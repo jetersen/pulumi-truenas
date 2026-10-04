@@ -21,4 +21,4 @@ test:
 	cd provider && go test ./...
 
 test-compose-preview: provider sdk
-	cd provider && TRUENAS_COMPOSE_CLI_TEST=1 go test -run TestComposeCLIPreview -v .
+	cd provider && VERSION=$(VERSION) TRUENAS_COMPOSE_CLI_TEST=1 go test -run TestComposeCLIPreview -v .

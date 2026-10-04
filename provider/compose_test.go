@@ -267,12 +267,18 @@ func testComposeCLIPreview(t *testing.T, runtime string) {
 	run := func(args ...string) string { return runCLI(t, args...) }
 	require.NoError(t, os.MkdirAll(filepath.Join(dir, "state"), 0700))
 	run("login", "file://"+filepath.Join(dir, "state"))
-	run("plugin", "install", "resource", "truenas", "0.1.0", "--file", binary)
+	version := os.Getenv("VERSION")
+	if version == "" {
+		version = "0.1.0"
+	}
+	run("plugin", "install", "resource", "truenas", version, "--file", binary)
 	project := fmt.Sprintf(`name: compose-fixture
 runtime: yaml
 resources:
   nas:
     type: pulumi:providers:truenas
+    options:
+      version: %s
     properties:
       endpoint: %s
       apiKey: fixture-api-key
@@ -294,7 +300,7 @@ resources:
               PASSWORD:
                 fn::secret: fixture-password
               DOMAIN: public.example
-`, "wss"+strings.TrimPrefix(server.URL, "https")+"/api/current")
+`, version, "wss"+strings.TrimPrefix(server.URL, "https")+"/api/current")
 	if runtime == "dotnet" {
 		project = "name: compose-fixture\nruntime: dotnet\n"
 		sdk, err := filepath.Abs("../sdk/dotnet/Jetersen.Pulumi.TrueNas.csproj")
