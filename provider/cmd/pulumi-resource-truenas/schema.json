@@ -3491,13 +3491,24 @@
                     "type": "string",
                     "description": "Catalog app to install (e.g. \"plex\"). Omit for custom apps."
                 },
+                "compose": {
+                    "$ref": "pulumi.json#/Any",
+                    "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default."
+                },
+                "composeSensitivePaths": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled."
+                },
                 "customApp": {
                     "type": "boolean",
                     "description": "True for custom (compose-based) apps."
                 },
                 "customComposeConfigString": {
                     "type": "string",
-                    "description": "Docker compose YAML for custom apps (write-only; not read back).",
+                    "description": "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.",
                     "secret": true
                 },
                 "humanVersion": {
@@ -3547,13 +3558,24 @@
                     "type": "string",
                     "description": "Catalog app to install (e.g. \"plex\"). Omit for custom apps."
                 },
+                "compose": {
+                    "$ref": "pulumi.json#/Any",
+                    "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default."
+                },
+                "composeSensitivePaths": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled."
+                },
                 "customApp": {
                     "type": "boolean",
                     "description": "True for custom (compose-based) apps."
                 },
                 "customComposeConfigString": {
                     "type": "string",
-                    "description": "Docker compose YAML for custom apps (write-only; not read back).",
+                    "description": "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.",
                     "secret": true
                 },
                 "name": {
@@ -3588,13 +3610,24 @@
                         "type": "string",
                         "description": "Catalog app to install (e.g. \"plex\"). Omit for custom apps."
                     },
+                    "compose": {
+                        "$ref": "pulumi.json#/Any",
+                        "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default."
+                    },
+                    "composeSensitivePaths": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled."
+                    },
                     "customApp": {
                         "type": "boolean",
                         "description": "True for custom (compose-based) apps."
                     },
                     "customComposeConfigString": {
                         "type": "string",
-                        "description": "Docker compose YAML for custom apps (write-only; not read back).",
+                        "description": "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.",
                         "secret": true
                     },
                     "humanVersion": {

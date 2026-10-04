@@ -17,9 +17,13 @@ type App struct {
 
 	// Catalog app to install (e.g. "plex"). Omit for custom apps.
 	CatalogApp pulumi.StringPtrOutput `pulumi:"catalogApp"`
+	// Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.
+	Compose pulumi.AnyOutput `pulumi:"compose"`
+	// Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.
+	ComposeSensitivePaths pulumi.StringArrayOutput `pulumi:"composeSensitivePaths"`
 	// True for custom (compose-based) apps.
 	CustomApp pulumi.BoolOutput `pulumi:"customApp"`
-	// Docker compose YAML for custom apps (write-only; not read back).
+	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString pulumi.StringPtrOutput `pulumi:"customComposeConfigString"`
 	HumanVersion              pulumi.StringOutput    `pulumi:"humanVersion"`
 	// Application name (unique per system).
@@ -83,9 +87,13 @@ func GetApp(ctx *pulumi.Context,
 type appState struct {
 	// Catalog app to install (e.g. "plex"). Omit for custom apps.
 	CatalogApp *string `pulumi:"catalogApp"`
+	// Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.
+	Compose interface{} `pulumi:"compose"`
+	// Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.
+	ComposeSensitivePaths []string `pulumi:"composeSensitivePaths"`
 	// True for custom (compose-based) apps.
 	CustomApp *bool `pulumi:"customApp"`
-	// Docker compose YAML for custom apps (write-only; not read back).
+	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString *string `pulumi:"customComposeConfigString"`
 	HumanVersion              *string `pulumi:"humanVersion"`
 	// Application name (unique per system).
@@ -106,9 +114,13 @@ type appState struct {
 type AppState struct {
 	// Catalog app to install (e.g. "plex"). Omit for custom apps.
 	CatalogApp pulumi.StringPtrInput
+	// Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.
+	Compose pulumi.Input
+	// Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.
+	ComposeSensitivePaths pulumi.StringArrayInput
 	// True for custom (compose-based) apps.
 	CustomApp pulumi.BoolPtrInput
-	// Docker compose YAML for custom apps (write-only; not read back).
+	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString pulumi.StringPtrInput
 	HumanVersion              pulumi.StringPtrInput
 	// Application name (unique per system).
@@ -133,9 +145,13 @@ func (AppState) ElementType() reflect.Type {
 type appArgs struct {
 	// Catalog app to install (e.g. "plex"). Omit for custom apps.
 	CatalogApp *string `pulumi:"catalogApp"`
+	// Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.
+	Compose interface{} `pulumi:"compose"`
+	// Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.
+	ComposeSensitivePaths []string `pulumi:"composeSensitivePaths"`
 	// True for custom (compose-based) apps.
 	CustomApp *bool `pulumi:"customApp"`
-	// Docker compose YAML for custom apps (write-only; not read back).
+	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString *string `pulumi:"customComposeConfigString"`
 	// Application name (unique per system).
 	Name string `pulumi:"name"`
@@ -153,9 +169,13 @@ type appArgs struct {
 type AppArgs struct {
 	// Catalog app to install (e.g. "plex"). Omit for custom apps.
 	CatalogApp pulumi.StringPtrInput
+	// Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.
+	Compose pulumi.Input
+	// Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.
+	ComposeSensitivePaths pulumi.StringArrayInput
 	// True for custom (compose-based) apps.
 	CustomApp pulumi.BoolPtrInput
-	// Docker compose YAML for custom apps (write-only; not read back).
+	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString pulumi.StringPtrInput
 	// Application name (unique per system).
 	Name pulumi.StringInput
@@ -261,12 +281,22 @@ func (o AppOutput) CatalogApp() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *App) pulumi.StringPtrOutput { return v.CatalogApp }).(pulumi.StringPtrOutput)
 }
 
+// Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.
+func (o AppOutput) Compose() pulumi.AnyOutput {
+	return o.ApplyT(func(v *App) pulumi.AnyOutput { return v.Compose }).(pulumi.AnyOutput)
+}
+
+// Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.
+func (o AppOutput) ComposeSensitivePaths() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *App) pulumi.StringArrayOutput { return v.ComposeSensitivePaths }).(pulumi.StringArrayOutput)
+}
+
 // True for custom (compose-based) apps.
 func (o AppOutput) CustomApp() pulumi.BoolOutput {
 	return o.ApplyT(func(v *App) pulumi.BoolOutput { return v.CustomApp }).(pulumi.BoolOutput)
 }
 
-// Docker compose YAML for custom apps (write-only; not read back).
+// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 func (o AppOutput) CustomComposeConfigString() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *App) pulumi.StringPtrOutput { return v.CustomComposeConfigString }).(pulumi.StringPtrOutput)
 }

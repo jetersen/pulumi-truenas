@@ -1,7 +1,7 @@
 VERSION ?= 0.1.0
 LDFLAGS = -X github.com/jetersen/pulumi-truenas/provider/pkg/version.Version=$(VERSION)
 
-.PHONY: schema provider sdk test
+.PHONY: schema provider sdk test test-compose-preview
 schema:
 	mkdir -p bin
 	cd provider && go build -ldflags '$(LDFLAGS)' -o ../bin/pulumi-tfgen-truenas ./cmd/pulumi-tfgen-truenas
@@ -19,3 +19,6 @@ sdk: schema
 
 test:
 	cd provider && go test ./...
+
+test-compose-preview: provider sdk
+	cd provider && TRUENAS_COMPOSE_CLI_TEST=1 go test -run TestComposeCLIPreview -v .

@@ -59,7 +59,7 @@ jobs:
           fi
       - name: Generate, build, and test
         run: |
-          make provider sdk test
+          make provider sdk test test-compose-preview
           git diff --exit-code -- provider/cmd/pulumi-resource-truenas sdk/go
           bash scripts/package.sh
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6

@@ -3,8 +3,13 @@ module github.com/jetersen/pulumi-truenas/provider
 go 1.26.6
 
 require (
+	github.com/gorilla/websocket v1.5.3
 	github.com/pulumi/pulumi-terraform-bridge/v3 v3.140.0
+	github.com/pulumi/pulumi/pkg/v3 v3.263.0
+	github.com/pulumi/pulumi/sdk/v3 v3.263.0
+	github.com/stretchr/testify v1.12.1
 	github.com/truenas/terraform-provider-truenas/shim v0.0.0
+	go.yaml.in/yaml/v3 v3.0.5
 )
 
 require (
@@ -93,7 +98,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.19 // indirect
 	github.com/googleapis/gax-go/v2 v2.23.0 // indirect
-	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0 // indirect
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645 // indirect
 	github.com/hashicorp/aws-sdk-go-base/v2 v2.0.0-beta.72 // indirect
@@ -169,8 +173,6 @@ require (
 	github.com/pulumi/pulumi-dotnet/pulumi-language-dotnet/v3 v3.110.0 // indirect
 	github.com/pulumi/pulumi-java v1.34.0 // indirect
 	github.com/pulumi/pulumi-yaml v1.38.1 // indirect
-	github.com/pulumi/pulumi/pkg/v3 v3.263.0 // indirect
-	github.com/pulumi/pulumi/sdk/v3 v3.263.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect

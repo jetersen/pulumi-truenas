@@ -31,7 +31,7 @@ func Provider() tfbridge.ProviderInfo {
 			"truenas_certificate": {Fields: map[string]*tfbridge.SchemaInfo{
 				"certificate": {CSharpName: "CertificatePem"},
 			}},
-			"truenas_app": {Fields: map[string]*tfbridge.SchemaInfo{
+			"truenas_app": {PreCheckCallback: composeCheck, TransformOutputs: composeProperties, Fields: map[string]*tfbridge.SchemaInfo{
 				"values":                       {Secret: &secret},
 				"custom_compose_config_string": {Secret: &secret},
 			}},

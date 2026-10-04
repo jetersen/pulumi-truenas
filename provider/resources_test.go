@@ -38,6 +38,15 @@ func TestGeneratedSDKContract(t *testing.T) {
 		t.Fatal("schema is missing mapped resources; regenerate it")
 	}
 	app := s.Resources["truenas:index/app:App"]
+	if _, ok := app.InputProperties["compose"]; !ok {
+		t.Fatal("missing structured Compose input")
+	}
+	if app.InputProperties["compose"].Secret {
+		t.Fatal("structured Compose must support field-level secrets")
+	}
+	if _, ok := app.InputProperties["composeSensitivePaths"]; !ok {
+		t.Fatal("missing explicit secret paths")
+	}
 	for _, name := range []string{"values", "customComposeConfigString"} {
 		if !app.InputProperties[name].Secret || !app.Properties[name].Secret {
 			t.Errorf("%s must be secret in inputs and outputs", name)

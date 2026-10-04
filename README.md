@@ -50,20 +50,70 @@ return await Deployment.RunAsync(() =>
 
 Use the existing app name as the import ID when adopting an application.
 Review a preview before applying. Deleting resources can delete NAS data;
-protect resources containing data. Upstream treats custom Compose configuration
-as write-only, so refreshing does not detect UI edits to that document.
-The bridge marks app values and Compose documents as secrets because they may
-contain application credentials. C# exposes certificate content as
-`CertificatePem` to avoid a class/property name collision.
+protect resources containing data. Both Compose representations read live configuration
+through `app.config` during refresh. Catalog app `values` and the legacy
+`customComposeConfigString` remain entirely secret. C# exposes certificate content
+as `CertificatePem` to avoid a class/property name collision.
+
+## Compose diffs
+
+Use the optional `compose` object instead of `customComposeConfigString` for
+field-level diffs. The adapter serializes this object for the upstream app
+resource; the app name, resource identity, and deployment API stay the same.
+For example, in TypeScript:
+
+```typescript
+const app = new truenas.App("dns", {
+    name: "dns",
+    customApp: true,
+    compose: {
+        services: {
+            dns: {
+                image: "technitium/dns-server:15.6.0",
+                network_mode: "host",
+                environment: { DNS_SERVER_ADMIN_PASSWORD: config.requireSecret("dnsPassword") },
+            },
+        },
+    },
+    composeSensitivePaths: ["/services/dns/hostname"],
+}, { provider: nas, protect: true });
+```
+
+Run `pulumi preview --refresh --diff` to compare live configuration with the
+program. Image and networking changes remain visible. Environment values,
+commands, entrypoints, labels, annotations, health-check commands, build arguments,
+logging/storage options, inline config content, secret definitions, volume/network
+driver options, and `x-` extensions are secret by default. Arrays in sensitive
+locations are encrypted as a whole because their elements can move.
+
+Use `composeSensitivePaths` for other application-specific sensitive locations.
+Paths are JSON pointers; a complete `*` segment matches all keys or elements,
+`~1` escapes `/`, and `~0` escapes `~`. An empty pointer protects the entire
+document. These paths supplement the defaults and also apply to new fields found
+during refresh. Name-based password detection is not a security boundary. Read
+failures stop refresh rather than silently retaining stale configuration. Avoid
+verbose provider/debug logs when working with secrets.
+
+Import an existing app by name first. Imports initially populate the fully secret
+`customComposeConfigString`, working around the bridge's dynamic-object import
+limitation. Then replace that input with an equivalent `compose` object. This is
+an in-place state transition; equivalent documents do not trigger an app update.
+Do not set both inputs. Object key order and YAML formatting do not cause drift;
+array order and scalar types remain significant.
 
 ## Development and releases
 
 Use Go 1.26.6+, Pulumi CLI 3.267.0+, Node.js 24, Python 3.13+, .NET 10, and a
 current `pulumi-language-dotnet` plugin. The Plugin Framework shim exposes the
-upstream internal constructor without maintaining an upstream fork.
+upstream internal constructor without maintaining an upstream fork. A focused app
+adapter adds structured Compose configuration and read-back while delegating
+deployment and identity to upstream. Compose tests use a local mock API, never a
+live NAS. The CLI tests exercise YAML and C# programs and require their language hosts
+bundled with Pulumi.
 
 ```sh
 make provider sdk test
+make test-compose-preview
 dotnet build sdk/dotnet
 cd sdk/nodejs && npm install && npm run build
 ```
