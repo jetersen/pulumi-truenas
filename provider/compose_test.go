@@ -253,7 +253,7 @@ func testComposeCLIPreview(t *testing.T, runtime string) {
 		env = append(env, v)
 	}
 	env = append(env, "PULUMI_HOME="+filepath.Join(dir, "home"), "PULUMI_CONFIG_PASSPHRASE=fixture-passphrase", "PULUMI_SKIP_UPDATE_CHECK=true")
-	run := func(args ...string) string {
+	runCLI := func(t *testing.T, args ...string) string {
 		t.Helper()
 		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 		defer cancel()
@@ -264,6 +264,7 @@ func testComposeCLIPreview(t *testing.T, runtime string) {
 		require.NoError(t, err, "Pulumi %v failed: %s", args, string(out))
 		return string(out)
 	}
+	run := func(args ...string) string { return runCLI(t, args...) }
 	require.NoError(t, os.MkdirAll(filepath.Join(dir, "state"), 0700))
 	run("login", "file://"+filepath.Join(dir, "state"))
 	run("plugin", "install", "resource", "truenas", "0.1.0", "--file", binary)
@@ -322,10 +323,43 @@ return await Deployment.RunAsync(() => {
 	}
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "Pulumi.yaml"), []byte(project), 0600))
 	run("stack", "init", "test", "--non-interactive")
+	t.Run("secret-create-preview", func(t *testing.T) {
+		preview := runCLI(t, "preview", "--diff", "--non-interactive", "--color", "never")
+		require.Contains(t, preview, "example/dns:1")
+		require.Contains(t, preview, "public.example")
+		require.Contains(t, preview, "[secret]")
+		for _, secret := range []string{"fixture-password", "fixture-api-key"} {
+			require.NotContains(t, preview, secret)
+		}
+	})
 	run("up", "--yes", "--skip-preview", "--non-interactive")
 	exported := run("stack", "export")
 	require.NotContains(t, exported, "fixture-password", "secret must be encrypted in persisted state")
 	require.NotContains(t, exported, "fixture-api-key")
+	t.Run("secret-update-preview", func(t *testing.T) {
+		// Exercise normal input changes, not just refresh drift. PASSWORD is
+		// protected solely by fn::secret / Output.CreateSecret, not a path rule.
+		programPath := filepath.Join(dir, "Pulumi.yaml")
+		if runtime == "dotnet" {
+			programPath = filepath.Join(dir, "Program.cs")
+		}
+		original, err := os.ReadFile(programPath)
+		require.NoError(t, err)
+		t.Cleanup(func() { require.NoError(t, os.WriteFile(programPath, original, 0600)) })
+		changed := strings.ReplaceAll(string(original), "fixture-password", "fixture-rotated-password")
+		changed = strings.ReplaceAll(changed, "example/dns:1", "example/dns:3")
+		require.NoError(t, os.WriteFile(programPath, []byte(changed), 0600))
+		preview := runCLI(t, "preview", "--diff", "--non-interactive", "--color", "never")
+		require.Contains(t, preview, "example/dns:1")
+		require.Contains(t, preview, "example/dns:3")
+		require.Contains(t, preview, "[secret]")
+		for _, secret := range []string{"fixture-password", "fixture-rotated-password", "fixture-api-key"} {
+			require.NotContains(t, preview, secret)
+		}
+		nas.mu.Lock()
+		defer nas.mu.Unlock()
+		require.Equal(t, 1, nas.writes, "preview must not deploy the rotated secret")
+	})
 	nas.mu.Lock()
 	dns := nas.document["services"].(map[string]any)["dns"].(map[string]any)
 	dns["image"] = "example/dns:2"
