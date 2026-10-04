@@ -11,16 +11,6 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
-// These are containers for arbitrary application data, not a guess based on
-// names like PASSWORD. Additional application-specific locations are explicit.
-var composeSecretPaths = []string{
-	"/services/*/environment/*", "/services/*/command", "/services/*/entrypoint",
-	"/services/*/labels/*", "/services/*/annotations/*", "/services/*/healthcheck/test",
-	"/services/*/build/args/*", "/services/*/build/labels/*",
-	"/services/*/logging/options/*", "/services/*/storage_opt/*",
-	"/configs/*/content", "/secrets", "/volumes/*/driver_opts/*", "/networks/*/driver_opts/*",
-}
-
 func composeCheck(ctx context.Context, props, _ resource.PropertyMap) (resource.PropertyMap, error) {
 	c, raw := props["compose"], props["customComposeConfigString"]
 	if c.HasValue() && raw.HasValue() {
@@ -59,7 +49,7 @@ func composeProperties(_ context.Context, props resource.PropertyMap) (resource.
 	if !ok || c.IsNull() {
 		return result, nil
 	}
-	paths := append([]string{}, composeSecretPaths...)
+	var paths []string
 	if extra, ok := result["composeSensitivePaths"]; ok && !extra.IsNull() {
 		extra = unwrap(extra)
 		if extra.ContainsUnknowns() {
@@ -87,9 +77,6 @@ func composeProperties(_ context.Context, props resource.PropertyMap) (resource.
 		parts, _ := pointerParts(path)
 		c = secretAt(c, parts)
 	}
-	// Compose extension fields are arbitrary and may contain credentials. Protect
-	// their full value wherever they occur, including future extension fields.
-	c = secretExtensions(c)
 	result["compose"] = c
 	return result, nil
 }
@@ -174,31 +161,6 @@ func secretAt(v resource.PropertyValue, parts []string) resource.PropertyValue {
 		if len(v.ArrayValue()) > 0 {
 			return resource.MakeSecret(v)
 		}
-	}
-	return v
-}
-
-func secretExtensions(v resource.PropertyValue) resource.PropertyValue {
-	if v.IsSecret() {
-		return v
-	}
-	if v.IsObject() {
-		obj := v.ObjectValue().Copy()
-		for k, child := range obj {
-			if strings.HasPrefix(string(k), "x-") && !child.IsSecret() {
-				obj[k] = resource.MakeSecret(child)
-			} else {
-				obj[k] = secretExtensions(child)
-			}
-		}
-		return resource.NewObjectProperty(obj)
-	}
-	if v.IsArray() {
-		arr := append([]resource.PropertyValue{}, v.ArrayValue()...)
-		for i := range arr {
-			arr[i] = secretExtensions(arr[i])
-		}
-		return resource.NewArrayProperty(arr)
 	}
 	return v
 }

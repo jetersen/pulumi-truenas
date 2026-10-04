@@ -60,39 +60,47 @@ as `CertificatePem` to avoid a class/property name collision.
 Use the optional `compose` object instead of `customComposeConfigString` for
 field-level diffs. The adapter serializes this object for the upstream app
 resource; the app name, resource identity, and deployment API stay the same.
-For example, in TypeScript:
+Keep image references in `compose.yaml` and parse that file into `compose` in the
+Pulumi program. Renovate continues to use its built-in Docker Compose manager;
+no custom regex or duplicate image version in application code is needed.
+For example, in TypeScript with the `yaml` package installed:
 
 ```typescript
+import { readFileSync } from "node:fs";
+import { parse } from "yaml";
+
+const compose = parse(readFileSync("compose.yaml", "utf8"));
+compose.services.dns.environment.DNS_SERVER_ADMIN_PASSWORD = config.requireSecret("dnsPassword");
+
 const app = new truenas.App("dns", {
     name: "dns",
     customApp: true,
-    compose: {
-        services: {
-            dns: {
-                image: "technitium/dns-server:15.6.0",
-                network_mode: "host",
-                environment: { DNS_SERVER_ADMIN_PASSWORD: config.requireSecret("dnsPassword") },
-            },
-        },
-    },
-    composeSensitivePaths: ["/services/dns/hostname"],
+    compose,
+    composeSensitivePaths: ["/services/dns/labels/private-note"],
 }, { provider: nas, protect: true });
 ```
 
-Run `pulumi preview --refresh --diff` to compare live configuration with the
-program. Image and networking changes remain visible. Environment values,
-commands, entrypoints, labels, annotations, health-check commands, build arguments,
-logging/storage options, inline config content, secret definitions, volume/network
-driver options, and `x-` extensions are secret by default. Arrays in sensitive
-locations are encrypted as a whole because their elements can move.
+C# programs can deserialize the same file to dictionaries and lists before
+assigning `AppArgs.Compose`. Keep scalar types intact. Inject credentials through
+Pulumi secret values rather than storing them in the Compose file.
 
-Use `composeSensitivePaths` for other application-specific sensitive locations.
-Paths are JSON pointers; a complete `*` segment matches all keys or elements,
-`~1` escapes `/`, and `~0` escapes `~`. An empty pointer protects the entire
-document. These paths supplement the defaults and also apply to new fields found
-during refresh. Name-based password detection is not a security boundary. Read
-failures stop refresh rather than silently retaining stale configuration. Avoid
-verbose provider/debug logs when working with secrets.
+Run `pulumi preview --refresh --diff` to compare live configuration with the
+program. Standard Pulumi secret values remain secret on read-back. Other fields,
+including ordinary environment variables, labels, and commands, stay visible.
+The provider does not guess which application values are credentials.
+
+Use `composeSensitivePaths` for sensitive locations that must be protected even
+when discovered during refresh. Paths are JSON pointers; a complete `*` segment
+matches all keys or elements, `~1` escapes `/`, and `~0` escapes `~`. An empty
+pointer protects the entire document. No paths are selected automatically.
+Arrays selected by a sensitive path are encrypted as a whole because elements
+can move. New fields are visible unless protected by a secret marker or an
+explicit path, so configure paths before reading externally managed credentials.
+
+Read failures stop refresh rather than silently retaining stale configuration.
+Avoid verbose provider/debug logs when working with secrets. The adapter supplies
+read-back until it is available upstream; see
+[terraform-provider-truenas#34](https://github.com/truenas/terraform-provider-truenas/issues/34).
 
 Import an existing app by name first. Imports initially populate the fully secret
 `customComposeConfigString`, working around the bridge's dynamic-object import

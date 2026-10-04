@@ -29,19 +29,18 @@ func TestComposeProtection(t *testing.T) {
 			"command": []any{"server", "--password=fixture-command"}, "labels": map[string]any{"auth": "fixture-label"},
 			"hostname": "private-host", "x-private": map[string]any{"key": "fixture-extension"},
 		}}},
-		"composeSensitivePaths": []any{"/services/dns/hostname"},
+		"composeSensitivePaths": []any{"/services/dns/hostname", "/services/dns/environment/PASSWORD"},
 	})
 	checked, err := composeCheck(context.Background(), props, nil)
 	require.NoError(t, err)
 	service := checked["compose"].ObjectValue()["services"].ObjectValue()["dns"].ObjectValue()
 	require.False(t, service["image"].IsSecret())
-	for _, key := range []string{"command", "hostname", "x-private"} {
-		require.True(t, service[resource.PropertyKey(key)].IsSecret(), key)
+	require.True(t, service["hostname"].IsSecret())
+	for _, key := range []string{"command", "labels", "x-private"} {
+		require.False(t, service[resource.PropertyKey(key)].ContainsSecrets(), key)
 	}
-	for _, key := range []string{"PASSWORD", "DOMAIN"} {
-		require.True(t, service["environment"].ObjectValue()[resource.PropertyKey(key)].IsSecret())
-	}
-	require.True(t, service["labels"].ObjectValue()["auth"].IsSecret())
+	require.True(t, service["environment"].ObjectValue()["PASSWORD"].IsSecret())
+	require.False(t, service["environment"].ObjectValue()["DOMAIN"].IsSecret())
 	require.False(t, props["compose"].ContainsSecrets(), "must not mutate caller inputs")
 	again, err := composeProperties(context.Background(), checked)
 	require.NoError(t, err)
@@ -167,6 +166,10 @@ func TestComposeProviderLifecycle(t *testing.T) {
 	news := resource.NewPropertyMapFromMap(map[string]any{"name": "dns", "customApp": true, "running": true, "compose": map[string]any{
 		"services": map[string]any{"dns": map[string]any{"image": "example/dns:1", "environment": map[string]any{"PASSWORD": "fixture-old"}}},
 	}})
+	news["composeSensitivePaths"] = resource.NewArrayProperty([]resource.PropertyValue{
+		resource.NewStringProperty("/services/dns/environment/PASSWORD"),
+		resource.NewStringProperty("/services/dns/environment/NEW_TOKEN"),
+	})
 	checked, err := p.Check(ctx, plugin.CheckRequest{URN: urn, News: news})
 	require.NoError(t, err)
 	require.Empty(t, checked.Failures)
@@ -192,7 +195,7 @@ func TestComposeProviderLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	service = drift.Outputs["compose"].ObjectValue()["services"].ObjectValue()["dns"].ObjectValue()
 	require.Equal(t, "example/dns:2", service["image"].StringValue())
-	require.True(t, service["environment"].ObjectValue()["NEW_TOKEN"].IsSecret(), "new fields must be secret during refresh")
+	require.True(t, service["environment"].ObjectValue()["NEW_TOKEN"].IsSecret(), "explicit paths must protect newly discovered fields")
 	diff, err = p.Diff(ctx, plugin.DiffRequest{URN: urn, ID: created.ID, OldInputs: drift.Inputs, OldOutputs: drift.Outputs, NewInputs: checked.Properties})
 	require.NoError(t, err)
 	require.Equal(t, plugin.DiffSome, diff.Changes)
@@ -281,12 +284,15 @@ resources:
       name: dns
       customApp: true
       running: true
+      composeSensitivePaths: [/services/dns/environment/NEW_TOKEN]
       compose:
         services:
           dns:
             image: example/dns:1
             environment:
-              PASSWORD: fixture-password
+              PASSWORD:
+                fn::secret: fixture-password
+              DOMAIN: public.example
 `, "wss"+strings.TrimPrefix(server.URL, "https")+"/api/current")
 	if runtime == "dotnet" {
 		project = "name: compose-fixture\nruntime: dotnet\n"
@@ -299,11 +305,12 @@ return await Deployment.RunAsync(() => {
  var nas = new TrueNas.Provider("nas",new TrueNas.ProviderArgs { Endpoint = "%s", ApiKey = Output.CreateSecret("fixture-api-key"), Insecure = true });
  var app = new TrueNas.App("dns",new TrueNas.AppArgs {
   Name = "dns", CustomApp = true, Running = true,
+  ComposeSensitivePaths = { "/services/dns/environment/NEW_TOKEN" },
   Compose = new Dictionary<string,object> {
    ["services"] = new Dictionary<string,object> {
     ["dns"] = new Dictionary<string,object> {
      ["image"] = "example/dns:1",
-     ["environment"] = new Dictionary<string,object> { ["PASSWORD"] = Output.CreateSecret("fixture-password") }
+     ["environment"] = new Dictionary<string,object> { ["PASSWORD"] = Output.CreateSecret("fixture-password"), ["DOMAIN"] = "public.example" }
     }
    }
   }
@@ -324,13 +331,21 @@ return await Deployment.RunAsync(() => {
 	dns["image"] = "example/dns:2"
 	dns["environment"].(map[string]any)["PASSWORD"] = "fixture-drift-password"
 	dns["environment"].(map[string]any)["NEW_TOKEN"] = "fixture-new-token"
+	dns["environment"].(map[string]any)["DOMAIN"] = "manual.example"
 	nas.mu.Unlock()
 	preview := run("preview", "--refresh", "--diff", "--non-interactive", "--color", "never")
 	require.Contains(t, preview, "example/dns:2")
 	require.Contains(t, preview, "example/dns:1")
 	require.Contains(t, preview, "[secret]")
+	require.Contains(t, preview, "public.example")
+	require.Contains(t, preview, "manual.example")
 	for _, s := range []string{"fixture-password", "fixture-drift-password", "fixture-new-token"} {
 		require.NotContains(t, preview, s)
+	}
+	run("refresh", "--yes", "--non-interactive")
+	refreshed := run("stack", "export")
+	for _, s := range []string{"fixture-password", "fixture-drift-password", "fixture-new-token"} {
+		require.NotContains(t, refreshed, s)
 	}
 	nas.mu.Lock()
 	require.Equal(t, 1, nas.writes)

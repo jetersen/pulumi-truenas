@@ -19,6 +19,7 @@ import (
 
 // Keep deployment, identity, and lifecycle behavior in the upstream resource.
 // Only adapt the structured Compose input and add read-back via app.config.
+// Track upstream read-back support: https://github.com/truenas/terraform-provider-truenas/issues/34
 type appDelegate interface {
 	resource.Resource
 	resource.ResourceWithConfigure
@@ -41,11 +42,11 @@ func (r *composeApp) Schema(ctx context.Context, req resource.SchemaRequest, res
 	r.appDelegate.Schema(ctx, req, resp)
 	resp.Schema.Attributes["compose"] = schema.DynamicAttribute{
 		Optional:    true,
-		Description: "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default.",
+		Description: "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Use Pulumi secret values or composeSensitivePaths for sensitive fields; ordinary fields remain visible.",
 	}
 	resp.Schema.Attributes["compose_sensitive_paths"] = schema.ListAttribute{
 		Optional: true, ElementType: types.StringType,
-		Description: "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled.",
+		Description: "Fields to protect during deployment and refresh, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. No paths are selected automatically.",
 	}
 	a := resp.Schema.Attributes["custom_compose_config_string"].(schema.StringAttribute)
 	a.Description = "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs."

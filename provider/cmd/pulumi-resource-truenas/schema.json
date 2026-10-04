@@ -3493,14 +3493,14 @@
                 },
                 "compose": {
                     "$ref": "pulumi.json#/Any",
-                    "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default."
+                    "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Use Pulumi secret values or composeSensitivePaths for sensitive fields; ordinary fields remain visible."
                 },
                 "composeSensitivePaths": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "description": "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled."
+                    "description": "Fields to protect during deployment and refresh, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. No paths are selected automatically."
                 },
                 "customApp": {
                     "type": "boolean",
@@ -3560,14 +3560,14 @@
                 },
                 "compose": {
                     "$ref": "pulumi.json#/Any",
-                    "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default."
+                    "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Use Pulumi secret values or composeSensitivePaths for sensitive fields; ordinary fields remain visible."
                 },
                 "composeSensitivePaths": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "description": "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled."
+                    "description": "Fields to protect during deployment and refresh, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. No paths are selected automatically."
                 },
                 "customApp": {
                     "type": "boolean",
@@ -3612,14 +3612,14 @@
                     },
                     "compose": {
                         "$ref": "pulumi.json#/Any",
-                        "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Environment values and other potentially sensitive fields are secret by default."
+                        "description": "Structured Docker Compose document for a custom app. Refreshed from app.config. Mutually exclusive with customComposeConfigString. Use Pulumi secret values or composeSensitivePaths for sensitive fields; ordinary fields remain visible."
                     },
                     "composeSensitivePaths": {
                         "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "Additional secret fields in compose, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. Defaults cannot be disabled."
+                        "description": "Fields to protect during deployment and refresh, expressed as JSON pointers (for example /services/dns/command). A whole path segment of * matches every object key or array element. No paths are selected automatically."
                     },
                     "customApp": {
                         "type": "boolean",
