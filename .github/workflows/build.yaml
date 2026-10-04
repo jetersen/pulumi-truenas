@@ -1,0 +1,87 @@
+name: Build and release
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: provider-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: provider/go.mod
+          cache-dependency-path: |
+            provider/go.sum
+            provider/shim/go.sum
+            sdk/go.sum
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          registry-url: https://npm.pkg.github.com
+          scope: '@jetersen'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - uses: pulumi/actions@8582a9e8cc630786854029b4e09281acd6794b58 # v6
+        with:
+          pulumi-version: '3.267.0'
+      - name: Install Python build tools
+        run: python3 -m pip install build
+      - name: Select release version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo 'VERSION=0.1.0' >> "$GITHUB_ENV"
+          fi
+      - name: Generate, build, and test
+        run: |
+          make provider sdk test
+          git diff --exit-code -- provider/cmd/pulumi-resource-truenas sdk/go
+          bash scripts/package.sh
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: packages
+          path: |
+            dist/*.nupkg
+            dist/*.tgz
+            dist/*.whl
+            dist/*.tar.gz
+            dist/checksums.txt
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.nupkg dist/*.tgz dist/*.whl dist/*.tar.gz dist/checksums.txt --verify-tag --generate-notes
+          git tag "sdk/$GITHUB_REF_NAME"
+          git push origin "sdk/$GITHUB_REF_NAME"
+      - name: Publish NuGet to GitHub Packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NuGetPackageSourceCredentials_github: Username=${{ github.actor }};Password=${{ github.token }};ValidAuthenticationTypes=Basic
+        run: |
+          dotnet nuget add source https://nuget.pkg.github.com/jetersen/index.json --name github
+          dotnet nuget push 'dist/*.nupkg' --source github --skip-duplicate
+      - name: Publish npm to GitHub Packages
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: npm publish dist/*.tgz --registry https://npm.pkg.github.com

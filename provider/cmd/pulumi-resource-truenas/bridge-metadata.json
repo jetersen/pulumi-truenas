@@ -1,0 +1,525 @@
+{
+    "default-resource-schema-fixups": {
+        "resources": {
+            "truenas_acl_template": {
+                "fields": {
+                    "id": {
+                        "name": "aclTemplateId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_acme_dns_authenticator": {
+                "fields": {
+                    "id": {
+                        "name": "acmeDnsAuthenticatorId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_alert_policy": {},
+            "truenas_alert_service": {
+                "fields": {
+                    "id": {
+                        "name": "alertServiceId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_api_key": {
+                "fields": {
+                    "id": {
+                        "name": "apiKeyId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_app": {},
+            "truenas_app_registry": {
+                "fields": {
+                    "id": {
+                        "name": "appRegistryId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_audit_config": {},
+            "truenas_boot_environment": {},
+            "truenas_catalog_config": {},
+            "truenas_certificate": {
+                "fields": {
+                    "id": {
+                        "name": "certificateId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_cloud_backup": {
+                "fields": {
+                    "id": {
+                        "name": "cloudBackupId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_cloudsync_credentials": {
+                "fields": {
+                    "id": {
+                        "name": "cloudsyncCredentialsId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_cloudsync_task": {
+                "fields": {
+                    "id": {
+                        "name": "cloudsyncTaskId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_container": {
+                "fields": {
+                    "id": {
+                        "name": "containerId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_container_device": {
+                "fields": {
+                    "id": {
+                        "name": "containerDeviceId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_cronjob": {
+                "fields": {
+                    "id": {
+                        "name": "cronjobId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_dataset": {},
+            "truenas_directoryservices": {},
+            "truenas_docker_config": {},
+            "truenas_enclosure_label": {
+                "fields": {
+                    "id": {
+                        "name": "enclosureLabelId"
+                    }
+                },
+                "computeID": {
+                    "kind": "delegate",
+                    "field": "enclosureLabelId"
+                }
+            },
+            "truenas_failover_config": {},
+            "truenas_filesystem_acl": {},
+            "truenas_filesystem_permissions": {},
+            "truenas_ftp_config": {},
+            "truenas_group": {
+                "fields": {
+                    "id": {
+                        "name": "groupId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_init_shutdown_script": {
+                "fields": {
+                    "id": {
+                        "name": "initShutdownScriptId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_ipmi_lan": {
+                "fields": {
+                    "id": {
+                        "name": "ipmiLanId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_iscsi_auth": {
+                "fields": {
+                    "id": {
+                        "name": "iscsiAuthId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_iscsi_extent": {
+                "fields": {
+                    "id": {
+                        "name": "iscsiExtentId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_iscsi_global": {},
+            "truenas_iscsi_initiator": {
+                "fields": {
+                    "id": {
+                        "name": "iscsiInitiatorId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_iscsi_portal": {
+                "fields": {
+                    "id": {
+                        "name": "iscsiPortalId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_iscsi_target": {
+                "fields": {
+                    "id": {
+                        "name": "iscsiTargetId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_iscsi_targetextent": {
+                "fields": {
+                    "id": {
+                        "name": "iscsiTargetextentId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_kerberos_config": {},
+            "truenas_kerberos_keytab": {
+                "fields": {
+                    "id": {
+                        "name": "kerberosKeytabId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_kerberos_realm": {
+                "fields": {
+                    "id": {
+                        "name": "kerberosRealmId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_keychain_ssh_connection": {
+                "fields": {
+                    "id": {
+                        "name": "keychainSshConnectionId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_keychain_ssh_keypair": {
+                "fields": {
+                    "id": {
+                        "name": "keychainSshKeypairId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_lxc_config": {},
+            "truenas_mail": {},
+            "truenas_network_config": {},
+            "truenas_network_interface": {},
+            "truenas_nfs_config": {},
+            "truenas_nfs_share": {},
+            "truenas_ntp_server": {
+                "fields": {
+                    "id": {
+                        "name": "ntpServerId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_nvmet_global": {},
+            "truenas_nvmet_host": {
+                "fields": {
+                    "id": {
+                        "name": "nvmetHostId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_nvmet_host_subsys": {
+                "fields": {
+                    "id": {
+                        "name": "nvmetHostSubsysId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_nvmet_namespace": {
+                "fields": {
+                    "id": {
+                        "name": "nvmetNamespaceId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_nvmet_port": {
+                "fields": {
+                    "id": {
+                        "name": "nvmetPortId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_nvmet_port_subsys": {
+                "fields": {
+                    "id": {
+                        "name": "nvmetPortSubsysId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_nvmet_subsys": {
+                "fields": {
+                    "id": {
+                        "name": "nvmetSubsysId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_periodic_snapshot_task": {
+                "fields": {
+                    "id": {
+                        "name": "periodicSnapshotTaskId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_pool": {
+                "fields": {
+                    "id": {
+                        "name": "poolId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_privilege": {
+                "fields": {
+                    "id": {
+                        "name": "privilegeId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_replication_config": {},
+            "truenas_replication_task": {
+                "fields": {
+                    "id": {
+                        "name": "replicationTaskId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_reporting_exporter": {
+                "fields": {
+                    "id": {
+                        "name": "reportingExporterId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_resilver_config": {},
+            "truenas_rsync_task": {
+                "fields": {
+                    "id": {
+                        "name": "rsyncTaskId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_scrub_task": {
+                "fields": {
+                    "id": {
+                        "name": "scrubTaskId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_service": {},
+            "truenas_smb_config": {},
+            "truenas_smb_share": {
+                "fields": {
+                    "id": {
+                        "name": "smbShareId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_smb_share_acl": {},
+            "truenas_snapshot": {},
+            "truenas_snmp_config": {},
+            "truenas_ssh_config": {},
+            "truenas_static_route": {
+                "fields": {
+                    "id": {
+                        "name": "staticRouteId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_system_advanced": {},
+            "truenas_system_dataset": {},
+            "truenas_system_general": {},
+            "truenas_tn_connect_config": {},
+            "truenas_truecommand_config": {},
+            "truenas_tunable": {
+                "fields": {
+                    "id": {
+                        "name": "tunableId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_twofactor_auth": {},
+            "truenas_ups_config": {},
+            "truenas_user": {
+                "fields": {
+                    "id": {
+                        "name": "userId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_vm": {
+                "fields": {
+                    "id": {
+                        "name": "vmId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_vm_device": {
+                "fields": {
+                    "id": {
+                        "name": "vmDeviceId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_vmware": {
+                "fields": {
+                    "id": {
+                        "name": "vmwareId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_webshare": {
+                "fields": {
+                    "id": {
+                        "name": "webshareId"
+                    }
+                },
+                "computeID": {
+                    "kind": "missing"
+                }
+            },
+            "truenas_webshare_config": {},
+            "truenas_zvol": {}
+        }
+    }
+}

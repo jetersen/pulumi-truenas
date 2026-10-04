@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "ignorePaths": ["sdk/**"],
+  "packageRules": [{
+    "matchPackageNames": ["github.com/truenas/terraform-provider-truenas", "github.com/pulumi/pulumi-terraform-bridge/v3"],
+    "automerge": false
+  }]
+}

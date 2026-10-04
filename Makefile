@@ -1,0 +1,21 @@
+VERSION ?= 0.1.0
+LDFLAGS = -X github.com/jetersen/pulumi-truenas/provider/pkg/version.Version=$(VERSION)
+
+.PHONY: schema provider sdk test
+schema:
+	mkdir -p bin
+	cd provider && go build -ldflags '$(LDFLAGS)' -o ../bin/pulumi-tfgen-truenas ./cmd/pulumi-tfgen-truenas
+	./bin/pulumi-tfgen-truenas schema --skip-docs --skip-examples --out provider/cmd/pulumi-resource-truenas
+
+provider: schema
+	cd provider && go build -ldflags '$(LDFLAGS)' -o ../bin/pulumi-resource-truenas ./cmd/pulumi-resource-truenas
+
+sdk: schema
+	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language dotnet --out sdk
+	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language nodejs --out sdk
+	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language python --out sdk
+	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language go --out sdk
+	cd sdk && go mod tidy
+
+test:
+	cd provider && go test ./...

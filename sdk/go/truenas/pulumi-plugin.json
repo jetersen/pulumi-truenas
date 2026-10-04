@@ -1,0 +1,6 @@
+{
+  "resource": true,
+  "name": "truenas",
+  "version": "0.1.0",
+  "server": "github://api.github.com/jetersen/pulumi-truenas"
+}

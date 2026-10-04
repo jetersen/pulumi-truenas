@@ -1,0 +1,10 @@
+/bin/
+/dist/
+/sdk/dotnet/
+/sdk/nodejs/
+/sdk/python/
+**/bin/
+**/obj/
+**/node_modules/
+**/__pycache__/
+.env*
