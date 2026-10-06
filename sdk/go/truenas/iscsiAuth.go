@@ -17,11 +17,15 @@ type IscsiAuth struct {
 
 	// Discovery authentication method. One of: NONE, CHAP, CHAP_MUTUAL.
 	DiscoveryAuth pulumi.StringOutput `pulumi:"discoveryAuth"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Peer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Peersecret pulumi.StringPtrOutput `pulumi:"peersecret"`
 	// Peer username for mutual CHAP (target authenticates to initiator).
 	Peeruser pulumi.StringOutput `pulumi:"peeruser"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// CHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Secret pulumi.StringOutput `pulumi:"secret"`
@@ -121,11 +125,15 @@ func (IscsiAuthState) ElementType() reflect.Type {
 type iscsiAuthArgs struct {
 	// Discovery authentication method. One of: NONE, CHAP, CHAP_MUTUAL.
 	DiscoveryAuth *string `pulumi:"discoveryAuth"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Peer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Peersecret *string `pulumi:"peersecret"`
 	// Peer username for mutual CHAP (target authenticates to initiator).
 	Peeruser *string `pulumi:"peeruser"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// CHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Secret string `pulumi:"secret"`
@@ -139,11 +147,15 @@ type iscsiAuthArgs struct {
 type IscsiAuthArgs struct {
 	// Discovery authentication method. One of: NONE, CHAP, CHAP_MUTUAL.
 	DiscoveryAuth pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Peer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Peersecret pulumi.StringPtrInput
 	// Peer username for mutual CHAP (target authenticates to initiator).
 	Peeruser pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// CHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Secret pulumi.StringInput
@@ -245,6 +257,8 @@ func (o IscsiAuthOutput) DiscoveryAuth() pulumi.StringOutput {
 	return o.ApplyT(func(v *IscsiAuth) pulumi.StringOutput { return v.DiscoveryAuth }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Peer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o IscsiAuthOutput) Peersecret() pulumi.StringPtrOutput {
@@ -256,6 +270,8 @@ func (o IscsiAuthOutput) Peeruser() pulumi.StringOutput {
 	return o.ApplyT(func(v *IscsiAuth) pulumi.StringOutput { return v.Peeruser }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // CHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o IscsiAuthOutput) Secret() pulumi.StringOutput {

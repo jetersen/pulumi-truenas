@@ -37,6 +37,8 @@ type User struct {
 	Local pulumi.BoolOutput `pulumi:"local"`
 	// Whether the user account is locked.
 	Locked pulumi.BoolOutput `pulumi:"locked"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// User password. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Password pulumi.StringPtrOutput `pulumi:"password"`
@@ -218,6 +220,8 @@ type userArgs struct {
 	HomeMode *string `pulumi:"homeMode"`
 	// Whether the user account is locked.
 	Locked *bool `pulumi:"locked"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// User password. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Password *string `pulumi:"password"`
@@ -261,6 +265,8 @@ type UserArgs struct {
 	HomeMode pulumi.StringPtrInput
 	// Whether the user account is locked.
 	Locked pulumi.BoolPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// User password. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Password pulumi.StringPtrInput
@@ -428,6 +434,8 @@ func (o UserOutput) Locked() pulumi.BoolOutput {
 	return o.ApplyT(func(v *User) pulumi.BoolOutput { return v.Locked }).(pulumi.BoolOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // User password. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o UserOutput) Password() pulumi.StringPtrOutput {

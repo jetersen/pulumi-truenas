@@ -15,8 +15,15 @@ import (
 type AlertService struct {
 	pulumi.CustomResourceState
 
-	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.
+	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>to keep secret keys out of state.
 	Attributes pulumi.StringOutput `pulumi:"attributes"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrOutput `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrOutput `pulumi:"attributesSecretsWoVersion"`
 	// Whether the alert service is enabled.
 	Enabled pulumi.BoolOutput `pulumi:"enabled"`
 	// Minimum alert level that triggers this service. One of: INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
@@ -44,8 +51,12 @@ func NewAlertService(ctx *pulumi.Context,
 	if args.Attributes != nil {
 		args.Attributes = pulumi.ToSecret(args.Attributes).(pulumi.StringInput)
 	}
+	if args.AttributesSecretsWo != nil {
+		args.AttributesSecretsWo = pulumi.ToSecret(args.AttributesSecretsWo).(pulumi.StringPtrInput)
+	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"attributes",
+		"attributesSecretsWo",
 	})
 	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
@@ -71,8 +82,13 @@ func GetAlertService(ctx *pulumi.Context,
 
 // Input properties used for looking up and filtering AlertService resources.
 type alertServiceState struct {
-	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.
+	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>to keep secret keys out of state.
 	Attributes *string `pulumi:"attributes"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo *string `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion *int `pulumi:"attributesSecretsWoVersion"`
 	// Whether the alert service is enabled.
 	Enabled *bool `pulumi:"enabled"`
 	// Minimum alert level that triggers this service. One of: INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
@@ -82,8 +98,13 @@ type alertServiceState struct {
 }
 
 type AlertServiceState struct {
-	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.
+	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>to keep secret keys out of state.
 	Attributes pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrInput
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrInput
 	// Whether the alert service is enabled.
 	Enabled pulumi.BoolPtrInput
 	// Minimum alert level that triggers this service. One of: INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
@@ -97,8 +118,15 @@ func (AlertServiceState) ElementType() reflect.Type {
 }
 
 type alertServiceArgs struct {
-	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.
+	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>to keep secret keys out of state.
 	Attributes string `pulumi:"attributes"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo *string `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion *int `pulumi:"attributesSecretsWoVersion"`
 	// Whether the alert service is enabled.
 	Enabled *bool `pulumi:"enabled"`
 	// Minimum alert level that triggers this service. One of: INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
@@ -109,8 +137,15 @@ type alertServiceArgs struct {
 
 // The set of arguments for constructing a AlertService resource.
 type AlertServiceArgs struct {
-	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.
+	// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>to keep secret keys out of state.
 	Attributes pulumi.StringInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrInput
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrInput
 	// Whether the alert service is enabled.
 	Enabled pulumi.BoolPtrInput
 	// Minimum alert level that triggers this service. One of: INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
@@ -206,9 +241,22 @@ func (o AlertServiceOutput) ToAlertServiceOutputWithContext(ctx context.Context)
 	return o
 }
 
-// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.
+// JSON document of service settings. Must include "type" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>to keep secret keys out of state.
 func (o AlertServiceOutput) Attributes() pulumi.StringOutput {
 	return o.ApplyT(func(v *AlertService) pulumi.StringOutput { return v.Attributes }).(pulumi.StringOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+func (o AlertServiceOutput) AttributesSecretsWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *AlertService) pulumi.StringPtrOutput { return v.AttributesSecretsWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+func (o AlertServiceOutput) AttributesSecretsWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *AlertService) pulumi.IntPtrOutput { return v.AttributesSecretsWoVersion }).(pulumi.IntPtrOutput)
 }
 
 // Whether the alert service is enabled.

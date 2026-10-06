@@ -17,8 +17,15 @@ type CloudsyncCredentials struct {
 
 	// Name of the cloud sync credentials.
 	Name pulumi.StringOutput `pulumi:"name"`
-	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).
+	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>to keep secret keys out of state.
 	ProviderConfig pulumi.StringOutput `pulumi:"providerConfig"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over<span pulumi-lang-nodejs=" providerConfig " pulumi-lang-dotnet=" ProviderConfig " pulumi-lang-go=" providerConfig " pulumi-lang-python=" provider_config " pulumi-lang-yaml=" providerConfig " pulumi-lang-java=" providerConfig " pulumi-lang-hcl=" provider_config "> providerConfig </span>when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.
+	ProviderSecretsWo pulumi.StringPtrOutput `pulumi:"providerSecretsWo"`
+	// Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>is set.
+	ProviderSecretsWoVersion pulumi.IntPtrOutput `pulumi:"providerSecretsWoVersion"`
 }
 
 // NewCloudsyncCredentials registers a new resource with the given unique name, arguments, and options.
@@ -37,8 +44,12 @@ func NewCloudsyncCredentials(ctx *pulumi.Context,
 	if args.ProviderConfig != nil {
 		args.ProviderConfig = pulumi.ToSecret(args.ProviderConfig).(pulumi.StringInput)
 	}
+	if args.ProviderSecretsWo != nil {
+		args.ProviderSecretsWo = pulumi.ToSecret(args.ProviderSecretsWo).(pulumi.StringPtrInput)
+	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"providerConfig",
+		"providerSecretsWo",
 	})
 	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
@@ -66,15 +77,25 @@ func GetCloudsyncCredentials(ctx *pulumi.Context,
 type cloudsyncCredentialsState struct {
 	// Name of the cloud sync credentials.
 	Name *string `pulumi:"name"`
-	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).
+	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>to keep secret keys out of state.
 	ProviderConfig *string `pulumi:"providerConfig"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over<span pulumi-lang-nodejs=" providerConfig " pulumi-lang-dotnet=" ProviderConfig " pulumi-lang-go=" providerConfig " pulumi-lang-python=" provider_config " pulumi-lang-yaml=" providerConfig " pulumi-lang-java=" providerConfig " pulumi-lang-hcl=" provider_config "> providerConfig </span>when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.
+	ProviderSecretsWo *string `pulumi:"providerSecretsWo"`
+	// Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>is set.
+	ProviderSecretsWoVersion *int `pulumi:"providerSecretsWoVersion"`
 }
 
 type CloudsyncCredentialsState struct {
 	// Name of the cloud sync credentials.
 	Name pulumi.StringPtrInput
-	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).
+	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>to keep secret keys out of state.
 	ProviderConfig pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over<span pulumi-lang-nodejs=" providerConfig " pulumi-lang-dotnet=" ProviderConfig " pulumi-lang-go=" providerConfig " pulumi-lang-python=" provider_config " pulumi-lang-yaml=" providerConfig " pulumi-lang-java=" providerConfig " pulumi-lang-hcl=" provider_config "> providerConfig </span>when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.
+	ProviderSecretsWo pulumi.StringPtrInput
+	// Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>is set.
+	ProviderSecretsWoVersion pulumi.IntPtrInput
 }
 
 func (CloudsyncCredentialsState) ElementType() reflect.Type {
@@ -84,16 +105,30 @@ func (CloudsyncCredentialsState) ElementType() reflect.Type {
 type cloudsyncCredentialsArgs struct {
 	// Name of the cloud sync credentials.
 	Name string `pulumi:"name"`
-	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).
+	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>to keep secret keys out of state.
 	ProviderConfig string `pulumi:"providerConfig"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over<span pulumi-lang-nodejs=" providerConfig " pulumi-lang-dotnet=" ProviderConfig " pulumi-lang-go=" providerConfig " pulumi-lang-python=" provider_config " pulumi-lang-yaml=" providerConfig " pulumi-lang-java=" providerConfig " pulumi-lang-hcl=" provider_config "> providerConfig </span>when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.
+	ProviderSecretsWo *string `pulumi:"providerSecretsWo"`
+	// Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>is set.
+	ProviderSecretsWoVersion *int `pulumi:"providerSecretsWoVersion"`
 }
 
 // The set of arguments for constructing a CloudsyncCredentials resource.
 type CloudsyncCredentialsArgs struct {
 	// Name of the cloud sync credentials.
 	Name pulumi.StringInput
-	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).
+	// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>to keep secret keys out of state.
 	ProviderConfig pulumi.StringInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over<span pulumi-lang-nodejs=" providerConfig " pulumi-lang-dotnet=" ProviderConfig " pulumi-lang-go=" providerConfig " pulumi-lang-python=" provider_config " pulumi-lang-yaml=" providerConfig " pulumi-lang-java=" providerConfig " pulumi-lang-hcl=" provider_config "> providerConfig </span>when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.
+	ProviderSecretsWo pulumi.StringPtrInput
+	// Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>is set.
+	ProviderSecretsWoVersion pulumi.IntPtrInput
 }
 
 func (CloudsyncCredentialsArgs) ElementType() reflect.Type {
@@ -188,9 +223,22 @@ func (o CloudsyncCredentialsOutput) Name() pulumi.StringOutput {
 	return o.ApplyT(func(v *CloudsyncCredentials) pulumi.StringOutput { return v.Name }).(pulumi.StringOutput)
 }
 
-// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).
+// JSON document of provider settings. Must include "type" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>to keep secret keys out of state.
 func (o CloudsyncCredentialsOutput) ProviderConfig() pulumi.StringOutput {
 	return o.ApplyT(func(v *CloudsyncCredentials) pulumi.StringOutput { return v.ProviderConfig }).(pulumi.StringOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over<span pulumi-lang-nodejs=" providerConfig " pulumi-lang-dotnet=" ProviderConfig " pulumi-lang-go=" providerConfig " pulumi-lang-python=" provider_config " pulumi-lang-yaml=" providerConfig " pulumi-lang-java=" providerConfig " pulumi-lang-hcl=" provider_config "> providerConfig </span>when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.
+func (o CloudsyncCredentialsOutput) ProviderSecretsWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudsyncCredentials) pulumi.StringPtrOutput { return v.ProviderSecretsWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" providerSecretsWo " pulumi-lang-dotnet=" ProviderSecretsWo " pulumi-lang-go=" providerSecretsWo " pulumi-lang-python=" provider_secrets_wo " pulumi-lang-yaml=" providerSecretsWo " pulumi-lang-java=" providerSecretsWo " pulumi-lang-hcl=" provider_secrets_wo "> providerSecretsWo </span>is set.
+func (o CloudsyncCredentialsOutput) ProviderSecretsWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *CloudsyncCredentials) pulumi.IntPtrOutput { return v.ProviderSecretsWoVersion }).(pulumi.IntPtrOutput)
 }
 
 type CloudsyncCredentialsArrayOutput struct{ *pulumi.OutputState }

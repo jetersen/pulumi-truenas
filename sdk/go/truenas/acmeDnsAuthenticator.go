@@ -17,6 +17,13 @@ type AcmeDnsAuthenticator struct {
 
 	// JSON document of DNS provider credentials/config. Must include "authenticator" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {"authenticator":"route53",<span pulumi-lang-nodejs=""accessKeyId"" pulumi-lang-dotnet=""AccessKeyId"" pulumi-lang-go=""accessKeyId"" pulumi-lang-python=""access_key_id"" pulumi-lang-yaml=""accessKeyId"" pulumi-lang-java=""accessKeyId"" pulumi-lang-hcl=""access_key_id"">"accessKeyId"</span>:"...",<span pulumi-lang-nodejs=""secretAccessKey"" pulumi-lang-dotnet=""SecretAccessKey"" pulumi-lang-go=""secretAccessKey"" pulumi-lang-python=""secret_access_key"" pulumi-lang-yaml=""secretAccessKey"" pulumi-lang-java=""secretAccessKey"" pulumi-lang-hcl=""secret_access_key"">"secretAccessKey"</span>:"..."}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare<span pulumi-lang-nodejs=" apiToken " pulumi-lang-dotnet=" ApiToken " pulumi-lang-go=" apiToken " pulumi-lang-python=" api_token " pulumi-lang-yaml=" apiToken " pulumi-lang-java=" apiToken " pulumi-lang-hcl=" api_token "> apiToken </span>was accepted without any outbound call failing); the "shell" variant is the one exception, performing a local check that "script" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).
 	Attributes pulumi.StringOutput `pulumi:"attributes"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrOutput `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrOutput `pulumi:"attributesSecretsWoVersion"`
 	// Human-readable name for the DNS authenticator. Updatable in place.
 	Name pulumi.StringOutput `pulumi:"name"`
 }
@@ -37,8 +44,12 @@ func NewAcmeDnsAuthenticator(ctx *pulumi.Context,
 	if args.Attributes != nil {
 		args.Attributes = pulumi.ToSecret(args.Attributes).(pulumi.StringInput)
 	}
+	if args.AttributesSecretsWo != nil {
+		args.AttributesSecretsWo = pulumi.ToSecret(args.AttributesSecretsWo).(pulumi.StringPtrInput)
+	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"attributes",
+		"attributesSecretsWo",
 	})
 	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
@@ -66,6 +77,11 @@ func GetAcmeDnsAuthenticator(ctx *pulumi.Context,
 type acmeDnsAuthenticatorState struct {
 	// JSON document of DNS provider credentials/config. Must include "authenticator" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {"authenticator":"route53",<span pulumi-lang-nodejs=""accessKeyId"" pulumi-lang-dotnet=""AccessKeyId"" pulumi-lang-go=""accessKeyId"" pulumi-lang-python=""access_key_id"" pulumi-lang-yaml=""accessKeyId"" pulumi-lang-java=""accessKeyId"" pulumi-lang-hcl=""access_key_id"">"accessKeyId"</span>:"...",<span pulumi-lang-nodejs=""secretAccessKey"" pulumi-lang-dotnet=""SecretAccessKey"" pulumi-lang-go=""secretAccessKey"" pulumi-lang-python=""secret_access_key"" pulumi-lang-yaml=""secretAccessKey"" pulumi-lang-java=""secretAccessKey"" pulumi-lang-hcl=""secret_access_key"">"secretAccessKey"</span>:"..."}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare<span pulumi-lang-nodejs=" apiToken " pulumi-lang-dotnet=" ApiToken " pulumi-lang-go=" apiToken " pulumi-lang-python=" api_token " pulumi-lang-yaml=" apiToken " pulumi-lang-java=" apiToken " pulumi-lang-hcl=" api_token "> apiToken </span>was accepted without any outbound call failing); the "shell" variant is the one exception, performing a local check that "script" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).
 	Attributes *string `pulumi:"attributes"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo *string `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion *int `pulumi:"attributesSecretsWoVersion"`
 	// Human-readable name for the DNS authenticator. Updatable in place.
 	Name *string `pulumi:"name"`
 }
@@ -73,6 +89,11 @@ type acmeDnsAuthenticatorState struct {
 type AcmeDnsAuthenticatorState struct {
 	// JSON document of DNS provider credentials/config. Must include "authenticator" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {"authenticator":"route53",<span pulumi-lang-nodejs=""accessKeyId"" pulumi-lang-dotnet=""AccessKeyId"" pulumi-lang-go=""accessKeyId"" pulumi-lang-python=""access_key_id"" pulumi-lang-yaml=""accessKeyId"" pulumi-lang-java=""accessKeyId"" pulumi-lang-hcl=""access_key_id"">"accessKeyId"</span>:"...",<span pulumi-lang-nodejs=""secretAccessKey"" pulumi-lang-dotnet=""SecretAccessKey"" pulumi-lang-go=""secretAccessKey"" pulumi-lang-python=""secret_access_key"" pulumi-lang-yaml=""secretAccessKey"" pulumi-lang-java=""secretAccessKey"" pulumi-lang-hcl=""secret_access_key"">"secretAccessKey"</span>:"..."}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare<span pulumi-lang-nodejs=" apiToken " pulumi-lang-dotnet=" ApiToken " pulumi-lang-go=" apiToken " pulumi-lang-python=" api_token " pulumi-lang-yaml=" apiToken " pulumi-lang-java=" apiToken " pulumi-lang-hcl=" api_token "> apiToken </span>was accepted without any outbound call failing); the "shell" variant is the one exception, performing a local check that "script" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).
 	Attributes pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrInput
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrInput
 	// Human-readable name for the DNS authenticator. Updatable in place.
 	Name pulumi.StringPtrInput
 }
@@ -84,6 +105,13 @@ func (AcmeDnsAuthenticatorState) ElementType() reflect.Type {
 type acmeDnsAuthenticatorArgs struct {
 	// JSON document of DNS provider credentials/config. Must include "authenticator" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {"authenticator":"route53",<span pulumi-lang-nodejs=""accessKeyId"" pulumi-lang-dotnet=""AccessKeyId"" pulumi-lang-go=""accessKeyId"" pulumi-lang-python=""access_key_id"" pulumi-lang-yaml=""accessKeyId"" pulumi-lang-java=""accessKeyId"" pulumi-lang-hcl=""access_key_id"">"accessKeyId"</span>:"...",<span pulumi-lang-nodejs=""secretAccessKey"" pulumi-lang-dotnet=""SecretAccessKey"" pulumi-lang-go=""secretAccessKey"" pulumi-lang-python=""secret_access_key"" pulumi-lang-yaml=""secretAccessKey"" pulumi-lang-java=""secretAccessKey"" pulumi-lang-hcl=""secret_access_key"">"secretAccessKey"</span>:"..."}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare<span pulumi-lang-nodejs=" apiToken " pulumi-lang-dotnet=" ApiToken " pulumi-lang-go=" apiToken " pulumi-lang-python=" api_token " pulumi-lang-yaml=" apiToken " pulumi-lang-java=" apiToken " pulumi-lang-hcl=" api_token "> apiToken </span>was accepted without any outbound call failing); the "shell" variant is the one exception, performing a local check that "script" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).
 	Attributes string `pulumi:"attributes"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo *string `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion *int `pulumi:"attributesSecretsWoVersion"`
 	// Human-readable name for the DNS authenticator. Updatable in place.
 	Name string `pulumi:"name"`
 }
@@ -92,6 +120,13 @@ type acmeDnsAuthenticatorArgs struct {
 type AcmeDnsAuthenticatorArgs struct {
 	// JSON document of DNS provider credentials/config. Must include "authenticator" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {"authenticator":"route53",<span pulumi-lang-nodejs=""accessKeyId"" pulumi-lang-dotnet=""AccessKeyId"" pulumi-lang-go=""accessKeyId"" pulumi-lang-python=""access_key_id"" pulumi-lang-yaml=""accessKeyId"" pulumi-lang-java=""accessKeyId"" pulumi-lang-hcl=""access_key_id"">"accessKeyId"</span>:"...",<span pulumi-lang-nodejs=""secretAccessKey"" pulumi-lang-dotnet=""SecretAccessKey"" pulumi-lang-go=""secretAccessKey"" pulumi-lang-python=""secret_access_key"" pulumi-lang-yaml=""secretAccessKey"" pulumi-lang-java=""secretAccessKey"" pulumi-lang-hcl=""secret_access_key"">"secretAccessKey"</span>:"..."}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare<span pulumi-lang-nodejs=" apiToken " pulumi-lang-dotnet=" ApiToken " pulumi-lang-go=" apiToken " pulumi-lang-python=" api_token " pulumi-lang-yaml=" apiToken " pulumi-lang-java=" apiToken " pulumi-lang-hcl=" api_token "> apiToken </span>was accepted without any outbound call failing); the "shell" variant is the one exception, performing a local check that "script" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).
 	Attributes pulumi.StringInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrInput
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrInput
 	// Human-readable name for the DNS authenticator. Updatable in place.
 	Name pulumi.StringInput
 }
@@ -186,6 +221,19 @@ func (o AcmeDnsAuthenticatorOutput) ToAcmeDnsAuthenticatorOutputWithContext(ctx 
 // JSON document of DNS provider credentials/config. Must include "authenticator" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {"authenticator":"route53",<span pulumi-lang-nodejs=""accessKeyId"" pulumi-lang-dotnet=""AccessKeyId"" pulumi-lang-go=""accessKeyId"" pulumi-lang-python=""access_key_id"" pulumi-lang-yaml=""accessKeyId"" pulumi-lang-java=""accessKeyId"" pulumi-lang-hcl=""access_key_id"">"accessKeyId"</span>:"...",<span pulumi-lang-nodejs=""secretAccessKey"" pulumi-lang-dotnet=""SecretAccessKey"" pulumi-lang-go=""secretAccessKey"" pulumi-lang-python=""secret_access_key"" pulumi-lang-yaml=""secretAccessKey"" pulumi-lang-java=""secretAccessKey"" pulumi-lang-hcl=""secret_access_key"">"secretAccessKey"</span>:"..."}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare<span pulumi-lang-nodejs=" apiToken " pulumi-lang-dotnet=" ApiToken " pulumi-lang-go=" apiToken " pulumi-lang-python=" api_token " pulumi-lang-yaml=" apiToken " pulumi-lang-java=" apiToken " pulumi-lang-hcl=" api_token "> apiToken </span>was accepted without any outbound call failing); the "shell" variant is the one exception, performing a local check that "script" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).
 func (o AcmeDnsAuthenticatorOutput) Attributes() pulumi.StringOutput {
 	return o.ApplyT(func(v *AcmeDnsAuthenticator) pulumi.StringOutput { return v.Attributes }).(pulumi.StringOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+func (o AcmeDnsAuthenticatorOutput) AttributesSecretsWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *AcmeDnsAuthenticator) pulumi.StringPtrOutput { return v.AttributesSecretsWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+func (o AcmeDnsAuthenticatorOutput) AttributesSecretsWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *AcmeDnsAuthenticator) pulumi.IntPtrOutput { return v.AttributesSecretsWoVersion }).(pulumi.IntPtrOutput)
 }
 
 // Human-readable name for the DNS authenticator. Updatable in place.

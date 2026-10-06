@@ -33,8 +33,15 @@ type CloudBackup struct {
 	Includes pulumi.StringArrayOutput `pulumi:"includes"`
 	// How many of the most recent backup snapshots to keep after each backup. Must be at least 1.
 	KeepLast pulumi.IntOutput `pulumi:"keepLast"`
-	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to "********" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).
-	Password pulumi.StringOutput `pulumi:"password"`
+	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>instead to keep it out of state. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	Password pulumi.StringPtrOutput `pulumi:"password"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	PasswordWo pulumi.StringPtrOutput `pulumi:"passwordWo"`
+	// Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>is set.
+	PasswordWoVersion pulumi.IntPtrOutput `pulumi:"passwordWoVersion"`
 	// The local path to back up, beginning with /mnt or /dev/zvol. Updatable in place.
 	Path pulumi.StringOutput `pulumi:"path"`
 	// A Bash script to run immediately after every backup if it succeeds. Defaults to an empty string.
@@ -67,17 +74,18 @@ func NewCloudBackup(ctx *pulumi.Context,
 	if args.KeepLast == nil {
 		return nil, errors.New("invalid value for required argument 'KeepLast'")
 	}
-	if args.Password == nil {
-		return nil, errors.New("invalid value for required argument 'Password'")
-	}
 	if args.Path == nil {
 		return nil, errors.New("invalid value for required argument 'Path'")
 	}
 	if args.Password != nil {
-		args.Password = pulumi.ToSecret(args.Password).(pulumi.StringInput)
+		args.Password = pulumi.ToSecret(args.Password).(pulumi.StringPtrInput)
+	}
+	if args.PasswordWo != nil {
+		args.PasswordWo = pulumi.ToSecret(args.PasswordWo).(pulumi.StringPtrInput)
 	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"password",
+		"passwordWo",
 	})
 	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
@@ -121,8 +129,13 @@ type cloudBackupState struct {
 	Includes []string `pulumi:"includes"`
 	// How many of the most recent backup snapshots to keep after each backup. Must be at least 1.
 	KeepLast *int `pulumi:"keepLast"`
-	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to "********" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).
+	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>instead to keep it out of state. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
 	Password *string `pulumi:"password"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	PasswordWo *string `pulumi:"passwordWo"`
+	// Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>is set.
+	PasswordWoVersion *int `pulumi:"passwordWoVersion"`
 	// The local path to back up, beginning with /mnt or /dev/zvol. Updatable in place.
 	Path *string `pulumi:"path"`
 	// A Bash script to run immediately after every backup if it succeeds. Defaults to an empty string.
@@ -158,8 +171,13 @@ type CloudBackupState struct {
 	Includes pulumi.StringArrayInput
 	// How many of the most recent backup snapshots to keep after each backup. Must be at least 1.
 	KeepLast pulumi.IntPtrInput
-	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to "********" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).
+	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>instead to keep it out of state. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
 	Password pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	PasswordWo pulumi.StringPtrInput
+	// Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>is set.
+	PasswordWoVersion pulumi.IntPtrInput
 	// The local path to back up, beginning with /mnt or /dev/zvol. Updatable in place.
 	Path pulumi.StringPtrInput
 	// A Bash script to run immediately after every backup if it succeeds. Defaults to an empty string.
@@ -199,8 +217,15 @@ type cloudBackupArgs struct {
 	Includes []string `pulumi:"includes"`
 	// How many of the most recent backup snapshots to keep after each backup. Must be at least 1.
 	KeepLast int `pulumi:"keepLast"`
-	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to "********" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).
-	Password string `pulumi:"password"`
+	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>instead to keep it out of state. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	Password *string `pulumi:"password"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	PasswordWo *string `pulumi:"passwordWo"`
+	// Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>is set.
+	PasswordWoVersion *int `pulumi:"passwordWoVersion"`
 	// The local path to back up, beginning with /mnt or /dev/zvol. Updatable in place.
 	Path string `pulumi:"path"`
 	// A Bash script to run immediately after every backup if it succeeds. Defaults to an empty string.
@@ -237,8 +262,15 @@ type CloudBackupArgs struct {
 	Includes pulumi.StringArrayInput
 	// How many of the most recent backup snapshots to keep after each backup. Must be at least 1.
 	KeepLast pulumi.IntInput
-	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to "********" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).
-	Password pulumi.StringInput
+	// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>instead to keep it out of state. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	Password pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+	PasswordWo pulumi.StringPtrInput
+	// Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>is set.
+	PasswordWoVersion pulumi.IntPtrInput
 	// The local path to back up, beginning with /mnt or /dev/zvol. Updatable in place.
 	Path pulumi.StringInput
 	// A Bash script to run immediately after every backup if it succeeds. Defaults to an empty string.
@@ -387,9 +419,22 @@ func (o CloudBackupOutput) KeepLast() pulumi.IntOutput {
 	return o.ApplyT(func(v *CloudBackup) pulumi.IntOutput { return v.KeepLast }).(pulumi.IntOutput)
 }
 
-// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to "********" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).
-func (o CloudBackupOutput) Password() pulumi.StringOutput {
-	return o.ApplyT(func(v *CloudBackup) pulumi.StringOutput { return v.Password }).(pulumi.StringOutput)
+// Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>instead to keep it out of state. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+func (o CloudBackupOutput) Password() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudBackup) pulumi.StringPtrOutput { return v.Password }).(pulumi.StringPtrOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>must be set.
+func (o CloudBackupOutput) PasswordWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *CloudBackup) pulumi.StringPtrOutput { return v.PasswordWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when<span pulumi-lang-nodejs=" passwordWo " pulumi-lang-dotnet=" PasswordWo " pulumi-lang-go=" passwordWo " pulumi-lang-python=" password_wo " pulumi-lang-yaml=" passwordWo " pulumi-lang-java=" passwordWo " pulumi-lang-hcl=" password_wo "> passwordWo </span>is set.
+func (o CloudBackupOutput) PasswordWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *CloudBackup) pulumi.IntPtrOutput { return v.PasswordWoVersion }).(pulumi.IntPtrOutput)
 }
 
 // The local path to back up, beginning with /mnt or /dev/zvol. Updatable in place.

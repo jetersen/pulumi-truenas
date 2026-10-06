@@ -59,8 +59,11 @@ jobs:
           fi
       - name: Generate, build, and test
         run: |
-          make provider sdk test
+          make provider sdk test test-compose-preview VERSION=0.1.0
           git diff --exit-code -- provider/cmd/pulumi-resource-truenas sdk/go
+          if [[ "$VERSION" != "0.1.0" ]]; then
+            make test-compose-preview
+          fi
           bash scripts/package.sh
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
@@ -76,7 +79,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/*.nupkg dist/*.tgz dist/*.whl dist/*.tar.gz dist/checksums.txt --verify-tag --generate-notes
+          release_flags=()
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            release_flags+=(--prerelease --latest=false)
+          fi
+          gh release create "$GITHUB_REF_NAME" dist/*.nupkg dist/*.tgz dist/*.whl dist/*.tar.gz dist/checksums.txt --verify-tag --generate-notes "${release_flags[@]}"
           git tag "sdk/$GITHUB_REF_NAME"
           git push origin "sdk/$GITHUB_REF_NAME"
   publish:
@@ -115,4 +122,8 @@ jobs:
       - name: Publish npm to GitHub Packages
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
-        run: npm publish ./dist/*.tgz --registry https://npm.pkg.github.com
+          RELEASE_TAG: ${{ inputs.publish-release || github.ref_name }}
+        run: |
+          tag=latest
+          if [[ "$RELEASE_TAG" == *-* ]]; then tag=next; fi
+          npm publish ./dist/*.tgz --registry https://npm.pkg.github.com --tag "$tag"

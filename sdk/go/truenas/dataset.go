@@ -39,9 +39,13 @@ type Dataset struct {
 	EncryptionAlgorithm pulumi.StringOutput `pulumi:"encryptionAlgorithm"`
 	// Automatically generate the encryption key (key-based encryption). Create-only.
 	EncryptionGenerateKey pulumi.BoolPtrOutput `pulumi:"encryptionGenerateKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
 	EncryptionKey pulumi.StringPtrOutput `pulumi:"encryptionKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
 	EncryptionPassphrase pulumi.StringPtrOutput `pulumi:"encryptionPassphrase"`
@@ -303,9 +307,13 @@ type datasetArgs struct {
 	EncryptionAlgorithm *string `pulumi:"encryptionAlgorithm"`
 	// Automatically generate the encryption key (key-based encryption). Create-only.
 	EncryptionGenerateKey *bool `pulumi:"encryptionGenerateKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
 	EncryptionKey *string `pulumi:"encryptionKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
 	EncryptionPassphrase *string `pulumi:"encryptionPassphrase"`
@@ -365,9 +373,13 @@ type DatasetArgs struct {
 	EncryptionAlgorithm pulumi.StringPtrInput
 	// Automatically generate the encryption key (key-based encryption). Create-only.
 	EncryptionGenerateKey pulumi.BoolPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
 	EncryptionKey pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
 	EncryptionPassphrase pulumi.StringPtrInput
@@ -550,12 +562,16 @@ func (o DatasetOutput) EncryptionGenerateKey() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *Dataset) pulumi.BoolPtrOutput { return v.EncryptionGenerateKey }).(pulumi.BoolPtrOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
 func (o DatasetOutput) EncryptionKey() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Dataset) pulumi.StringPtrOutput { return v.EncryptionKey }).(pulumi.StringPtrOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
 func (o DatasetOutput) EncryptionPassphrase() pulumi.StringPtrOutput {

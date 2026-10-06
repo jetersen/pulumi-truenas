@@ -15,8 +15,15 @@ import (
 type KerberosKeytab struct {
 	pulumi.CustomResourceState
 
-	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create ><span pulumi-lang-nodejs=" getInstance " pulumi-lang-dotnet=" GetInstance " pulumi-lang-go=" getInstance " pulumi-lang-python=" get_instance " pulumi-lang-yaml=" getInstance " pulumi-lang-java=" getInstance " pulumi-lang-hcl=" get_instance "> getInstance </span>> query > update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).
-	File pulumi.StringOutput `pulumi:"file"`
+	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>— it IS stored in state and read back on refresh (the API returns it unmasked). Use<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>to keep the keytab out of state. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	File pulumi.StringPtrOutput `pulumi:"file"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	FileWo pulumi.StringPtrOutput `pulumi:"fileWo"`
+	// Version trigger for file_wo. Bump to re-send a changed<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>(a write-only value is absent from state, so its change cannot be detected automatically). Required when<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>is set.
+	FileWoVersion pulumi.IntPtrOutput `pulumi:"fileWoVersion"`
 	// Name of the Kerberos keytab entry. This identifies the keytab entry itself, not the name of any file — it is unrelated to the principal names inside the keytab data. Some names are reserved for internal use (e.g. AD_MACHINE_ACCOUNT, IPA_MACHINE_ACCOUNT). Updatable in place (renaming does not replace the resource).
 	Name pulumi.StringOutput `pulumi:"name"`
 }
@@ -28,17 +35,18 @@ func NewKerberosKeytab(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.File == nil {
-		return nil, errors.New("invalid value for required argument 'File'")
-	}
 	if args.Name == nil {
 		return nil, errors.New("invalid value for required argument 'Name'")
 	}
 	if args.File != nil {
-		args.File = pulumi.ToSecret(args.File).(pulumi.StringInput)
+		args.File = pulumi.ToSecret(args.File).(pulumi.StringPtrInput)
+	}
+	if args.FileWo != nil {
+		args.FileWo = pulumi.ToSecret(args.FileWo).(pulumi.StringPtrInput)
 	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"file",
+		"fileWo",
 	})
 	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
@@ -64,15 +72,25 @@ func GetKerberosKeytab(ctx *pulumi.Context,
 
 // Input properties used for looking up and filtering KerberosKeytab resources.
 type kerberosKeytabState struct {
-	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create ><span pulumi-lang-nodejs=" getInstance " pulumi-lang-dotnet=" GetInstance " pulumi-lang-go=" getInstance " pulumi-lang-python=" get_instance " pulumi-lang-yaml=" getInstance " pulumi-lang-java=" getInstance " pulumi-lang-hcl=" get_instance "> getInstance </span>> query > update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).
+	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>— it IS stored in state and read back on refresh (the API returns it unmasked). Use<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>to keep the keytab out of state. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
 	File *string `pulumi:"file"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	FileWo *string `pulumi:"fileWo"`
+	// Version trigger for file_wo. Bump to re-send a changed<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>(a write-only value is absent from state, so its change cannot be detected automatically). Required when<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>is set.
+	FileWoVersion *int `pulumi:"fileWoVersion"`
 	// Name of the Kerberos keytab entry. This identifies the keytab entry itself, not the name of any file — it is unrelated to the principal names inside the keytab data. Some names are reserved for internal use (e.g. AD_MACHINE_ACCOUNT, IPA_MACHINE_ACCOUNT). Updatable in place (renaming does not replace the resource).
 	Name *string `pulumi:"name"`
 }
 
 type KerberosKeytabState struct {
-	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create ><span pulumi-lang-nodejs=" getInstance " pulumi-lang-dotnet=" GetInstance " pulumi-lang-go=" getInstance " pulumi-lang-python=" get_instance " pulumi-lang-yaml=" getInstance " pulumi-lang-java=" getInstance " pulumi-lang-hcl=" get_instance "> getInstance </span>> query > update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).
+	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>— it IS stored in state and read back on refresh (the API returns it unmasked). Use<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>to keep the keytab out of state. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
 	File pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	FileWo pulumi.StringPtrInput
+	// Version trigger for file_wo. Bump to re-send a changed<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>(a write-only value is absent from state, so its change cannot be detected automatically). Required when<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>is set.
+	FileWoVersion pulumi.IntPtrInput
 	// Name of the Kerberos keytab entry. This identifies the keytab entry itself, not the name of any file — it is unrelated to the principal names inside the keytab data. Some names are reserved for internal use (e.g. AD_MACHINE_ACCOUNT, IPA_MACHINE_ACCOUNT). Updatable in place (renaming does not replace the resource).
 	Name pulumi.StringPtrInput
 }
@@ -82,16 +100,30 @@ func (KerberosKeytabState) ElementType() reflect.Type {
 }
 
 type kerberosKeytabArgs struct {
-	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create ><span pulumi-lang-nodejs=" getInstance " pulumi-lang-dotnet=" GetInstance " pulumi-lang-go=" getInstance " pulumi-lang-python=" get_instance " pulumi-lang-yaml=" getInstance " pulumi-lang-java=" getInstance " pulumi-lang-hcl=" get_instance "> getInstance </span>> query > update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).
-	File string `pulumi:"file"`
+	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>— it IS stored in state and read back on refresh (the API returns it unmasked). Use<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>to keep the keytab out of state. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	File *string `pulumi:"file"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	FileWo *string `pulumi:"fileWo"`
+	// Version trigger for file_wo. Bump to re-send a changed<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>(a write-only value is absent from state, so its change cannot be detected automatically). Required when<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>is set.
+	FileWoVersion *int `pulumi:"fileWoVersion"`
 	// Name of the Kerberos keytab entry. This identifies the keytab entry itself, not the name of any file — it is unrelated to the principal names inside the keytab data. Some names are reserved for internal use (e.g. AD_MACHINE_ACCOUNT, IPA_MACHINE_ACCOUNT). Updatable in place (renaming does not replace the resource).
 	Name string `pulumi:"name"`
 }
 
 // The set of arguments for constructing a KerberosKeytab resource.
 type KerberosKeytabArgs struct {
-	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create ><span pulumi-lang-nodejs=" getInstance " pulumi-lang-dotnet=" GetInstance " pulumi-lang-go=" getInstance " pulumi-lang-python=" get_instance " pulumi-lang-yaml=" getInstance " pulumi-lang-java=" getInstance " pulumi-lang-hcl=" get_instance "> getInstance </span>> query > update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).
-	File pulumi.StringInput
+	// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>— it IS stored in state and read back on refresh (the API returns it unmasked). Use<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>to keep the keytab out of state. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	File pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+	FileWo pulumi.StringPtrInput
+	// Version trigger for file_wo. Bump to re-send a changed<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>(a write-only value is absent from state, so its change cannot be detected automatically). Required when<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>is set.
+	FileWoVersion pulumi.IntPtrInput
 	// Name of the Kerberos keytab entry. This identifies the keytab entry itself, not the name of any file — it is unrelated to the principal names inside the keytab data. Some names are reserved for internal use (e.g. AD_MACHINE_ACCOUNT, IPA_MACHINE_ACCOUNT). Updatable in place (renaming does not replace the resource).
 	Name pulumi.StringInput
 }
@@ -183,9 +215,22 @@ func (o KerberosKeytabOutput) ToKerberosKeytabOutputWithContext(ctx context.Cont
 	return o
 }
 
-// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create ><span pulumi-lang-nodejs=" getInstance " pulumi-lang-dotnet=" GetInstance " pulumi-lang-go=" getInstance " pulumi-lang-python=" get_instance " pulumi-lang-yaml=" getInstance " pulumi-lang-java=" getInstance " pulumi-lang-hcl=" get_instance "> getInstance </span>> query > update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).
-func (o KerberosKeytabOutput) File() pulumi.StringOutput {
-	return o.ApplyT(func(v *KerberosKeytab) pulumi.StringOutput { return v.File }).(pulumi.StringOutput)
+// Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>— it IS stored in state and read back on refresh (the API returns it unmasked). Use<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>to keep the keytab out of state. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+func (o KerberosKeytabOutput) File() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *KerberosKeytab) pulumi.StringPtrOutput { return v.File }).(pulumi.StringPtrOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>must be set.
+func (o KerberosKeytabOutput) FileWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *KerberosKeytab) pulumi.StringPtrOutput { return v.FileWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for file_wo. Bump to re-send a changed<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>(a write-only value is absent from state, so its change cannot be detected automatically). Required when<span pulumi-lang-nodejs=" fileWo " pulumi-lang-dotnet=" FileWo " pulumi-lang-go=" fileWo " pulumi-lang-python=" file_wo " pulumi-lang-yaml=" fileWo " pulumi-lang-java=" fileWo " pulumi-lang-hcl=" file_wo "> fileWo </span>is set.
+func (o KerberosKeytabOutput) FileWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *KerberosKeytab) pulumi.IntPtrOutput { return v.FileWoVersion }).(pulumi.IntPtrOutput)
 }
 
 // Name of the Kerberos keytab entry. This identifies the keytab entry itself, not the name of any file — it is unrelated to the principal names inside the keytab data. Some names are reserved for internal use (e.g. AD_MACHINE_ACCOUNT, IPA_MACHINE_ACCOUNT). Updatable in place (renaming does not replace the resource).

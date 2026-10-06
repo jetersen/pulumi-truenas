@@ -31,6 +31,8 @@ type IpmiLan struct {
 	MacAddress pulumi.StringOutput `pulumi:"macAddress"`
 	// Static netmask for this channel, e.g. "255.255.255.0". Required (and only sent) when "dhcp" = false; see "ipaddress".
 	Netmask pulumi.StringOutput `pulumi:"netmask"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// New BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no "password" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform >= 1.11.
 	//
@@ -165,6 +167,8 @@ type ipmiLanArgs struct {
 	Ipaddress *string `pulumi:"ipaddress"`
 	// Static netmask for this channel, e.g. "255.255.255.0". Required (and only sent) when "dhcp" = false; see "ipaddress".
 	Netmask *string `pulumi:"netmask"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// New BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no "password" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform >= 1.11.
 	//
@@ -192,6 +196,8 @@ type IpmiLanArgs struct {
 	Ipaddress pulumi.StringPtrInput
 	// Static netmask for this channel, e.g. "255.255.255.0". Required (and only sent) when "dhcp" = false; see "ipaddress".
 	Netmask pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// New BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no "password" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform >= 1.11.
 	//
@@ -327,6 +333,8 @@ func (o IpmiLanOutput) Netmask() pulumi.StringOutput {
 	return o.ApplyT(func(v *IpmiLan) pulumi.StringOutput { return v.Netmask }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // New BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no "password" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform >= 1.11.
 //

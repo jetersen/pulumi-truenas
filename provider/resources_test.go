@@ -3,6 +3,7 @@ package truenas
 import (
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 
 	shim "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfshim"
@@ -38,9 +39,32 @@ func TestGeneratedSDKContract(t *testing.T) {
 		t.Fatal("schema is missing mapped resources; regenerate it")
 	}
 	app := s.Resources["truenas:index/app:App"]
+	if _, ok := app.InputProperties["compose"]; !ok {
+		t.Fatal("missing structured Compose input")
+	}
+	if app.InputProperties["compose"].Secret {
+		t.Fatal("structured Compose must support field-level secrets")
+	}
+	if _, ok := app.InputProperties["composeSensitivePaths"]; !ok {
+		t.Fatal("missing explicit secret paths")
+	}
 	for _, name := range []string{"values", "customComposeConfigString"} {
 		if !app.InputProperties[name].Secret || !app.Properties[name].Secret {
 			t.Errorf("%s must be secret in inputs and outputs", name)
+		}
+	}
+	for _, name := range []string{"customComposeConfigStringWo", "customComposeConfigStringWoVersion"} {
+		if _, ok := app.InputProperties[name]; !ok {
+			t.Errorf("missing upstream Compose overlay field %s", name)
+		}
+	}
+	for token, r := range s.Resources {
+		for name, p := range r.InputProperties {
+			if strings.HasSuffix(name, "Wo") {
+				if !p.Secret || !strings.Contains(p.Description, "Pulumi stores this input encrypted in state") {
+					t.Errorf("%s.%s must be secret and document Pulumi state behavior", token, name)
+				}
+			}
 		}
 	}
 	var csharp struct {
