@@ -28,6 +28,8 @@ type UpsConfig struct {
 	Identifier pulumi.StringOutput `pulumi:"identifier"`
 	// UPS mode: MASTER or SLAVE.
 	Mode pulumi.StringOutput `pulumi:"mode"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Monpwd pulumi.StringPtrOutput `pulumi:"monpwd"`
@@ -198,6 +200,8 @@ type upsConfigArgs struct {
 	Identifier *string `pulumi:"identifier"`
 	// UPS mode: MASTER or SLAVE.
 	Mode *string `pulumi:"mode"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Monpwd *string `pulumi:"monpwd"`
@@ -241,6 +245,8 @@ type UpsConfigArgs struct {
 	Identifier pulumi.StringPtrInput
 	// UPS mode: MASTER or SLAVE.
 	Mode pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Monpwd pulumi.StringPtrInput
@@ -392,6 +398,8 @@ func (o UpsConfigOutput) Mode() pulumi.StringOutput {
 	return o.ApplyT(func(v *UpsConfig) pulumi.StringOutput { return v.Mode }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Password used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o UpsConfigOutput) Monpwd() pulumi.StringPtrOutput {

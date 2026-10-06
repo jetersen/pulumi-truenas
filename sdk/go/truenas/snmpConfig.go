@@ -14,8 +14,15 @@ import (
 type SnmpConfig struct {
 	pulumi.CustomResourceState
 
-	// SNMP community string.
+	// SNMP community string. Stored in state (read back unmasked from TrueNAS). Use<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>to keep it out of state.
 	Community pulumi.StringOutput `pulumi:"community"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.
+	CommunityWo pulumi.StringPtrOutput `pulumi:"communityWo"`
+	// Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>is set.
+	CommunityWoVersion pulumi.IntPtrOutput `pulumi:"communityWoVersion"`
 	// Contact information for the SNMP administrator.
 	Contact pulumi.StringOutput `pulumi:"contact"`
 	// Physical location of the system, exposed via SNMP.
@@ -30,9 +37,13 @@ type SnmpConfig struct {
 	V3 pulumi.BoolOutput `pulumi:"v3"`
 	// SNMPv3 authentication type: one of "" (none), MD5, SHA.
 	V3Authtype pulumi.StringOutput `pulumi:"v3Authtype"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	V3Password pulumi.StringPtrOutput `pulumi:"v3Password"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	V3Privpassphrase pulumi.StringPtrOutput `pulumi:"v3Privpassphrase"`
@@ -54,6 +65,9 @@ func NewSnmpConfig(ctx *pulumi.Context,
 	if args.Community != nil {
 		args.Community = pulumi.ToSecret(args.Community).(pulumi.StringPtrInput)
 	}
+	if args.CommunityWo != nil {
+		args.CommunityWo = pulumi.ToSecret(args.CommunityWo).(pulumi.StringPtrInput)
+	}
 	if args.V3Password != nil {
 		args.V3Password = pulumi.ToSecret(args.V3Password).(pulumi.StringPtrInput)
 	}
@@ -62,6 +76,7 @@ func NewSnmpConfig(ctx *pulumi.Context,
 	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"community",
+		"communityWo",
 		"v3Password",
 		"v3Privpassphrase",
 	})
@@ -89,8 +104,13 @@ func GetSnmpConfig(ctx *pulumi.Context,
 
 // Input properties used for looking up and filtering SnmpConfig resources.
 type snmpConfigState struct {
-	// SNMP community string.
+	// SNMP community string. Stored in state (read back unmasked from TrueNAS). Use<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>to keep it out of state.
 	Community *string `pulumi:"community"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.
+	CommunityWo *string `pulumi:"communityWo"`
+	// Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>is set.
+	CommunityWoVersion *int `pulumi:"communityWoVersion"`
 	// Contact information for the SNMP administrator.
 	Contact *string `pulumi:"contact"`
 	// Physical location of the system, exposed via SNMP.
@@ -120,8 +140,13 @@ type snmpConfigState struct {
 }
 
 type SnmpConfigState struct {
-	// SNMP community string.
+	// SNMP community string. Stored in state (read back unmasked from TrueNAS). Use<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>to keep it out of state.
 	Community pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.
+	CommunityWo pulumi.StringPtrInput
+	// Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>is set.
+	CommunityWoVersion pulumi.IntPtrInput
 	// Contact information for the SNMP administrator.
 	Contact pulumi.StringPtrInput
 	// Physical location of the system, exposed via SNMP.
@@ -155,8 +180,15 @@ func (SnmpConfigState) ElementType() reflect.Type {
 }
 
 type snmpConfigArgs struct {
-	// SNMP community string.
+	// SNMP community string. Stored in state (read back unmasked from TrueNAS). Use<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>to keep it out of state.
 	Community *string `pulumi:"community"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.
+	CommunityWo *string `pulumi:"communityWo"`
+	// Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>is set.
+	CommunityWoVersion *int `pulumi:"communityWoVersion"`
 	// Contact information for the SNMP administrator.
 	Contact *string `pulumi:"contact"`
 	// Physical location of the system, exposed via SNMP.
@@ -171,9 +203,13 @@ type snmpConfigArgs struct {
 	V3 *bool `pulumi:"v3"`
 	// SNMPv3 authentication type: one of "" (none), MD5, SHA.
 	V3Authtype *string `pulumi:"v3Authtype"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	V3Password *string `pulumi:"v3Password"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	V3Privpassphrase *string `pulumi:"v3Privpassphrase"`
@@ -187,8 +223,15 @@ type snmpConfigArgs struct {
 
 // The set of arguments for constructing a SnmpConfig resource.
 type SnmpConfigArgs struct {
-	// SNMP community string.
+	// SNMP community string. Stored in state (read back unmasked from TrueNAS). Use<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>to keep it out of state.
 	Community pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.
+	CommunityWo pulumi.StringPtrInput
+	// Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>is set.
+	CommunityWoVersion pulumi.IntPtrInput
 	// Contact information for the SNMP administrator.
 	Contact pulumi.StringPtrInput
 	// Physical location of the system, exposed via SNMP.
@@ -203,9 +246,13 @@ type SnmpConfigArgs struct {
 	V3 pulumi.BoolPtrInput
 	// SNMPv3 authentication type: one of "" (none), MD5, SHA.
 	V3Authtype pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	V3Password pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	V3Privpassphrase pulumi.StringPtrInput
@@ -304,9 +351,22 @@ func (o SnmpConfigOutput) ToSnmpConfigOutputWithContext(ctx context.Context) Snm
 	return o
 }
 
-// SNMP community string.
+// SNMP community string. Stored in state (read back unmasked from TrueNAS). Use<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>to keep it out of state.
 func (o SnmpConfigOutput) Community() pulumi.StringOutput {
 	return o.ApplyT(func(v *SnmpConfig) pulumi.StringOutput { return v.Community }).(pulumi.StringOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.
+func (o SnmpConfigOutput) CommunityWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *SnmpConfig) pulumi.StringPtrOutput { return v.CommunityWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when<span pulumi-lang-nodejs=" communityWo " pulumi-lang-dotnet=" CommunityWo " pulumi-lang-go=" communityWo " pulumi-lang-python=" community_wo " pulumi-lang-yaml=" communityWo " pulumi-lang-java=" communityWo " pulumi-lang-hcl=" community_wo "> communityWo </span>is set.
+func (o SnmpConfigOutput) CommunityWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *SnmpConfig) pulumi.IntPtrOutput { return v.CommunityWoVersion }).(pulumi.IntPtrOutput)
 }
 
 // Contact information for the SNMP administrator.
@@ -344,12 +404,16 @@ func (o SnmpConfigOutput) V3Authtype() pulumi.StringOutput {
 	return o.ApplyT(func(v *SnmpConfig) pulumi.StringOutput { return v.V3Authtype }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // SNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o SnmpConfigOutput) V3Password() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *SnmpConfig) pulumi.StringPtrOutput { return v.V3Password }).(pulumi.StringPtrOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // SNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o SnmpConfigOutput) V3Privpassphrase() pulumi.StringPtrOutput {

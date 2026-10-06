@@ -30,9 +30,13 @@ type CloudsyncTask struct {
 	Enabled   pulumi.BoolOutput   `pulumi:"enabled"`
 	// Encrypt file contents before uploading (rclone crypt). Requires encryption_password.
 	Encryption pulumi.BoolOutput `pulumi:"encryption"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionPassword pulumi.StringPtrOutput `pulumi:"encryptionPassword"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Salt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionSalt pulumi.StringPtrOutput   `pulumi:"encryptionSalt"`
@@ -215,9 +219,13 @@ type cloudsyncTaskArgs struct {
 	Enabled   *bool  `pulumi:"enabled"`
 	// Encrypt file contents before uploading (rclone crypt). Requires encryption_password.
 	Encryption *bool `pulumi:"encryption"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionPassword *string `pulumi:"encryptionPassword"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Salt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionSalt *string  `pulumi:"encryptionSalt"`
@@ -256,9 +264,13 @@ type CloudsyncTaskArgs struct {
 	Enabled   pulumi.BoolPtrInput
 	// Encrypt file contents before uploading (rclone crypt). Requires encryption_password.
 	Encryption pulumi.BoolPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionPassword pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Salt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionSalt pulumi.StringPtrInput
@@ -406,12 +418,16 @@ func (o CloudsyncTaskOutput) Encryption() pulumi.BoolOutput {
 	return o.ApplyT(func(v *CloudsyncTask) pulumi.BoolOutput { return v.Encryption }).(pulumi.BoolOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Password for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 func (o CloudsyncTaskOutput) EncryptionPassword() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *CloudsyncTask) pulumi.StringPtrOutput { return v.EncryptionPassword }).(pulumi.StringPtrOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Salt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 func (o CloudsyncTaskOutput) EncryptionSalt() pulumi.StringPtrOutput {

@@ -7,6 +7,7 @@ import (
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge"
 	"github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfbridge/tokens"
 	shim "github.com/pulumi/pulumi-terraform-bridge/v3/pkg/tfshim"
+	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 	upstream "github.com/truenas/terraform-provider-truenas/shim"
 
 	"github.com/jetersen/pulumi-truenas/provider/pkg/version"
@@ -67,5 +68,25 @@ func Provider() tfbridge.ProviderInfo {
 		}
 		return true
 	})
+	// Terraform's write-only contract is stronger than the bridge's: Pulumi
+	// still persists encrypted inputs. Clarify upstream docs in every SDK.
+	info.SchemaPostProcessor = func(spec *schema.PackageSpec) {
+		info.P.ResourcesMap().Range(func(name string, r shim.Resource) bool {
+			mapping := info.Resources[name]
+			rs := spec.Resources[string(mapping.Tok)]
+			r.Schema().Range(func(key string, field shim.Schema) bool {
+				if field.WriteOnly() {
+					property := tfbridge.TerraformToPulumiNameV2(key, r.Schema(), mapping.Fields)
+					for _, properties := range []map[string]schema.PropertySpec{rs.InputProperties, rs.Properties} {
+						p := properties[property]
+						p.Description = "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n" + p.Description
+						properties[property] = p
+					}
+				}
+				return true
+			})
+			return true
+		})
+	}
 	return info
 }

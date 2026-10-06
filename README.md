@@ -98,9 +98,9 @@ can move. New fields are visible unless protected by a secret marker or an
 explicit path, so configure paths before reading externally managed credentials.
 
 Read failures stop refresh rather than silently retaining stale configuration.
-Avoid verbose provider/debug logs when working with secrets. The adapter supplies
-read-back until it is available upstream; see
-[terraform-provider-truenas#34](https://github.com/truenas/terraform-provider-truenas/issues/34).
+Avoid verbose provider/debug logs when working with secrets. Read-back and drift
+reconciliation use the upstream v1.5.7 implementation. The adapter translates its
+result into structured Compose without fetching the configuration again.
 
 Import an existing app by name first. Imports initially populate the fully secret
 `customComposeConfigString`, working around the bridge's dynamic-object import
@@ -109,15 +109,46 @@ an in-place state transition; equivalent documents do not trigger an app update.
 Do not set both inputs. Object key order and YAML formatting do not cause drift;
 array order and scalar types remain significant.
 
+### Optional secret overlay
+
+Upstream v1.5.7 adds `customComposeConfigStringWo` and
+`customComposeConfigStringWoVersion`. The overlay is a JSON or YAML object merged
+into either `compose` or `customComposeConfigString` when deploying. Supply it as
+a Pulumi secret and increment the version when rotating it. For example:
+
+```typescript
+new truenas.App("dns", {
+    name: "dns",
+    customApp: true,
+    compose: parse(readFileSync("compose.yaml", "utf8")),
+    customComposeConfigStringWo: config.requireSecret("composeOverlay"),
+    customComposeConfigStringWoVersion: 1,
+}, { provider: nas, protect: true });
+```
+
+Put secret keys only in the overlay. Refresh retains only keys present in the
+base document, so overlay secrets and other extra live keys do not appear in
+Compose outputs. Changes to those excluded keys are not detected as drift.
+Use object-form environment variables for nested overlays; arrays are replaced
+as whole values, not merged by environment-variable name.
+
+Pulumi's bridge still stores write-only inputs encrypted in state. These fields
+prevent read-back into outputs, but do not provide Terraform's guarantee that
+values never enter state. See
+[pulumi-terraform-bridge#3201](https://github.com/pulumi/pulumi-terraform-bridge/issues/3201).
+Existing `compose` inputs with Pulumi secrets remain supported without an overlay.
+
 ## Development and releases
 
-Use Go 1.26.6+, Pulumi CLI 3.267.0+, Node.js 24, Python 3.13+, .NET 10, and a
-current `pulumi-language-dotnet` plugin. The Plugin Framework shim exposes the
+Use Go 1.26.6+, Pulumi CLI 3.267.0+, Node.js 24, Python 3.13+, and .NET 10.
+`make sdk` builds local .NET and YAML language hosts from
+the dependencies pinned in `provider/go.mod` and puts `bin/` first on `PATH`
+for generation and CLI tests. This avoids missing or incompatible system hosts.
+The Plugin Framework shim exposes the
 upstream internal constructor without maintaining an upstream fork. A focused app
-adapter adds structured Compose configuration and read-back while delegating
-deployment and identity to upstream. Compose tests use a local mock API, never a
-live NAS. The CLI tests exercise YAML and C# programs and require their language hosts
-bundled with Pulumi.
+adapter translates structured Compose while delegating read-back, deployment,
+and identity to upstream. Compose tests use a local mock API, never a
+live NAS. The CLI tests exercise YAML and C# programs using the local language hosts.
 
 ```sh
 make provider sdk test

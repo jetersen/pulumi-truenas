@@ -18,7 +18,7 @@ type SystemAdvanced struct {
 	Advancedmode pulumi.BoolOutput `pulumi:"advancedmode"`
 	// Whether anonymous usage statistics are sent.
 	Anonstats pulumi.BoolOutput `pulumi:"anonstats"`
-	// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update.
+	// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update. Marked Sensitive so it is not shown in plan output.
 	AnonstatsToken pulumi.StringOutput `pulumi:"anonstatsToken"`
 	// Whether the autotune script runs at boot to tune system parameters.
 	Autotune pulumi.BoolOutput `pulumi:"autotune"`
@@ -48,6 +48,8 @@ type SystemAdvanced struct {
 	Overprovision pulumi.IntOutput `pulumi:"overprovision"`
 	// Whether the power management daemon (powerd) is enabled.
 	Powerdaemon pulumi.BoolOutput `pulumi:"powerdaemon"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Global password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	SedPasswd pulumi.StringPtrOutput `pulumi:"sedPasswd"`
@@ -82,6 +84,7 @@ func NewSystemAdvanced(ctx *pulumi.Context,
 		args.SedPasswd = pulumi.ToSecret(args.SedPasswd).(pulumi.StringPtrInput)
 	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
+		"anonstatsToken",
 		"sedPasswd",
 	})
 	opts = append(opts, secrets)
@@ -112,7 +115,7 @@ type systemAdvancedState struct {
 	Advancedmode *bool `pulumi:"advancedmode"`
 	// Whether anonymous usage statistics are sent.
 	Anonstats *bool `pulumi:"anonstats"`
-	// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update.
+	// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update. Marked Sensitive so it is not shown in plan output.
 	AnonstatsToken *string `pulumi:"anonstatsToken"`
 	// Whether the autotune script runs at boot to tune system parameters.
 	Autotune *bool `pulumi:"autotune"`
@@ -170,7 +173,7 @@ type SystemAdvancedState struct {
 	Advancedmode pulumi.BoolPtrInput
 	// Whether anonymous usage statistics are sent.
 	Anonstats pulumi.BoolPtrInput
-	// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update.
+	// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update. Marked Sensitive so it is not shown in plan output.
 	AnonstatsToken pulumi.StringPtrInput
 	// Whether the autotune script runs at boot to tune system parameters.
 	Autotune pulumi.BoolPtrInput
@@ -258,6 +261,8 @@ type systemAdvancedArgs struct {
 	Overprovision *int `pulumi:"overprovision"`
 	// Whether the power management daemon (powerd) is enabled.
 	Powerdaemon *bool `pulumi:"powerdaemon"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Global password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	SedPasswd *string `pulumi:"sedPasswd"`
@@ -313,6 +318,8 @@ type SystemAdvancedArgs struct {
 	Overprovision pulumi.IntPtrInput
 	// Whether the power management daemon (powerd) is enabled.
 	Powerdaemon pulumi.BoolPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Global password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	SedPasswd pulumi.StringPtrInput
@@ -433,7 +440,7 @@ func (o SystemAdvancedOutput) Anonstats() pulumi.BoolOutput {
 	return o.ApplyT(func(v *SystemAdvanced) pulumi.BoolOutput { return v.Anonstats }).(pulumi.BoolOutput)
 }
 
-// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update.
+// Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update. Marked Sensitive so it is not shown in plan output.
 func (o SystemAdvancedOutput) AnonstatsToken() pulumi.StringOutput {
 	return o.ApplyT(func(v *SystemAdvanced) pulumi.StringOutput { return v.AnonstatsToken }).(pulumi.StringOutput)
 }
@@ -508,6 +515,8 @@ func (o SystemAdvancedOutput) Powerdaemon() pulumi.BoolOutput {
 	return o.ApplyT(func(v *SystemAdvanced) pulumi.BoolOutput { return v.Powerdaemon }).(pulumi.BoolOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Global password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o SystemAdvancedOutput) SedPasswd() pulumi.StringPtrOutput {

@@ -17,6 +17,13 @@ type VmDevice struct {
 
 	// JSON document of device attributes. Must include "dtype": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.
 	Attributes pulumi.StringOutput `pulumi:"attributes"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrOutput `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrOutput `pulumi:"attributesSecretsWoVersion"`
 	// Boot/attach order.
 	Order pulumi.IntOutput `pulumi:"order"`
 	// ID of the VM this device belongs to.
@@ -39,8 +46,12 @@ func NewVmDevice(ctx *pulumi.Context,
 	if args.Attributes != nil {
 		args.Attributes = pulumi.ToSecret(args.Attributes).(pulumi.StringInput)
 	}
+	if args.AttributesSecretsWo != nil {
+		args.AttributesSecretsWo = pulumi.ToSecret(args.AttributesSecretsWo).(pulumi.StringPtrInput)
+	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"attributes",
+		"attributesSecretsWo",
 	})
 	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
@@ -68,6 +79,11 @@ func GetVmDevice(ctx *pulumi.Context,
 type vmDeviceState struct {
 	// JSON document of device attributes. Must include "dtype": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.
 	Attributes *string `pulumi:"attributes"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo *string `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion *int `pulumi:"attributesSecretsWoVersion"`
 	// Boot/attach order.
 	Order *int `pulumi:"order"`
 	// ID of the VM this device belongs to.
@@ -77,6 +93,11 @@ type vmDeviceState struct {
 type VmDeviceState struct {
 	// JSON document of device attributes. Must include "dtype": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.
 	Attributes pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrInput
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrInput
 	// Boot/attach order.
 	Order pulumi.IntPtrInput
 	// ID of the VM this device belongs to.
@@ -90,6 +111,13 @@ func (VmDeviceState) ElementType() reflect.Type {
 type vmDeviceArgs struct {
 	// JSON document of device attributes. Must include "dtype": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.
 	Attributes string `pulumi:"attributes"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo *string `pulumi:"attributesSecretsWo"`
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion *int `pulumi:"attributesSecretsWoVersion"`
 	// Boot/attach order.
 	Order *int `pulumi:"order"`
 	// ID of the VM this device belongs to.
@@ -100,6 +128,13 @@ type vmDeviceArgs struct {
 type VmDeviceArgs struct {
 	// JSON document of device attributes. Must include "dtype": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.
 	Attributes pulumi.StringInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+	AttributesSecretsWo pulumi.StringPtrInput
+	// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+	AttributesSecretsWoVersion pulumi.IntPtrInput
 	// Boot/attach order.
 	Order pulumi.IntPtrInput
 	// ID of the VM this device belongs to.
@@ -196,6 +231,19 @@ func (o VmDeviceOutput) ToVmDeviceOutputWithContext(ctx context.Context) VmDevic
 // JSON document of device attributes. Must include "dtype": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.
 func (o VmDeviceOutput) Attributes() pulumi.StringOutput {
 	return o.ApplyT(func(v *VmDevice) pulumi.StringOutput { return v.Attributes }).(pulumi.StringOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.
+func (o VmDeviceOutput) AttributesSecretsWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *VmDevice) pulumi.StringPtrOutput { return v.AttributesSecretsWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when<span pulumi-lang-nodejs=" attributesSecretsWo " pulumi-lang-dotnet=" AttributesSecretsWo " pulumi-lang-go=" attributesSecretsWo " pulumi-lang-python=" attributes_secrets_wo " pulumi-lang-yaml=" attributesSecretsWo " pulumi-lang-java=" attributesSecretsWo " pulumi-lang-hcl=" attributes_secrets_wo "> attributesSecretsWo </span>is set.
+func (o VmDeviceOutput) AttributesSecretsWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *VmDevice) pulumi.IntPtrOutput { return v.AttributesSecretsWoVersion }).(pulumi.IntPtrOutput)
 }
 
 // Boot/attach order.

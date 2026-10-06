@@ -21,6 +21,8 @@ type Vmware struct {
 	Filesystem pulumi.StringOutput `pulumi:"filesystem"`
 	// Valid IP address / hostname of a VMware host. When clustering, this is the vCenter server for the cluster. Validated against the real endpoint at apply time (see the resource-level description).
 	Hostname pulumi.StringOutput `pulumi:"hostname"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).
 	Password pulumi.StringOutput `pulumi:"password"`
@@ -124,6 +126,8 @@ type vmwareArgs struct {
 	Filesystem string `pulumi:"filesystem"`
 	// Valid IP address / hostname of a VMware host. When clustering, this is the vCenter server for the cluster. Validated against the real endpoint at apply time (see the resource-level description).
 	Hostname string `pulumi:"hostname"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).
 	Password string `pulumi:"password"`
@@ -139,6 +143,8 @@ type VmwareArgs struct {
 	Filesystem pulumi.StringInput
 	// Valid IP address / hostname of a VMware host. When clustering, this is the vCenter server for the cluster. Validated against the real endpoint at apply time (see the resource-level description).
 	Hostname pulumi.StringInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).
 	Password pulumi.StringInput
@@ -248,6 +254,8 @@ func (o VmwareOutput) Hostname() pulumi.StringOutput {
 	return o.ApplyT(func(v *Vmware) pulumi.StringOutput { return v.Hostname }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Password for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).
 func (o VmwareOutput) Password() pulumi.StringOutput {

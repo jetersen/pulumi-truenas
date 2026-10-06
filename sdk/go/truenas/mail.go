@@ -20,6 +20,8 @@ type Mail struct {
 	Fromname pulumi.StringOutput `pulumi:"fromname"`
 	// Outgoing SMTP server hostname.
 	Outgoingserver pulumi.StringOutput `pulumi:"outgoingserver"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Pass pulumi.StringPtrOutput `pulumi:"pass"`
@@ -120,6 +122,8 @@ type mailArgs struct {
 	Fromname *string `pulumi:"fromname"`
 	// Outgoing SMTP server hostname.
 	Outgoingserver *string `pulumi:"outgoingserver"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Pass *string `pulumi:"pass"`
@@ -141,6 +145,8 @@ type MailArgs struct {
 	Fromname pulumi.StringPtrInput
 	// Outgoing SMTP server hostname.
 	Outgoingserver pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// SMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	Pass pulumi.StringPtrInput
@@ -256,6 +262,8 @@ func (o MailOutput) Outgoingserver() pulumi.StringOutput {
 	return o.ApplyT(func(v *Mail) pulumi.StringOutput { return v.Outgoingserver }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // SMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o MailOutput) Pass() pulumi.StringPtrOutput {

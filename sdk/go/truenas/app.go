@@ -25,7 +25,14 @@ type App struct {
 	CustomApp pulumi.BoolOutput `pulumi:"customApp"`
 	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString pulumi.StringPtrOutput `pulumi:"customComposeConfigString"`
-	HumanVersion              pulumi.StringOutput    `pulumi:"humanVersion"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only overlay (JSON or YAML) deep-merged into<span pulumi-lang-nodejs=" customComposeConfigString " pulumi-lang-dotnet=" CustomComposeConfigString " pulumi-lang-go=" customComposeConfigString " pulumi-lang-python=" custom_compose_config_string " pulumi-lang-yaml=" customComposeConfigString " pulumi-lang-java=" customComposeConfigString " pulumi-lang-hcl=" custom_compose_config_string "> customComposeConfigString </span>when sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.
+	CustomComposeConfigStringWo pulumi.StringPtrOutput `pulumi:"customComposeConfigStringWo"`
+	// Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when<span pulumi-lang-nodejs=" customComposeConfigStringWo " pulumi-lang-dotnet=" CustomComposeConfigStringWo " pulumi-lang-go=" customComposeConfigStringWo " pulumi-lang-python=" custom_compose_config_string_wo " pulumi-lang-yaml=" customComposeConfigStringWo " pulumi-lang-java=" customComposeConfigStringWo " pulumi-lang-hcl=" custom_compose_config_string_wo "> customComposeConfigStringWo </span>is set.
+	CustomComposeConfigStringWoVersion pulumi.IntPtrOutput `pulumi:"customComposeConfigStringWoVersion"`
+	HumanVersion                       pulumi.StringOutput `pulumi:"humanVersion"`
 	// Application name (unique per system).
 	Name pulumi.StringOutput `pulumi:"name"`
 	// Whether the app should be running. Set false to stop.
@@ -54,11 +61,15 @@ func NewApp(ctx *pulumi.Context,
 	if args.CustomComposeConfigString != nil {
 		args.CustomComposeConfigString = pulumi.ToSecret(args.CustomComposeConfigString).(pulumi.StringPtrInput)
 	}
+	if args.CustomComposeConfigStringWo != nil {
+		args.CustomComposeConfigStringWo = pulumi.ToSecret(args.CustomComposeConfigStringWo).(pulumi.StringPtrInput)
+	}
 	if args.Values != nil {
 		args.Values = pulumi.ToSecret(args.Values).(pulumi.StringPtrInput)
 	}
 	secrets := pulumi.AdditionalSecretOutputs([]string{
 		"customComposeConfigString",
+		"customComposeConfigStringWo",
 		"values",
 	})
 	opts = append(opts, secrets)
@@ -95,7 +106,12 @@ type appState struct {
 	CustomApp *bool `pulumi:"customApp"`
 	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString *string `pulumi:"customComposeConfigString"`
-	HumanVersion              *string `pulumi:"humanVersion"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only overlay (JSON or YAML) deep-merged into<span pulumi-lang-nodejs=" customComposeConfigString " pulumi-lang-dotnet=" CustomComposeConfigString " pulumi-lang-go=" customComposeConfigString " pulumi-lang-python=" custom_compose_config_string " pulumi-lang-yaml=" customComposeConfigString " pulumi-lang-java=" customComposeConfigString " pulumi-lang-hcl=" custom_compose_config_string "> customComposeConfigString </span>when sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.
+	CustomComposeConfigStringWo *string `pulumi:"customComposeConfigStringWo"`
+	// Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when<span pulumi-lang-nodejs=" customComposeConfigStringWo " pulumi-lang-dotnet=" CustomComposeConfigStringWo " pulumi-lang-go=" customComposeConfigStringWo " pulumi-lang-python=" custom_compose_config_string_wo " pulumi-lang-yaml=" customComposeConfigStringWo " pulumi-lang-java=" customComposeConfigStringWo " pulumi-lang-hcl=" custom_compose_config_string_wo "> customComposeConfigStringWo </span>is set.
+	CustomComposeConfigStringWoVersion *int    `pulumi:"customComposeConfigStringWoVersion"`
+	HumanVersion                       *string `pulumi:"humanVersion"`
 	// Application name (unique per system).
 	Name *string `pulumi:"name"`
 	// Whether the app should be running. Set false to stop.
@@ -122,7 +138,12 @@ type AppState struct {
 	CustomApp pulumi.BoolPtrInput
 	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString pulumi.StringPtrInput
-	HumanVersion              pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only overlay (JSON or YAML) deep-merged into<span pulumi-lang-nodejs=" customComposeConfigString " pulumi-lang-dotnet=" CustomComposeConfigString " pulumi-lang-go=" customComposeConfigString " pulumi-lang-python=" custom_compose_config_string " pulumi-lang-yaml=" customComposeConfigString " pulumi-lang-java=" customComposeConfigString " pulumi-lang-hcl=" custom_compose_config_string "> customComposeConfigString </span>when sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.
+	CustomComposeConfigStringWo pulumi.StringPtrInput
+	// Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when<span pulumi-lang-nodejs=" customComposeConfigStringWo " pulumi-lang-dotnet=" CustomComposeConfigStringWo " pulumi-lang-go=" customComposeConfigStringWo " pulumi-lang-python=" custom_compose_config_string_wo " pulumi-lang-yaml=" customComposeConfigStringWo " pulumi-lang-java=" customComposeConfigStringWo " pulumi-lang-hcl=" custom_compose_config_string_wo "> customComposeConfigStringWo </span>is set.
+	CustomComposeConfigStringWoVersion pulumi.IntPtrInput
+	HumanVersion                       pulumi.StringPtrInput
 	// Application name (unique per system).
 	Name pulumi.StringPtrInput
 	// Whether the app should be running. Set false to stop.
@@ -153,6 +174,13 @@ type appArgs struct {
 	CustomApp *bool `pulumi:"customApp"`
 	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString *string `pulumi:"customComposeConfigString"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only overlay (JSON or YAML) deep-merged into<span pulumi-lang-nodejs=" customComposeConfigString " pulumi-lang-dotnet=" CustomComposeConfigString " pulumi-lang-go=" customComposeConfigString " pulumi-lang-python=" custom_compose_config_string " pulumi-lang-yaml=" customComposeConfigString " pulumi-lang-java=" customComposeConfigString " pulumi-lang-hcl=" custom_compose_config_string "> customComposeConfigString </span>when sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.
+	CustomComposeConfigStringWo *string `pulumi:"customComposeConfigStringWo"`
+	// Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when<span pulumi-lang-nodejs=" customComposeConfigStringWo " pulumi-lang-dotnet=" CustomComposeConfigStringWo " pulumi-lang-go=" customComposeConfigStringWo " pulumi-lang-python=" custom_compose_config_string_wo " pulumi-lang-yaml=" customComposeConfigStringWo " pulumi-lang-java=" customComposeConfigStringWo " pulumi-lang-hcl=" custom_compose_config_string_wo "> customComposeConfigStringWo </span>is set.
+	CustomComposeConfigStringWoVersion *int `pulumi:"customComposeConfigStringWoVersion"`
 	// Application name (unique per system).
 	Name string `pulumi:"name"`
 	// Whether the app should be running. Set false to stop.
@@ -177,6 +205,13 @@ type AppArgs struct {
 	CustomApp pulumi.BoolPtrInput
 	// Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 	CustomComposeConfigString pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Write-only overlay (JSON or YAML) deep-merged into<span pulumi-lang-nodejs=" customComposeConfigString " pulumi-lang-dotnet=" CustomComposeConfigString " pulumi-lang-go=" customComposeConfigString " pulumi-lang-python=" custom_compose_config_string " pulumi-lang-yaml=" customComposeConfigString " pulumi-lang-java=" customComposeConfigString " pulumi-lang-hcl=" custom_compose_config_string "> customComposeConfigString </span>when sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.
+	CustomComposeConfigStringWo pulumi.StringPtrInput
+	// Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when<span pulumi-lang-nodejs=" customComposeConfigStringWo " pulumi-lang-dotnet=" CustomComposeConfigStringWo " pulumi-lang-go=" customComposeConfigStringWo " pulumi-lang-python=" custom_compose_config_string_wo " pulumi-lang-yaml=" customComposeConfigStringWo " pulumi-lang-java=" customComposeConfigStringWo " pulumi-lang-hcl=" custom_compose_config_string_wo "> customComposeConfigStringWo </span>is set.
+	CustomComposeConfigStringWoVersion pulumi.IntPtrInput
 	// Application name (unique per system).
 	Name pulumi.StringInput
 	// Whether the app should be running. Set false to stop.
@@ -299,6 +334,19 @@ func (o AppOutput) CustomApp() pulumi.BoolOutput {
 // Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.
 func (o AppOutput) CustomComposeConfigString() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *App) pulumi.StringPtrOutput { return v.CustomComposeConfigString }).(pulumi.StringPtrOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Write-only overlay (JSON or YAML) deep-merged into<span pulumi-lang-nodejs=" customComposeConfigString " pulumi-lang-dotnet=" CustomComposeConfigString " pulumi-lang-go=" customComposeConfigString " pulumi-lang-python=" custom_compose_config_string " pulumi-lang-yaml=" customComposeConfigString " pulumi-lang-java=" customComposeConfigString " pulumi-lang-hcl=" custom_compose_config_string "> customComposeConfigString </span>when sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.
+func (o AppOutput) CustomComposeConfigStringWo() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *App) pulumi.StringPtrOutput { return v.CustomComposeConfigStringWo }).(pulumi.StringPtrOutput)
+}
+
+// Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when<span pulumi-lang-nodejs=" customComposeConfigStringWo " pulumi-lang-dotnet=" CustomComposeConfigStringWo " pulumi-lang-go=" customComposeConfigStringWo " pulumi-lang-python=" custom_compose_config_string_wo " pulumi-lang-yaml=" customComposeConfigStringWo " pulumi-lang-java=" customComposeConfigStringWo " pulumi-lang-hcl=" custom_compose_config_string_wo "> customComposeConfigStringWo </span>is set.
+func (o AppOutput) CustomComposeConfigStringWoVersion() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *App) pulumi.IntPtrOutput { return v.CustomComposeConfigStringWoVersion }).(pulumi.IntPtrOutput)
 }
 
 func (o AppOutput) HumanVersion() pulumi.StringOutput {

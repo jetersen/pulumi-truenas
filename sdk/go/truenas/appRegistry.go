@@ -19,6 +19,8 @@ type AppRegistry struct {
 	Description pulumi.StringPtrOutput `pulumi:"description"`
 	// Human-readable name for the container registry.
 	Name pulumi.StringOutput `pulumi:"name"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).
 	Password pulumi.StringOutput `pulumi:"password"`
@@ -110,6 +112,8 @@ type appRegistryArgs struct {
 	Description *string `pulumi:"description"`
 	// Human-readable name for the container registry.
 	Name string `pulumi:"name"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).
 	Password string `pulumi:"password"`
@@ -125,6 +129,8 @@ type AppRegistryArgs struct {
 	Description pulumi.StringPtrInput
 	// Human-readable name for the container registry.
 	Name pulumi.StringInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Password or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).
 	Password pulumi.StringInput
@@ -231,6 +237,8 @@ func (o AppRegistryOutput) Name() pulumi.StringOutput {
 	return o.ApplyT(func(v *AppRegistry) pulumi.StringOutput { return v.Name }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Password or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).
 func (o AppRegistryOutput) Password() pulumi.StringOutput {

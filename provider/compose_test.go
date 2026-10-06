@@ -19,6 +19,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/plugin"
 	"github.com/stretchr/testify/require"
+	"go.yaml.in/yaml/v3"
 )
 
 func TestComposeProtection(t *testing.T) {
@@ -75,6 +76,7 @@ type fixtureNAS struct {
 	mu        sync.Mutex
 	document  map[string]any
 	writes    int
+	reads     int
 	failRead  bool
 	failWrite bool
 }
@@ -114,7 +116,7 @@ func (nas *fixtureNAS) serve(w http.ResponseWriter, r *http.Request) {
 			if req.Method == "app.update" {
 				ix = 1
 			}
-			if json.Unmarshal(req.Params[ix], &payload) != nil || json.Unmarshal([]byte(payload.Compose), &nas.document) != nil {
+			if json.Unmarshal(req.Params[ix], &payload) != nil || yaml.Unmarshal([]byte(payload.Compose), &nas.document) != nil {
 				rpcError = map[string]any{"code": -1, "message": "invalid fixture payload"}
 			}
 			nas.writes++
@@ -122,6 +124,7 @@ func (nas *fixtureNAS) serve(w http.ResponseWriter, r *http.Request) {
 		case "app.get_instance":
 			result = map[string]any{"name": "dns", "id": "dns", "custom_app": true, "state": "RUNNING", "version": "1.0.0", "metadata": map[string]any{"train": ""}}
 		case "app.config":
+			nas.reads++
 			if nas.failRead {
 				rpcError = map[string]any{"code": -1, "message": "fixture-sensitive-error"}
 			} else {
@@ -229,11 +232,12 @@ func TestComposeCLIPreview(t *testing.T) {
 		t.Skip("run make test-compose-preview for isolated CLI coverage")
 	}
 	for _, runtime := range []string{"yaml", "dotnet"} {
-		t.Run(runtime, func(t *testing.T) { testComposeCLIPreview(t, runtime) })
+		t.Run(runtime, func(t *testing.T) { testComposeCLIPreview(t, runtime, false) })
+		t.Run(runtime+"-overlay", func(t *testing.T) { testComposeCLIPreview(t, runtime, true) })
 	}
 }
 
-func testComposeCLIPreview(t *testing.T, runtime string) {
+func testComposeCLIPreview(t *testing.T, runtime string, overlay bool) {
 	if os.Getenv("TRUENAS_COMPOSE_CLI_TEST") != "1" {
 		t.Skip("run make test-compose-preview for isolated CLI coverage")
 	}
@@ -324,8 +328,22 @@ return await Deployment.RunAsync(() => {
  },new CustomResourceOptions { Provider = nas });
  return new Dictionary<string,object>();
 });`, "wss"+strings.TrimPrefix(server.URL, "https")+"/api/current")
+		if overlay {
+			program = strings.ReplaceAll(program, `["PASSWORD"] = Output.CreateSecret("fixture-password"), `, "")
+			program = strings.Replace(program, "  Compose =", `  CustomComposeConfigStringWo = Output.CreateSecret("""{"services":{"dns":{"environment":{"PASSWORD":"fixture-password"}}}}"""),
+  CustomComposeConfigStringWoVersion = 1,
+  Compose =`, 1)
+		}
 		require.NoError(t, os.WriteFile(filepath.Join(dir, "Fixture.csproj"), []byte(csproj), 0600))
 		require.NoError(t, os.WriteFile(filepath.Join(dir, "Program.cs"), []byte(program), 0600))
+	}
+	if overlay && runtime == "yaml" {
+		project = strings.Replace(project, "              PASSWORD:\n                fn::secret: fixture-password\n", "", 1)
+		project = strings.Replace(project, "      compose:\n", `      customComposeConfigStringWo:
+        fn::secret: '{"services":{"dns":{"environment":{"PASSWORD":"fixture-password"}}}}'
+      customComposeConfigStringWoVersion: 1
+      compose:
+`, 1)
 	}
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "Pulumi.yaml"), []byte(project), 0600))
 	run("stack", "init", "test", "--non-interactive")
@@ -354,11 +372,19 @@ return await Deployment.RunAsync(() => {
 		t.Cleanup(func() { require.NoError(t, os.WriteFile(programPath, original, 0600)) })
 		changed := strings.ReplaceAll(string(original), "fixture-password", "fixture-rotated-password")
 		changed = strings.ReplaceAll(changed, "example/dns:1", "example/dns:3")
+		if overlay {
+			changed = strings.ReplaceAll(changed, "customComposeConfigStringWoVersion: 1", "customComposeConfigStringWoVersion: 2")
+			changed = strings.ReplaceAll(changed, "CustomComposeConfigStringWoVersion = 1", "CustomComposeConfigStringWoVersion = 2")
+		}
 		require.NoError(t, os.WriteFile(programPath, []byte(changed), 0600))
 		preview := runCLI(t, "preview", "--diff", "--non-interactive", "--color", "never")
 		require.Contains(t, preview, "example/dns:1")
 		require.Contains(t, preview, "example/dns:3")
-		require.Contains(t, preview, "[secret]")
+		if !overlay {
+			require.Contains(t, preview, "[secret]")
+		} else {
+			require.Contains(t, preview, "customComposeConfigStringWoVersion")
+		}
 		for _, secret := range []string{"fixture-password", "fixture-rotated-password", "fixture-api-key"} {
 			require.NotContains(t, preview, secret)
 		}
@@ -376,7 +402,9 @@ return await Deployment.RunAsync(() => {
 	preview := run("preview", "--refresh", "--diff", "--non-interactive", "--color", "never")
 	require.Contains(t, preview, "example/dns:2")
 	require.Contains(t, preview, "example/dns:1")
-	require.Contains(t, preview, "[secret]")
+	if !overlay {
+		require.Contains(t, preview, "[secret]")
+	}
 	require.Contains(t, preview, "public.example")
 	require.Contains(t, preview, "manual.example")
 	for _, s := range []string{"fixture-password", "fixture-drift-password", "fixture-new-token"} {
@@ -386,6 +414,40 @@ return await Deployment.RunAsync(() => {
 	refreshed := run("stack", "export")
 	for _, s := range []string{"fixture-password", "fixture-drift-password", "fixture-new-token"} {
 		require.NotContains(t, refreshed, s)
+	}
+	if overlay {
+		var state struct {
+			Deployment struct {
+				Resources []struct {
+					Type    string         `json:"type"`
+					Inputs  map[string]any `json:"inputs"`
+					Outputs map[string]any `json:"outputs"`
+				} `json:"resources"`
+			} `json:"deployment"`
+		}
+		for _, snapshot := range []string{exported, refreshed} {
+			require.NoError(t, json.Unmarshal([]byte(snapshot), &state))
+			found := false
+			for _, r := range state.Deployment.Resources {
+				if r.Type != "truenas:index/app:App" {
+					continue
+				}
+				found = true
+				// Pulumi stores the encrypted input after creation, even though
+				// the bridge currently drops it on refresh. Outputs stay projected.
+				if snapshot == exported {
+					secret, ok := r.Inputs["customComposeConfigStringWo"].(map[string]any)
+					require.True(t, ok)
+					require.Contains(t, secret, "ciphertext")
+				}
+				require.NotContains(t, r.Outputs, "customComposeConfigStringWo")
+				b, err := json.Marshal(r.Outputs["compose"])
+				require.NoError(t, err)
+				require.NotContains(t, string(b), "PASSWORD")
+				require.NotContains(t, string(b), "NEW_TOKEN")
+			}
+			require.True(t, found)
+		}
 	}
 	nas.mu.Lock()
 	require.Equal(t, 1, nas.writes)
@@ -451,5 +513,99 @@ func TestComposeLegacyAndImport(t *testing.T) {
 	require.NoError(t, err)
 	nas.mu.Lock()
 	require.Equal(t, 1, nas.writes, "changing representation must not redeploy unchanged Compose")
+	nas.mu.Unlock()
+}
+
+func TestComposeOverlay(t *testing.T) {
+	for _, structured := range []bool{false, true} {
+		name := "string"
+		if structured {
+			name = "structured"
+		}
+		t.Run(name, func(t *testing.T) { testComposeOverlay(t, structured) })
+	}
+}
+
+func testComposeOverlay(t *testing.T, structured bool) {
+	nas := &fixtureNAS{}
+	server := httptest.NewTLSServer(http.HandlerFunc(nas.serve))
+	defer server.Close()
+	ctx := context.Background()
+	p, err := pf.NewProvider(ctx, Provider(), pf.ProviderMetadata{PackageSchema: []byte(`{}`)})
+	require.NoError(t, err)
+	defer p.Close()
+	_, err = p.Configure(ctx, plugin.ConfigureRequest{Inputs: resource.NewPropertyMapFromMap(map[string]any{
+		"endpoint": "wss" + strings.TrimPrefix(server.URL, "https") + "/api/current", "apiKey": "fixture-key", "insecure": true,
+	})})
+	require.NoError(t, err)
+	urn := resource.URN("urn:pulumi:test::compose::truenas:index/app:App::dns")
+	news := resource.NewPropertyMapFromMap(map[string]any{
+		"name": "dns", "customApp": true, "running": true,
+		"compose":                            map[string]any{"services": map[string]any{"dns": map[string]any{"image": "example/dns:1", "environment": map[string]any{"PUBLIC": "public"}}}},
+		"customComposeConfigStringWo":        `{"services":{"dns":{"environment":{"PASSWORD":"fixture-overlay-password"}}}}`,
+		"customComposeConfigStringWoVersion": 1,
+	})
+	if !structured {
+		news["customComposeConfigString"] = resource.NewStringProperty(`{"services":{"dns":{"image":"example/dns:1","environment":{"PUBLIC":"public"}}}}`)
+		delete(news, "compose")
+	}
+	missingVersion := cloneProperties(t, news)
+	delete(missingVersion, "customComposeConfigStringWoVersion")
+	invalid, err := p.Check(ctx, plugin.CheckRequest{URN: urn, News: missingVersion})
+	require.NoError(t, err)
+	require.NotEmpty(t, invalid.Failures, "overlay requires a persisted version trigger")
+	checked, err := p.Check(ctx, plugin.CheckRequest{URN: urn, News: news})
+	require.NoError(t, err)
+	require.Empty(t, checked.Failures)
+	created, err := p.Create(ctx, plugin.CreateRequest{URN: urn, Properties: checked.Properties})
+	require.NoError(t, err)
+	require.False(t, created.Properties["customComposeConfigStringWo"].HasValue())
+	nas.mu.Lock()
+	require.Equal(t, "fixture-overlay-password", nas.document["services"].(map[string]any)["dns"].(map[string]any)["environment"].(map[string]any)["PASSWORD"])
+	nas.mu.Unlock()
+	read, err := p.Read(ctx, plugin.ReadRequest{URN: urn, ID: created.ID, Inputs: cloneProperties(t, checked.Properties), State: created.Properties})
+	require.NoError(t, err)
+	assertProjected := func(outputs resource.PropertyMap) {
+		t.Helper()
+		require.False(t, outputs["customComposeConfigStringWo"].HasValue())
+		if structured {
+			env := outputs["compose"].ObjectValue()["services"].ObjectValue()["dns"].ObjectValue()["environment"].ObjectValue()
+			require.False(t, env["PASSWORD"].HasValue(), "overlay must not return through structured read-back")
+		} else {
+			require.NotContains(t, unwrap(outputs["customComposeConfigString"]).StringValue(), "PASSWORD")
+		}
+	}
+	assertProjected(read.Outputs)
+	diff, err := p.Diff(ctx, plugin.DiffRequest{URN: urn, ID: created.ID, OldInputs: read.Inputs, OldOutputs: read.Outputs, NewInputs: checked.Properties})
+	require.NoError(t, err)
+	require.Equal(t, plugin.DiffNone, diff.Changes)
+	nas.mu.Lock()
+	require.Equal(t, 1, nas.reads, "read-back must use a single upstream app.config call")
+	nas.document["services"].(map[string]any)["dns"].(map[string]any)["image"] = "example/dns:2"
+	nas.mu.Unlock()
+	drift, err := p.Read(ctx, plugin.ReadRequest{URN: urn, ID: created.ID, Inputs: cloneProperties(t, read.Inputs), State: read.Outputs})
+	require.NoError(t, err)
+	assertProjected(drift.Outputs)
+	diff, err = p.Diff(ctx, plugin.DiffRequest{URN: urn, ID: created.ID, OldInputs: drift.Inputs, OldOutputs: drift.Outputs, NewInputs: checked.Properties})
+	require.NoError(t, err)
+	require.Equal(t, plugin.DiffSome, diff.Changes)
+	require.Empty(t, diff.ReplaceKeys)
+	corrected, err := p.Update(ctx, plugin.UpdateRequest{URN: urn, ID: created.ID, OldInputs: drift.Inputs, OldOutputs: drift.Outputs, NewInputs: checked.Properties})
+	require.NoError(t, err)
+	rotated := cloneProperties(t, checked.Properties)
+	rotated["customComposeConfigStringWo"] = resource.MakeSecret(resource.NewStringProperty(`{"services":{"dns":{"environment":{"PASSWORD":"fixture-rotated"}}}}`))
+	rotated["customComposeConfigStringWoVersion"] = resource.NewNumberProperty(2)
+	// Rotation must deploy even when the public base has not changed.
+	diff, err = p.Diff(ctx, plugin.DiffRequest{URN: urn, ID: created.ID, OldInputs: checked.Properties, OldOutputs: corrected.Properties, NewInputs: rotated})
+	require.NoError(t, err)
+	require.Equal(t, plugin.DiffSome, diff.Changes)
+	require.Empty(t, diff.ReplaceKeys)
+	updated, err := p.Update(ctx, plugin.UpdateRequest{URN: urn, ID: created.ID, OldInputs: checked.Properties, OldOutputs: corrected.Properties, NewInputs: rotated})
+	require.NoError(t, err)
+	require.False(t, updated.Properties["customComposeConfigStringWo"].HasValue())
+	nas.mu.Lock()
+	require.Equal(t, "fixture-rotated", nas.document["services"].(map[string]any)["dns"].(map[string]any)["environment"].(map[string]any)["PASSWORD"])
+	require.Equal(t, "example/dns:1", nas.document["services"].(map[string]any)["dns"].(map[string]any)["image"])
+	require.Equal(t, 3, nas.writes, "only creation, drift correction, and rotation may write")
 	nas.mu.Unlock()
 }

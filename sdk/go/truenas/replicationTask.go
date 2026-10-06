@@ -35,6 +35,8 @@ type ReplicationTask struct {
 	Encryption pulumi.BoolOutput `pulumi:"encryption"`
 	// Inherit encryption from the target's parent dataset instead of supplying a key.
 	EncryptionInherit pulumi.BoolOutput `pulumi:"encryptionInherit"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Encryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionKey pulumi.StringPtrOutput `pulumi:"encryptionKey"`
@@ -384,6 +386,8 @@ type replicationTaskArgs struct {
 	Encryption *bool `pulumi:"encryption"`
 	// Inherit encryption from the target's parent dataset instead of supplying a key.
 	EncryptionInherit *bool `pulumi:"encryptionInherit"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Encryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionKey *string `pulumi:"encryptionKey"`
@@ -481,6 +485,8 @@ type ReplicationTaskArgs struct {
 	Encryption pulumi.BoolPtrInput
 	// Inherit encryption from the target's parent dataset instead of supplying a key.
 	EncryptionInherit pulumi.BoolPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// Encryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 	EncryptionKey pulumi.StringPtrInput
@@ -693,6 +699,8 @@ func (o ReplicationTaskOutput) EncryptionInherit() pulumi.BoolOutput {
 	return o.ApplyT(func(v *ReplicationTask) pulumi.BoolOutput { return v.EncryptionInherit }).(pulumi.BoolOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // Encryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform >= 1.11.
 func (o ReplicationTaskOutput) EncryptionKey() pulumi.StringPtrOutput {

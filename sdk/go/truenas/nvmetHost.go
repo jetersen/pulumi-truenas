@@ -17,6 +17,8 @@ type NvmetHost struct {
 
 	// Free-form description of the host.
 	Description pulumi.StringOutput `pulumi:"description"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// DH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	DhchapCtrlKey pulumi.StringPtrOutput `pulumi:"dhchapCtrlKey"`
@@ -24,6 +26,8 @@ type NvmetHost struct {
 	DhchapDhgroup pulumi.StringOutput `pulumi:"dhchapDhgroup"`
 	// DH-CHAP hash algorithm. One of: SHA-256, SHA-384, SHA-512.
 	DhchapHash pulumi.StringOutput `pulumi:"dhchapHash"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// DH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	DhchapKey pulumi.StringPtrOutput `pulumi:"dhchapKey"`
@@ -115,6 +119,8 @@ func (NvmetHostState) ElementType() reflect.Type {
 type nvmetHostArgs struct {
 	// Free-form description of the host.
 	Description *string `pulumi:"description"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// DH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	DhchapCtrlKey *string `pulumi:"dhchapCtrlKey"`
@@ -122,6 +128,8 @@ type nvmetHostArgs struct {
 	DhchapDhgroup *string `pulumi:"dhchapDhgroup"`
 	// DH-CHAP hash algorithm. One of: SHA-256, SHA-384, SHA-512.
 	DhchapHash *string `pulumi:"dhchapHash"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// DH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	DhchapKey *string `pulumi:"dhchapKey"`
@@ -133,6 +141,8 @@ type nvmetHostArgs struct {
 type NvmetHostArgs struct {
 	// Free-form description of the host.
 	Description pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// DH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	DhchapCtrlKey pulumi.StringPtrInput
@@ -140,6 +150,8 @@ type NvmetHostArgs struct {
 	DhchapDhgroup pulumi.StringPtrInput
 	// DH-CHAP hash algorithm. One of: SHA-256, SHA-384, SHA-512.
 	DhchapHash pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
 	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 	// DH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 	DhchapKey pulumi.StringPtrInput
@@ -239,6 +251,8 @@ func (o NvmetHostOutput) Description() pulumi.StringOutput {
 	return o.ApplyT(func(v *NvmetHost) pulumi.StringOutput { return v.Description }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // DH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o NvmetHostOutput) DhchapCtrlKey() pulumi.StringPtrOutput {
@@ -255,6 +269,8 @@ func (o NvmetHostOutput) DhchapHash() pulumi.StringOutput {
 	return o.ApplyT(func(v *NvmetHost) pulumi.StringOutput { return v.DhchapHash }).(pulumi.StringOutput)
 }
 
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
 // **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
 // DH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform >= 1.11.
 func (o NvmetHostOutput) DhchapKey() pulumi.StringPtrOutput {

@@ -3234,6 +3234,15 @@
                     "description": "JSON document of DNS provider credentials/config. Must include \"authenticator\" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {\"authenticator\":\"route53\",\u003cspan pulumi-lang-nodejs=\"\"accessKeyId\"\" pulumi-lang-dotnet=\"\"AccessKeyId\"\" pulumi-lang-go=\"\"accessKeyId\"\" pulumi-lang-python=\"\"access_key_id\"\" pulumi-lang-yaml=\"\"accessKeyId\"\" pulumi-lang-java=\"\"accessKeyId\"\" pulumi-lang-hcl=\"\"access_key_id\"\"\u003e\"accessKeyId\"\u003c/span\u003e:\"...\",\u003cspan pulumi-lang-nodejs=\"\"secretAccessKey\"\" pulumi-lang-dotnet=\"\"SecretAccessKey\"\" pulumi-lang-go=\"\"secretAccessKey\"\" pulumi-lang-python=\"\"secret_access_key\"\" pulumi-lang-yaml=\"\"secretAccessKey\"\" pulumi-lang-java=\"\"secretAccessKey\"\" pulumi-lang-hcl=\"\"secret_access_key\"\"\u003e\"secretAccessKey\"\u003c/span\u003e:\"...\"}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare\u003cspan pulumi-lang-nodejs=\" apiToken \" pulumi-lang-dotnet=\" ApiToken \" pulumi-lang-go=\" apiToken \" pulumi-lang-python=\" api_token \" pulumi-lang-yaml=\" apiToken \" pulumi-lang-java=\" apiToken \" pulumi-lang-hcl=\" api_token \"\u003e apiToken \u003c/span\u003ewas accepted without any outbound call failing); the \"shell\" variant is the one exception, performing a local check that \"script\" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).",
                     "secret": true
                 },
+                "attributesSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                    "secret": true
+                },
+                "attributesSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
+                },
                 "name": {
                     "type": "string",
                     "description": "Human-readable name for the DNS authenticator. Updatable in place."
@@ -3248,6 +3257,15 @@
                     "type": "string",
                     "description": "JSON document of DNS provider credentials/config. Must include \"authenticator\" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {\"authenticator\":\"route53\",\u003cspan pulumi-lang-nodejs=\"\"accessKeyId\"\" pulumi-lang-dotnet=\"\"AccessKeyId\"\" pulumi-lang-go=\"\"accessKeyId\"\" pulumi-lang-python=\"\"access_key_id\"\" pulumi-lang-yaml=\"\"accessKeyId\"\" pulumi-lang-java=\"\"accessKeyId\"\" pulumi-lang-hcl=\"\"access_key_id\"\"\u003e\"accessKeyId\"\u003c/span\u003e:\"...\",\u003cspan pulumi-lang-nodejs=\"\"secretAccessKey\"\" pulumi-lang-dotnet=\"\"SecretAccessKey\"\" pulumi-lang-go=\"\"secretAccessKey\"\" pulumi-lang-python=\"\"secret_access_key\"\" pulumi-lang-yaml=\"\"secretAccessKey\"\" pulumi-lang-java=\"\"secretAccessKey\"\" pulumi-lang-hcl=\"\"secret_access_key\"\"\u003e\"secretAccessKey\"\u003c/span\u003e:\"...\"}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare\u003cspan pulumi-lang-nodejs=\" apiToken \" pulumi-lang-dotnet=\" ApiToken \" pulumi-lang-go=\" apiToken \" pulumi-lang-python=\" api_token \" pulumi-lang-yaml=\" apiToken \" pulumi-lang-java=\" apiToken \" pulumi-lang-hcl=\" api_token \"\u003e apiToken \u003c/span\u003ewas accepted without any outbound call failing); the \"shell\" variant is the one exception, performing a local check that \"script\" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).",
                     "secret": true
+                },
+                "attributesSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                    "secret": true
+                },
+                "attributesSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                 },
                 "name": {
                     "type": "string",
@@ -3265,6 +3283,15 @@
                         "type": "string",
                         "description": "JSON document of DNS provider credentials/config. Must include \"authenticator\" (one of: cloudflare, digitalocean, OVH, route53, shell) plus that variant's own fields — e.g. {\"authenticator\":\"route53\",\u003cspan pulumi-lang-nodejs=\"\"accessKeyId\"\" pulumi-lang-dotnet=\"\"AccessKeyId\"\" pulumi-lang-go=\"\"accessKeyId\"\" pulumi-lang-python=\"\"access_key_id\"\" pulumi-lang-yaml=\"\"accessKeyId\"\" pulumi-lang-java=\"\"accessKeyId\"\" pulumi-lang-hcl=\"\"access_key_id\"\"\u003e\"accessKeyId\"\u003c/span\u003e:\"...\",\u003cspan pulumi-lang-nodejs=\"\"secretAccessKey\"\" pulumi-lang-dotnet=\"\"SecretAccessKey\"\" pulumi-lang-go=\"\"secretAccessKey\"\" pulumi-lang-python=\"\"secret_access_key\"\" pulumi-lang-yaml=\"\"secretAccessKey\"\" pulumi-lang-java=\"\"secretAccessKey\"\" pulumi-lang-hcl=\"\"secret_access_key\"\"\u003e\"secretAccessKey\"\u003c/span\u003e:\"...\"}. Marked Sensitive: probed live, credentials are NOT masked on read-back (create/get_instance/query all return them in cleartext), so — unlike a WriteOnly attribute — this value IS stored in state and IS read back on refresh/import. acme.dns.authenticator.create does not validate credentials against the actual DNS provider (probed live: a syntactically valid but fake cloudflare\u003cspan pulumi-lang-nodejs=\" apiToken \" pulumi-lang-dotnet=\" ApiToken \" pulumi-lang-go=\" apiToken \" pulumi-lang-python=\" api_token \" pulumi-lang-yaml=\" apiToken \" pulumi-lang-java=\" apiToken \" pulumi-lang-hcl=\" api_token \"\u003e apiToken \u003c/span\u003ewas accepted without any outbound call failing); the \"shell\" variant is the one exception, performing a local check that \"script\" is an existing file under a pool mount point. Updatable in place (a full replace, not a partial patch — acme.dns.authenticator.update takes the same {name, attributes} shape as create).",
                         "secret": true
+                    },
+                    "attributesSecretsWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. the DNS provider API token) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                        "secret": true
+                    },
+                    "attributesSecretsWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                     },
                     "name": {
                         "type": "string",
@@ -3314,8 +3341,17 @@
             "properties": {
                 "attributes": {
                     "type": "string",
-                    "description": "JSON document of service settings. Must include \"type\" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.",
+                    "description": "JSON document of service settings. Must include \"type\" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eto keep secret keys out of state.",
                     "secret": true
+                },
+                "attributesSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                    "secret": true
+                },
+                "attributesSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                 },
                 "enabled": {
                     "type": "boolean",
@@ -3339,8 +3375,17 @@
             "inputProperties": {
                 "attributes": {
                     "type": "string",
-                    "description": "JSON document of service settings. Must include \"type\" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.",
+                    "description": "JSON document of service settings. Must include \"type\" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eto keep secret keys out of state.",
                     "secret": true
+                },
+                "attributesSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                    "secret": true
+                },
+                "attributesSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                 },
                 "enabled": {
                     "type": "boolean",
@@ -3365,8 +3410,17 @@
                 "properties": {
                     "attributes": {
                         "type": "string",
-                        "description": "JSON document of service settings. Must include \"type\" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys.",
+                        "description": "JSON document of service settings. Must include \"type\" (e.g. Mail, SNMPTrap, Slack, PagerDuty). May contain secrets such as webhook URLs or SNMP v3 keys; use\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eto keep secret keys out of state.",
                         "secret": true
+                    },
+                    "attributesSecretsWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. Slack/PagerDuty/AWS credentials) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                        "secret": true
+                    },
+                    "attributesSecretsWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                     },
                     "enabled": {
                         "type": "boolean",
@@ -3511,6 +3565,15 @@
                     "description": "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.",
                     "secret": true
                 },
+                "customComposeConfigStringWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only overlay (JSON or YAML) deep-merged into\u003cspan pulumi-lang-nodejs=\" customComposeConfigString \" pulumi-lang-dotnet=\" CustomComposeConfigString \" pulumi-lang-go=\" customComposeConfigString \" pulumi-lang-python=\" custom_compose_config_string \" pulumi-lang-yaml=\" customComposeConfigString \" pulumi-lang-java=\" customComposeConfigString \" pulumi-lang-hcl=\" custom_compose_config_string \"\u003e customComposeConfigString \u003c/span\u003ewhen sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.",
+                    "secret": true
+                },
+                "customComposeConfigStringWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when\u003cspan pulumi-lang-nodejs=\" customComposeConfigStringWo \" pulumi-lang-dotnet=\" CustomComposeConfigStringWo \" pulumi-lang-go=\" customComposeConfigStringWo \" pulumi-lang-python=\" custom_compose_config_string_wo \" pulumi-lang-yaml=\" customComposeConfigStringWo \" pulumi-lang-java=\" customComposeConfigStringWo \" pulumi-lang-hcl=\" custom_compose_config_string_wo \"\u003e customComposeConfigStringWo \u003c/span\u003eis set."
+                },
                 "humanVersion": {
                     "type": "string"
                 },
@@ -3578,6 +3641,15 @@
                     "description": "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.",
                     "secret": true
                 },
+                "customComposeConfigStringWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only overlay (JSON or YAML) deep-merged into\u003cspan pulumi-lang-nodejs=\" customComposeConfigString \" pulumi-lang-dotnet=\" CustomComposeConfigString \" pulumi-lang-go=\" customComposeConfigString \" pulumi-lang-python=\" custom_compose_config_string \" pulumi-lang-yaml=\" customComposeConfigString \" pulumi-lang-java=\" customComposeConfigString \" pulumi-lang-hcl=\" custom_compose_config_string \"\u003e customComposeConfigString \u003c/span\u003ewhen sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.",
+                    "secret": true
+                },
+                "customComposeConfigStringWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when\u003cspan pulumi-lang-nodejs=\" customComposeConfigStringWo \" pulumi-lang-dotnet=\" CustomComposeConfigStringWo \" pulumi-lang-go=\" customComposeConfigStringWo \" pulumi-lang-python=\" custom_compose_config_string_wo \" pulumi-lang-yaml=\" customComposeConfigStringWo \" pulumi-lang-java=\" customComposeConfigStringWo \" pulumi-lang-hcl=\" custom_compose_config_string_wo \"\u003e customComposeConfigStringWo \u003c/span\u003eis set."
+                },
                 "name": {
                     "type": "string",
                     "description": "Application name (unique per system)."
@@ -3630,6 +3702,15 @@
                         "description": "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs.",
                         "secret": true
                     },
+                    "customComposeConfigStringWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only overlay (JSON or YAML) deep-merged into\u003cspan pulumi-lang-nodejs=\" customComposeConfigString \" pulumi-lang-dotnet=\" CustomComposeConfigString \" pulumi-lang-go=\" customComposeConfigString \" pulumi-lang-python=\" custom_compose_config_string \" pulumi-lang-yaml=\" customComposeConfigString \" pulumi-lang-java=\" customComposeConfigString \" pulumi-lang-hcl=\" custom_compose_config_string \"\u003e customComposeConfigString \u003c/span\u003ewhen sending, for secret parts of the Compose (e.g. nested service environment values). Read from configuration and never stored in state; on refresh the live Compose is projected onto only the keys in custom_compose_config_string, so these secret keys are not read back. Requires custom_compose_config_string_wo_version.",
+                        "secret": true
+                    },
+                    "customComposeConfigStringWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for custom_compose_config_string_wo; bump to re-send a rotated overlay (write-only values are absent from state so a change cannot be detected otherwise). Required when\u003cspan pulumi-lang-nodejs=\" customComposeConfigStringWo \" pulumi-lang-dotnet=\" CustomComposeConfigStringWo \" pulumi-lang-go=\" customComposeConfigStringWo \" pulumi-lang-python=\" custom_compose_config_string_wo \" pulumi-lang-yaml=\" customComposeConfigStringWo \" pulumi-lang-java=\" customComposeConfigStringWo \" pulumi-lang-hcl=\" custom_compose_config_string_wo \"\u003e customComposeConfigStringWo \u003c/span\u003eis set."
+                    },
                     "humanVersion": {
                         "type": "string"
                     },
@@ -3680,7 +3761,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).",
                     "secret": true
                 },
                 "uri": {
@@ -3709,7 +3790,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword or access token for registry authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real registry endpoint at apply time (see the resource-level description).",
                     "secret": true
                 },
                 "uri": {
@@ -4498,8 +4579,17 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to \"********\" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).",
+                    "description": "Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003e— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003einstead to keep it out of state. Exactly one of password or\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003emust be set.",
                     "secret": true
+                },
+                "passwordWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003emust be set.",
+                    "secret": true
+                },
+                "passwordWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003eis set."
                 },
                 "path": {
                     "type": "string",
@@ -4540,7 +4630,6 @@
                 "excludes",
                 "includes",
                 "keepLast",
-                "password",
                 "path",
                 "postScript",
                 "preScript",
@@ -4594,8 +4683,17 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to \"********\" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).",
+                    "description": "Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003e— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003einstead to keep it out of state. Exactly one of password or\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003emust be set.",
                     "secret": true
+                },
+                "passwordWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003emust be set.",
+                    "secret": true
+                },
+                "passwordWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003eis set."
                 },
                 "path": {
                     "type": "string",
@@ -4630,7 +4728,6 @@
                 "attributes",
                 "credentials",
                 "keepLast",
-                "password",
                 "path"
             ],
             "stateInputs": {
@@ -4680,8 +4777,17 @@
                     },
                     "password": {
                         "type": "string",
-                        "description": "Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in state and can be read back on refresh/import: the wire field is a pydantic Secret (Secret[NonEmptyString], probed via middleware source — cloud_backup.py's CloudBackupEntry) whose value is only masked to \"********\" for a caller whose session lacks FULL_ADMIN and the CLOUD_BACKUP_WRITE role; this provider's usual admin-scoped API key session sees the real value on cloud_backup.get_instance/query (verified against middleware's dump_result()/remove_secrets() logic, since no working credential was available to trigger a live create — see cloud_backup.create's credential/bucket validation, documented on the resource). Never sent to cloud_backup.sync (this provider never calls it).",
+                        "description": "Password for the restic repository (RESTIC_PASSWORD). Marked Sensitive (kept out of plan/apply output), but — unlike\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003e— it IS stored in state and read back on refresh (TrueNAS returns it unmasked to an admin session). Use\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003einstead to keep it out of state. Exactly one of password or\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003emust be set.",
                         "secret": true
+                    },
+                    "passwordWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to password: the restic repository password read from configuration and never stored in state, and not read back on refresh. Requires password_wo_version. Exactly one of password or\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003emust be set.",
+                        "secret": true
+                    },
+                    "passwordWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for password_wo. Because a write-only value is absent from state, its rotation cannot be detected automatically; bump this integer to re-send a changed password_wo. Required when\u003cspan pulumi-lang-nodejs=\" passwordWo \" pulumi-lang-dotnet=\" PasswordWo \" pulumi-lang-go=\" passwordWo \" pulumi-lang-python=\" password_wo \" pulumi-lang-yaml=\" passwordWo \" pulumi-lang-java=\" passwordWo \" pulumi-lang-hcl=\" password_wo \"\u003e passwordWo \u003c/span\u003eis set."
                     },
                     "path": {
                         "type": "string",
@@ -4726,8 +4832,17 @@
                 },
                 "providerConfig": {
                     "type": "string",
-                    "description": "JSON document of provider settings. Must include \"type\" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).",
+                    "description": "JSON document of provider settings. Must include \"type\" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use\u003cspan pulumi-lang-nodejs=\" providerSecretsWo \" pulumi-lang-dotnet=\" ProviderSecretsWo \" pulumi-lang-go=\" providerSecretsWo \" pulumi-lang-python=\" provider_secrets_wo \" pulumi-lang-yaml=\" providerSecretsWo \" pulumi-lang-java=\" providerSecretsWo \" pulumi-lang-hcl=\" provider_secrets_wo \"\u003e providerSecretsWo \u003c/span\u003eto keep secret keys out of state.",
                     "secret": true
+                },
+                "providerSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over\u003cspan pulumi-lang-nodejs=\" providerConfig \" pulumi-lang-dotnet=\" ProviderConfig \" pulumi-lang-go=\" providerConfig \" pulumi-lang-python=\" provider_config \" pulumi-lang-yaml=\" providerConfig \" pulumi-lang-java=\" providerConfig \" pulumi-lang-hcl=\" provider_config \"\u003e providerConfig \u003c/span\u003ewhen sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.",
+                    "secret": true
+                },
+                "providerSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" providerSecretsWo \" pulumi-lang-dotnet=\" ProviderSecretsWo \" pulumi-lang-go=\" providerSecretsWo \" pulumi-lang-python=\" provider_secrets_wo \" pulumi-lang-yaml=\" providerSecretsWo \" pulumi-lang-java=\" providerSecretsWo \" pulumi-lang-hcl=\" provider_secrets_wo \"\u003e providerSecretsWo \u003c/span\u003eis set."
                 }
             },
             "required": [
@@ -4741,8 +4856,17 @@
                 },
                 "providerConfig": {
                     "type": "string",
-                    "description": "JSON document of provider settings. Must include \"type\" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).",
+                    "description": "JSON document of provider settings. Must include \"type\" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use\u003cspan pulumi-lang-nodejs=\" providerSecretsWo \" pulumi-lang-dotnet=\" ProviderSecretsWo \" pulumi-lang-go=\" providerSecretsWo \" pulumi-lang-python=\" provider_secrets_wo \" pulumi-lang-yaml=\" providerSecretsWo \" pulumi-lang-java=\" providerSecretsWo \" pulumi-lang-hcl=\" provider_secrets_wo \"\u003e providerSecretsWo \u003c/span\u003eto keep secret keys out of state.",
                     "secret": true
+                },
+                "providerSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over\u003cspan pulumi-lang-nodejs=\" providerConfig \" pulumi-lang-dotnet=\" ProviderConfig \" pulumi-lang-go=\" providerConfig \" pulumi-lang-python=\" provider_config \" pulumi-lang-yaml=\" providerConfig \" pulumi-lang-java=\" providerConfig \" pulumi-lang-hcl=\" provider_config \"\u003e providerConfig \u003c/span\u003ewhen sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.",
+                    "secret": true
+                },
+                "providerSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" providerSecretsWo \" pulumi-lang-dotnet=\" ProviderSecretsWo \" pulumi-lang-go=\" providerSecretsWo \" pulumi-lang-python=\" provider_secrets_wo \" pulumi-lang-yaml=\" providerSecretsWo \" pulumi-lang-java=\" providerSecretsWo \" pulumi-lang-hcl=\" provider_secrets_wo \"\u003e providerSecretsWo \u003c/span\u003eis set."
                 }
             },
             "requiredInputs": [
@@ -4758,8 +4882,17 @@
                     },
                     "providerConfig": {
                         "type": "string",
-                        "description": "JSON document of provider settings. Must include \"type\" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX).",
+                        "description": "JSON document of provider settings. Must include \"type\" (e.g. S3, B2, GOOGLE_CLOUD_STORAGE, STORJ_IX). May contain secrets (access keys); use\u003cspan pulumi-lang-nodejs=\" providerSecretsWo \" pulumi-lang-dotnet=\" ProviderSecretsWo \" pulumi-lang-go=\" providerSecretsWo \" pulumi-lang-python=\" provider_secrets_wo \" pulumi-lang-yaml=\" providerSecretsWo \" pulumi-lang-java=\" providerSecretsWo \" pulumi-lang-hcl=\" provider_secrets_wo \"\u003e providerSecretsWo \u003c/span\u003eto keep secret keys out of state.",
                         "secret": true
+                    },
+                    "providerSecretsWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret provider settings (e.g. an S3 access key/secret) merged over\u003cspan pulumi-lang-nodejs=\" providerConfig \" pulumi-lang-dotnet=\" ProviderConfig \" pulumi-lang-go=\" providerConfig \" pulumi-lang-python=\" provider_config \" pulumi-lang-yaml=\" providerConfig \" pulumi-lang-java=\" providerConfig \" pulumi-lang-hcl=\" provider_config \"\u003e providerConfig \u003c/span\u003ewhen sending to TrueNAS. Never stored in state, and not read back on refresh. Requires provider_secrets_wo_version.",
+                        "secret": true
+                    },
+                    "providerSecretsWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for provider_secrets_wo. Bump to re-send a changed write-only secret overlay. Required when\u003cspan pulumi-lang-nodejs=\" providerSecretsWo \" pulumi-lang-dotnet=\" ProviderSecretsWo \" pulumi-lang-go=\" providerSecretsWo \" pulumi-lang-python=\" provider_secrets_wo \" pulumi-lang-yaml=\" providerSecretsWo \" pulumi-lang-java=\" providerSecretsWo \" pulumi-lang-hcl=\" provider_secrets_wo \"\u003e providerSecretsWo \u003c/span\u003eis set."
                     }
                 },
                 "type": "object"
@@ -4806,12 +4939,12 @@
                 },
                 "encryptionPassword": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "encryptionSalt": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSalt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSalt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "excludes": {
@@ -4917,12 +5050,12 @@
                 },
                 "encryptionPassword": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for client-side encryption. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "encryptionSalt": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSalt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSalt for client-side encryption key derivation. Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "excludes": {
@@ -5585,12 +5718,12 @@
                 },
                 "encryptionKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
                     "secret": true
                 },
                 "encryptionPassphrase": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
                     "secret": true
                 },
                 "exec": {
@@ -5753,12 +5886,12 @@
                 },
                 "encryptionKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
                     "secret": true
                 },
                 "encryptionPassphrase": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
                     "secret": true
                 },
                 "exec": {
@@ -7372,7 +7505,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nNew BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no \"password\" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform \u003e= 1.11.\n\nSAFETY: this provider's own committed acceptance tests never set this field — an incorrect password change could lock out legitimate BMC administrative access.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nNew BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no \"password\" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform \u003e= 1.11.\n\nSAFETY: this provider's own committed acceptance tests never set this field — an incorrect password change could lock out legitimate BMC administrative access.",
                     "secret": true
                 },
                 "vlan": {
@@ -7421,7 +7554,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nNew BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no \"password\" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform \u003e= 1.11.\n\nSAFETY: this provider's own committed acceptance tests never set this field — an incorrect password change could lock out legitimate BMC administrative access.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nNew BMC/IPMI password for this channel (8-16 characters, ASCII upper/lower/digits/special per the API's own accepts schema). Write-only: never stored in Terraform state and never read back — probed live, ipmi.lan.query's response objects have no \"password\" key at all, under any name, masked or otherwise. Omit to leave the BMC's current password untouched. Requires Terraform \u003e= 1.11.\n\nSAFETY: this provider's own committed acceptance tests never set this field — an incorrect password change could lock out legitimate BMC administrative access.",
                     "secret": true
                 },
                 "vlan": {
@@ -7492,7 +7625,7 @@
                 },
                 "peersecret": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPeer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPeer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "peeruser": {
@@ -7501,7 +7634,7 @@
                 },
                 "secret": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nCHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nCHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "tag": {
@@ -7527,7 +7660,7 @@
                 },
                 "peersecret": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPeer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPeer secret for mutual CHAP. Must be 12-16 characters. Omit or leave empty to disable mutual CHAP. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "peeruser": {
@@ -7536,7 +7669,7 @@
                 },
                 "secret": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nCHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nCHAP secret (password) for the initiator. Must be 12-16 characters. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "tag": {
@@ -8289,8 +8422,17 @@
             "properties": {
                 "file": {
                     "type": "string",
-                    "description": "Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create \u003e\u003cspan pulumi-lang-nodejs=\" getInstance \" pulumi-lang-dotnet=\" GetInstance \" pulumi-lang-go=\" getInstance \" pulumi-lang-python=\" get_instance \" pulumi-lang-yaml=\" getInstance \" pulumi-lang-java=\" getInstance \" pulumi-lang-hcl=\" get_instance \"\u003e getInstance \u003c/span\u003e\u003e query \u003e update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).",
+                    "description": "Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003e— it IS stored in state and read back on refresh (the API returns it unmasked). Use\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003eto keep the keytab out of state. Exactly one of file or\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003emust be set.",
                     "secret": true
+                },
+                "fileWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003emust be set.",
+                    "secret": true
+                },
+                "fileWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for file_wo. Bump to re-send a changed\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003e(a write-only value is absent from state, so its change cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003eis set."
                 },
                 "name": {
                     "type": "string",
@@ -8298,14 +8440,22 @@
                 }
             },
             "required": [
-                "file",
                 "name"
             ],
             "inputProperties": {
                 "file": {
                     "type": "string",
-                    "description": "Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create \u003e\u003cspan pulumi-lang-nodejs=\" getInstance \" pulumi-lang-dotnet=\" GetInstance \" pulumi-lang-go=\" getInstance \" pulumi-lang-python=\" get_instance \" pulumi-lang-yaml=\" getInstance \" pulumi-lang-java=\" getInstance \" pulumi-lang-hcl=\" get_instance \"\u003e getInstance \u003c/span\u003e\u003e query \u003e update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).",
+                    "description": "Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003e— it IS stored in state and read back on refresh (the API returns it unmasked). Use\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003eto keep the keytab out of state. Exactly one of file or\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003emust be set.",
                     "secret": true
+                },
+                "fileWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003emust be set.",
+                    "secret": true
+                },
+                "fileWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for file_wo. Bump to re-send a changed\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003e(a write-only value is absent from state, so its change cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003eis set."
                 },
                 "name": {
                     "type": "string",
@@ -8313,7 +8463,6 @@
                 }
             },
             "requiredInputs": [
-                "file",
                 "name"
             ],
             "stateInputs": {
@@ -8321,8 +8470,17 @@
                 "properties": {
                     "file": {
                         "type": "string",
-                        "description": "Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output and logs), but — unlike a WriteOnly attribute — it IS stored in Terraform state and IS read back on refresh/import: a live create \u003e\u003cspan pulumi-lang-nodejs=\" getInstance \" pulumi-lang-dotnet=\" GetInstance \" pulumi-lang-go=\" getInstance \" pulumi-lang-python=\" get_instance \" pulumi-lang-yaml=\" getInstance \" pulumi-lang-java=\" getInstance \" pulumi-lang-hcl=\" get_instance \"\u003e getInstance \u003c/span\u003e\u003e query \u003e update round trip (using a real keytab exported from a Samba AD domain controller via `samba-tool domain exportkeytab`) showed kerberos.keytab.query/get_instance returning this value byte-for-byte intact, never redacted or omitted, so the normal Sensitive+Computed-free modeling applies rather than the WriteOnly pattern used for genuinely one-way secrets (e.g. truenas_user's password).",
+                        "description": "Base64-encoded Kerberos keytab data to merge into the system keytab. Passed through as-is — do not base64-encode it again. Marked Sensitive (kept out of plan/apply output), but — unlike\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003e— it IS stored in state and read back on refresh (the API returns it unmasked). Use\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003eto keep the keytab out of state. Exactly one of file or\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003emust be set.",
                         "secret": true
+                    },
+                    "fileWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to file: the base64-encoded keytab read from configuration and never stored in state, and not read back on refresh. Requires file_wo_version. Exactly one of file or\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003emust be set.",
+                        "secret": true
+                    },
+                    "fileWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for file_wo. Bump to re-send a changed\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003e(a write-only value is absent from state, so its change cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" fileWo \" pulumi-lang-dotnet=\" FileWo \" pulumi-lang-go=\" fileWo \" pulumi-lang-python=\" file_wo \" pulumi-lang-yaml=\" fileWo \" pulumi-lang-java=\" fileWo \" pulumi-lang-hcl=\" file_wo \"\u003e fileWo \u003c/span\u003eis set."
                     },
                     "name": {
                         "type": "string",
@@ -8717,7 +8875,7 @@
                 },
                 "pass": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "port": {
@@ -8761,7 +8919,7 @@
                 },
                 "pass": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSMTP authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "port": {
@@ -9899,7 +10057,7 @@
                 },
                 "dhchapCtrlKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "dhchapDhgroup": {
@@ -9912,7 +10070,7 @@
                 },
                 "dhchapKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "hostnqn": {
@@ -9933,7 +10091,7 @@
                 },
                 "dhchapCtrlKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP controller key used for bidirectional authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "dhchapDhgroup": {
@@ -9946,7 +10104,7 @@
                 },
                 "dhchapKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nDH-CHAP key used by this host to authenticate to a subsystem. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "hostnqn": {
@@ -10920,7 +11078,7 @@
                 },
                 "encryptionKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nEncryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nEncryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "encryptionKeyFormat": {
@@ -11167,7 +11325,7 @@
                 },
                 "encryptionKey": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nEncryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nEncryption key (hex string, or passphrase per encryption_key_format). Write-only: never stored in Terraform state or read back. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "encryptionKeyFormat": {
@@ -12969,8 +13127,17 @@
             "properties": {
                 "community": {
                     "type": "string",
-                    "description": "SNMP community string.",
+                    "description": "SNMP community string. Stored in state (read back unmasked from TrueNAS). Use\u003cspan pulumi-lang-nodejs=\" communityWo \" pulumi-lang-dotnet=\" CommunityWo \" pulumi-lang-go=\" communityWo \" pulumi-lang-python=\" community_wo \" pulumi-lang-yaml=\" communityWo \" pulumi-lang-java=\" communityWo \" pulumi-lang-hcl=\" community_wo \"\u003e communityWo \u003c/span\u003eto keep it out of state.",
                     "secret": true
+                },
+                "communityWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.",
+                    "secret": true
+                },
+                "communityWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" communityWo \" pulumi-lang-dotnet=\" CommunityWo \" pulumi-lang-go=\" communityWo \" pulumi-lang-python=\" community_wo \" pulumi-lang-yaml=\" communityWo \" pulumi-lang-java=\" communityWo \" pulumi-lang-hcl=\" community_wo \"\u003e communityWo \u003c/span\u003eis set."
                 },
                 "contact": {
                     "type": "string",
@@ -13002,12 +13169,12 @@
                 },
                 "v3Password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "v3Privpassphrase": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "v3Privproto": {
@@ -13039,8 +13206,17 @@
             "inputProperties": {
                 "community": {
                     "type": "string",
-                    "description": "SNMP community string.",
+                    "description": "SNMP community string. Stored in state (read back unmasked from TrueNAS). Use\u003cspan pulumi-lang-nodejs=\" communityWo \" pulumi-lang-dotnet=\" CommunityWo \" pulumi-lang-go=\" communityWo \" pulumi-lang-python=\" community_wo \" pulumi-lang-yaml=\" communityWo \" pulumi-lang-java=\" communityWo \" pulumi-lang-hcl=\" community_wo \"\u003e communityWo \u003c/span\u003eto keep it out of state.",
                     "secret": true
+                },
+                "communityWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.",
+                    "secret": true
+                },
+                "communityWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" communityWo \" pulumi-lang-dotnet=\" CommunityWo \" pulumi-lang-go=\" communityWo \" pulumi-lang-python=\" community_wo \" pulumi-lang-yaml=\" communityWo \" pulumi-lang-java=\" communityWo \" pulumi-lang-hcl=\" community_wo \"\u003e communityWo \u003c/span\u003eis set."
                 },
                 "contact": {
                     "type": "string",
@@ -13072,12 +13248,12 @@
                 },
                 "v3Password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 authentication password (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "v3Privpassphrase": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nSNMPv3 privacy passphrase (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "v3Privproto": {
@@ -13098,8 +13274,17 @@
                 "properties": {
                     "community": {
                         "type": "string",
-                        "description": "SNMP community string.",
+                        "description": "SNMP community string. Stored in state (read back unmasked from TrueNAS). Use\u003cspan pulumi-lang-nodejs=\" communityWo \" pulumi-lang-dotnet=\" CommunityWo \" pulumi-lang-go=\" communityWo \" pulumi-lang-python=\" community_wo \" pulumi-lang-yaml=\" communityWo \" pulumi-lang-java=\" communityWo \" pulumi-lang-hcl=\" community_wo \"\u003e communityWo \u003c/span\u003eto keep it out of state.",
                         "secret": true
+                    },
+                    "communityWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to community: the SNMP community string read from configuration and never stored in state, and not read back on refresh. Requires community_wo_version; conflicts with community.",
+                        "secret": true
+                    },
+                    "communityWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for community_wo. Bump this integer to re-send a changed write-only community string (a write-only value is absent from state, so its rotation cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" communityWo \" pulumi-lang-dotnet=\" CommunityWo \" pulumi-lang-go=\" communityWo \" pulumi-lang-python=\" community_wo \" pulumi-lang-yaml=\" communityWo \" pulumi-lang-java=\" communityWo \" pulumi-lang-hcl=\" community_wo \"\u003e communityWo \u003c/span\u003eis set."
                     },
                     "contact": {
                         "type": "string",
@@ -13417,7 +13602,8 @@
                 },
                 "anonstatsToken": {
                     "type": "string",
-                    "description": "Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update."
+                    "description": "Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update. Marked Sensitive so it is not shown in plan output.",
+                    "secret": true
                 },
                 "autotune": {
                     "type": "boolean",
@@ -13480,7 +13666,7 @@
                 },
                 "sedPasswd": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nGlobal password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nGlobal password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "sedUser": {
@@ -13614,7 +13800,7 @@
                 },
                 "sedPasswd": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nGlobal password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nGlobal password for Self-Encrypting Drives (SED) (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "sedUser": {
@@ -13670,7 +13856,8 @@
                     },
                     "anonstatsToken": {
                         "type": "string",
-                        "description": "Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update."
+                        "description": "Token used when submitting anonymous usage statistics. Server-computed; never sent to system.advanced.update. Marked Sensitive so it is not shown in plan output.",
+                        "secret": true
                     },
                     "autotune": {
                         "type": "boolean",
@@ -14303,6 +14490,15 @@
                     "description": "16-character API key generated by iX Portal, used to authenticate with TrueCommand services. Null when not configured. Sensitive but NOT write-only: read back verbatim from truecommand.config (decisive live probe — see model.go's doc comment), unlike a genuinely masked credential.",
                     "secret": true
                 },
+                "apiKeyWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to api_key: the 16-character TrueCommand API key read from configuration and never stored in state, and not read back on refresh. Requires api_key_wo_version; conflicts with api_key.",
+                    "secret": true
+                },
+                "apiKeyWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for api_key_wo. Bump to re-send a rotated\u003cspan pulumi-lang-nodejs=\" apiKeyWo \" pulumi-lang-dotnet=\" ApiKeyWo \" pulumi-lang-go=\" apiKeyWo \" pulumi-lang-python=\" api_key_wo \" pulumi-lang-yaml=\" apiKeyWo \" pulumi-lang-java=\" apiKeyWo \" pulumi-lang-hcl=\" api_key_wo \"\u003e apiKeyWo \u003c/span\u003e(a write-only value is absent from state, so its change cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" apiKeyWo \" pulumi-lang-dotnet=\" ApiKeyWo \" pulumi-lang-go=\" apiKeyWo \" pulumi-lang-python=\" api_key_wo \" pulumi-lang-yaml=\" apiKeyWo \" pulumi-lang-java=\" apiKeyWo \" pulumi-lang-hcl=\" api_key_wo \"\u003e apiKeyWo \u003c/span\u003eis set."
+                },
                 "enabled": {
                     "type": "boolean",
                     "description": "Whether this system is enabled to connect to a TrueCommand instance. SAFETY: setting this to true starts a real connection attempt to a TrueCommand instance using \u003cspan pulumi-lang-nodejs=\"\"apiKey\"\" pulumi-lang-dotnet=\"\"ApiKey\"\" pulumi-lang-go=\"\"apiKey\"\" pulumi-lang-python=\"\"api_key\"\" pulumi-lang-yaml=\"\"apiKey\"\" pulumi-lang-java=\"\"apiKey\"\" pulumi-lang-hcl=\"\"api_key\"\"\u003e\"apiKey\"\u003c/span\u003e (see the resource description above) — a real, external side effect. This provider's own tests never set this to true. Leave unconfigured (the default) to manage this resource purely for its read-only status fields, or set explicitly to false to ensure TrueCommand stays disabled. Change deliberately."
@@ -14338,6 +14534,15 @@
                     "description": "16-character API key generated by iX Portal, used to authenticate with TrueCommand services. Null when not configured. Sensitive but NOT write-only: read back verbatim from truecommand.config (decisive live probe — see model.go's doc comment), unlike a genuinely masked credential.",
                     "secret": true
                 },
+                "apiKeyWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to api_key: the 16-character TrueCommand API key read from configuration and never stored in state, and not read back on refresh. Requires api_key_wo_version; conflicts with api_key.",
+                    "secret": true
+                },
+                "apiKeyWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for api_key_wo. Bump to re-send a rotated\u003cspan pulumi-lang-nodejs=\" apiKeyWo \" pulumi-lang-dotnet=\" ApiKeyWo \" pulumi-lang-go=\" apiKeyWo \" pulumi-lang-python=\" api_key_wo \" pulumi-lang-yaml=\" apiKeyWo \" pulumi-lang-java=\" apiKeyWo \" pulumi-lang-hcl=\" api_key_wo \"\u003e apiKeyWo \u003c/span\u003e(a write-only value is absent from state, so its change cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" apiKeyWo \" pulumi-lang-dotnet=\" ApiKeyWo \" pulumi-lang-go=\" apiKeyWo \" pulumi-lang-python=\" api_key_wo \" pulumi-lang-yaml=\" apiKeyWo \" pulumi-lang-java=\" apiKeyWo \" pulumi-lang-hcl=\" api_key_wo \"\u003e apiKeyWo \u003c/span\u003eis set."
+                },
                 "enabled": {
                     "type": "boolean",
                     "description": "Whether this system is enabled to connect to a TrueCommand instance. SAFETY: setting this to true starts a real connection attempt to a TrueCommand instance using \u003cspan pulumi-lang-nodejs=\"\"apiKey\"\" pulumi-lang-dotnet=\"\"ApiKey\"\" pulumi-lang-go=\"\"apiKey\"\" pulumi-lang-python=\"\"api_key\"\" pulumi-lang-yaml=\"\"apiKey\"\" pulumi-lang-java=\"\"apiKey\"\" pulumi-lang-hcl=\"\"api_key\"\"\u003e\"apiKey\"\u003c/span\u003e (see the resource description above) — a real, external side effect. This provider's own tests never set this to true. Leave unconfigured (the default) to manage this resource purely for its read-only status fields, or set explicitly to false to ensure TrueCommand stays disabled. Change deliberately."
@@ -14350,6 +14555,15 @@
                         "type": "string",
                         "description": "16-character API key generated by iX Portal, used to authenticate with TrueCommand services. Null when not configured. Sensitive but NOT write-only: read back verbatim from truecommand.config (decisive live probe — see model.go's doc comment), unlike a genuinely masked credential.",
                         "secret": true
+                    },
+                    "apiKeyWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only alternative to api_key: the 16-character TrueCommand API key read from configuration and never stored in state, and not read back on refresh. Requires api_key_wo_version; conflicts with api_key.",
+                        "secret": true
+                    },
+                    "apiKeyWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for api_key_wo. Bump to re-send a rotated\u003cspan pulumi-lang-nodejs=\" apiKeyWo \" pulumi-lang-dotnet=\" ApiKeyWo \" pulumi-lang-go=\" apiKeyWo \" pulumi-lang-python=\" api_key_wo \" pulumi-lang-yaml=\" apiKeyWo \" pulumi-lang-java=\" apiKeyWo \" pulumi-lang-hcl=\" api_key_wo \"\u003e apiKeyWo \u003c/span\u003e(a write-only value is absent from state, so its change cannot be detected automatically). Required when\u003cspan pulumi-lang-nodejs=\" apiKeyWo \" pulumi-lang-dotnet=\" ApiKeyWo \" pulumi-lang-go=\" apiKeyWo \" pulumi-lang-python=\" api_key_wo \" pulumi-lang-yaml=\" apiKeyWo \" pulumi-lang-java=\" apiKeyWo \" pulumi-lang-hcl=\" api_key_wo \"\u003e apiKeyWo \u003c/span\u003eis set."
                     },
                     "enabled": {
                         "type": "boolean",
@@ -14573,7 +14787,7 @@
                 },
                 "monpwd": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "monuser": {
@@ -14673,7 +14887,7 @@
                 },
                 "monpwd": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword used to monitor the UPS (never read back from TrueNAS). Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "monuser": {
@@ -14867,7 +15081,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nUser password. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nUser password. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "passwordDisabled": {
@@ -14976,7 +15190,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nUser password. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nUser password. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11.",
                     "secret": true
                 },
                 "passwordDisabled": {
@@ -15525,6 +15739,15 @@
                     "description": "JSON document of device attributes. Must include \"dtype\": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.",
                     "secret": true
                 },
+                "attributesSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                    "secret": true
+                },
+                "attributesSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
+                },
                 "order": {
                     "type": "integer",
                     "description": "Boot/attach order."
@@ -15544,6 +15767,15 @@
                     "type": "string",
                     "description": "JSON document of device attributes. Must include \"dtype\": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.",
                     "secret": true
+                },
+                "attributesSecretsWo": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                    "secret": true
+                },
+                "attributesSecretsWoVersion": {
+                    "type": "integer",
+                    "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                 },
                 "order": {
                     "type": "integer",
@@ -15565,6 +15797,15 @@
                         "type": "string",
                         "description": "JSON document of device attributes. Must include \"dtype\": DISK, NIC, CDROM, DISPLAY, PCI, RAW, or USB.",
                         "secret": true
+                    },
+                    "attributesSecretsWo": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nWrite-only JSON object of secret attributes (e.g. a DISPLAY device's password) merged over attributes when sending to TrueNAS. Never stored in state, and not read back on refresh. Requires attributes_secrets_wo_version.",
+                        "secret": true
+                    },
+                    "attributesSecretsWoVersion": {
+                        "type": "integer",
+                        "description": "Version trigger for attributes_secrets_wo. Bump to re-send a changed write-only secret overlay (a write-only value is absent from state). Required when\u003cspan pulumi-lang-nodejs=\" attributesSecretsWo \" pulumi-lang-dotnet=\" AttributesSecretsWo \" pulumi-lang-go=\" attributesSecretsWo \" pulumi-lang-python=\" attributes_secrets_wo \" pulumi-lang-yaml=\" attributesSecretsWo \" pulumi-lang-java=\" attributesSecretsWo \" pulumi-lang-hcl=\" attributes_secrets_wo \"\u003e attributesSecretsWo \u003c/span\u003eis set."
                     },
                     "order": {
                         "type": "integer",
@@ -15597,7 +15838,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).",
                     "secret": true
                 },
                 "state": {
@@ -15632,7 +15873,7 @@
                 },
                 "password": {
                     "type": "string",
-                    "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassword for VMware host authentication. Write-only: never stored in Terraform state. Requires Terraform \u003e= 1.11. Validated against the real vCenter/ESXi endpoint at apply time (see the resource-level description).",
                     "secret": true
                 },
                 "username": {

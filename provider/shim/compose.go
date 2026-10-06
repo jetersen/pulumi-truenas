@@ -14,12 +14,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
-	"github.com/truenas/terraform-provider-truenas/internal/client"
+	"gopkg.in/yaml.v3"
 )
 
 // Keep deployment, identity, and lifecycle behavior in the upstream resource.
-// Only adapt the structured Compose input and add read-back via app.config.
-// Track upstream read-back support: https://github.com/truenas/terraform-provider-truenas/issues/34
+// Translate structured Compose to and from its upstream string representation.
+// Upstream owns read-back, including projection when a write-only overlay is used.
 type appDelegate interface {
 	resource.Resource
 	resource.ResourceWithConfigure
@@ -27,10 +27,7 @@ type appDelegate interface {
 	resource.ResourceWithIdentity
 }
 
-type composeApp struct {
-	appDelegate
-	readConfig func(context.Context, string) (json.RawMessage, error)
-}
+type composeApp struct{ appDelegate }
 
 func (r *composeApp) upstreamSchema(ctx context.Context) schema.Schema {
 	var resp resource.SchemaResponse
@@ -51,15 +48,6 @@ func (r *composeApp) Schema(ctx context.Context, req resource.SchemaRequest, res
 	a := resp.Schema.Attributes["custom_compose_config_string"].(schema.StringAttribute)
 	a.Description = "Docker Compose YAML for custom apps. Refreshed from app.config; the entire document is secret. Use compose for field-level diffs."
 	resp.Schema.Attributes["custom_compose_config_string"] = a
-}
-
-func (r *composeApp) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
-	r.appDelegate.Configure(ctx, req, resp)
-	if c, ok := req.ProviderData.(*client.Client); ok {
-		r.readConfig = func(ctx context.Context, name string) (json.RawMessage, error) {
-			return c.CallRead(ctx, "app.config", name)
-		}
-	}
 }
 
 // translate removes adapter-only attributes before passing values to the
@@ -195,47 +183,49 @@ func (r *composeApp) Read(ctx context.Context, req resource.ReadRequest, resp *r
 	resp.State = req.State
 	r.appDelegate.Read(ctx, req, resp)
 	resp.Diagnostics = protectDiagnostics(resp.Diagnostics)
+	upstreamState := resp.State
 	resp.State = r.extend(ctx, resp.State, original)
 	if resp.Diagnostics.HasError() || resp.State.Raw.IsNull() {
 		return
 	}
 	var attrs map[string]tftypes.Value
 	_ = resp.State.Raw.As(&attrs)
-	var custom bool
-	_ = attrs["custom_app"].As(&custom)
-	if !custom {
+	if attrs["compose"].IsNull() {
+		// Imports retain the secret string. The bridge cannot extract arbitrary
+		// nested dynamic objects during import; users can switch to compose later.
 		return
 	}
-	var name string
-	_ = attrs["name"].As(&name)
-	if r.readConfig == nil {
-		resp.Diagnostics.AddError("Compose read-back unavailable", "The TrueNAS client was not configured.")
+	var updated map[string]tftypes.Value
+	if err := upstreamState.Raw.As(&updated); err != nil {
+		adapterError(&resp.Diagnostics)
 		return
 	}
-	b, err := r.readConfig(ctx, name)
-	if err != nil {
-		resp.Diagnostics.AddError("Compose read-back failed", "Could not read app.config. Refresh cannot verify the Compose configuration; API details are omitted to protect secrets.")
+	var serialized string
+	if err := updated["custom_compose_config_string"].As(&serialized); err != nil {
+		adapterError(&resp.Diagnostics)
 		return
 	}
 	var document map[string]any
-	decoder := json.NewDecoder(bytes.NewReader(b))
-	decoder.UseNumber()
-	err = decoder.Decode(&document)
-	_, servicesOK := document["services"].(map[string]any)
-	if err != nil || document == nil || !servicesOK {
-		resp.Diagnostics.AddError("Invalid Compose read-back", "app.config did not return a Compose object with services. The previous state has been retained.")
+	if err := yaml.Unmarshal([]byte(serialized), &document); err != nil {
+		adapterError(&resp.Diagnostics)
 		return
 	}
-	// Imports use the legacy secret string until the program explicitly selects
-	// compose. The bridge cannot currently extract schema-free dynamic objects
-	// during import (nested objects cause extractSchemaInputs to panic).
-	if !attrs["compose"].IsNull() {
-		attrs["compose"] = jsonToValue(document)
-		attrs["custom_compose_config_string"] = tftypes.NewValue(tftypes.String, nil)
-	} else {
-		b, _ = json.Marshal(document)
-		attrs["custom_compose_config_string"] = tftypes.NewValue(tftypes.String, string(b))
+	if _, ok := document["services"].(map[string]any); !ok {
+		adapterError(&resp.Diagnostics)
+		return
 	}
+	b, err := json.Marshal(document)
+	if err != nil {
+		adapterError(&resp.Diagnostics)
+		return
+	}
+	decoder := json.NewDecoder(bytes.NewReader(b))
+	decoder.UseNumber()
+	if err := decoder.Decode(&document); err != nil {
+		adapterError(&resp.Diagnostics)
+		return
+	}
+	attrs["compose"] = jsonToValue(document)
 	resp.State.Raw = tftypes.NewValue(resp.State.Schema.Type().TerraformType(ctx), attrs)
 }
 
