@@ -17,7 +17,7 @@ type Dataset struct {
 
 	// ACL inheritance mode: PASSTHROUGH, RESTRICTED, or DISCARD. Null (unset) inherits from the parent.
 	Aclmode pulumi.StringOutput `pulumi:"aclmode"`
-	// ACL type: posix, nfsv4, or off. Case-insensitive.
+	// ACL type: posix, nfsv4, off, or inherit. Case-insensitive.
 	Acltype pulumi.StringOutput `pulumi:"acltype"`
 	// Update access time on read: ON or OFF. Null inherits.
 	Atime pulumi.StringOutput `pulumi:"atime"`
@@ -25,7 +25,7 @@ type Dataset struct {
 	Checksum pulumi.StringOutput `pulumi:"checksum"`
 	// Human-readable description stored as org.freenas:description.
 	Comments pulumi.StringOutput `pulumi:"comments"`
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression pulumi.StringOutput `pulumi:"compression"`
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies pulumi.IntOutput `pulumi:"copies"`
@@ -137,7 +137,7 @@ func GetDataset(ctx *pulumi.Context,
 type datasetState struct {
 	// ACL inheritance mode: PASSTHROUGH, RESTRICTED, or DISCARD. Null (unset) inherits from the parent.
 	Aclmode *string `pulumi:"aclmode"`
-	// ACL type: posix, nfsv4, or off. Case-insensitive.
+	// ACL type: posix, nfsv4, off, or inherit. Case-insensitive.
 	Acltype *string `pulumi:"acltype"`
 	// Update access time on read: ON or OFF. Null inherits.
 	Atime *string `pulumi:"atime"`
@@ -145,7 +145,7 @@ type datasetState struct {
 	Checksum *string `pulumi:"checksum"`
 	// Human-readable description stored as org.freenas:description.
 	Comments *string `pulumi:"comments"`
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression *string `pulumi:"compression"`
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies *int `pulumi:"copies"`
@@ -210,7 +210,7 @@ type datasetState struct {
 type DatasetState struct {
 	// ACL inheritance mode: PASSTHROUGH, RESTRICTED, or DISCARD. Null (unset) inherits from the parent.
 	Aclmode pulumi.StringPtrInput
-	// ACL type: posix, nfsv4, or off. Case-insensitive.
+	// ACL type: posix, nfsv4, off, or inherit. Case-insensitive.
 	Acltype pulumi.StringPtrInput
 	// Update access time on read: ON or OFF. Null inherits.
 	Atime pulumi.StringPtrInput
@@ -218,7 +218,7 @@ type DatasetState struct {
 	Checksum pulumi.StringPtrInput
 	// Human-readable description stored as org.freenas:description.
 	Comments pulumi.StringPtrInput
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression pulumi.StringPtrInput
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies pulumi.IntPtrInput
@@ -287,7 +287,7 @@ func (DatasetState) ElementType() reflect.Type {
 type datasetArgs struct {
 	// ACL inheritance mode: PASSTHROUGH, RESTRICTED, or DISCARD. Null (unset) inherits from the parent.
 	Aclmode *string `pulumi:"aclmode"`
-	// ACL type: posix, nfsv4, or off. Case-insensitive.
+	// ACL type: posix, nfsv4, off, or inherit. Case-insensitive.
 	Acltype *string `pulumi:"acltype"`
 	// Update access time on read: ON or OFF. Null inherits.
 	Atime *string `pulumi:"atime"`
@@ -295,7 +295,7 @@ type datasetArgs struct {
 	Checksum *string `pulumi:"checksum"`
 	// Human-readable description stored as org.freenas:description.
 	Comments *string `pulumi:"comments"`
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression *string `pulumi:"compression"`
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies *int `pulumi:"copies"`
@@ -353,7 +353,7 @@ type datasetArgs struct {
 type DatasetArgs struct {
 	// ACL inheritance mode: PASSTHROUGH, RESTRICTED, or DISCARD. Null (unset) inherits from the parent.
 	Aclmode pulumi.StringPtrInput
-	// ACL type: posix, nfsv4, or off. Case-insensitive.
+	// ACL type: posix, nfsv4, off, or inherit. Case-insensitive.
 	Acltype pulumi.StringPtrInput
 	// Update access time on read: ON or OFF. Null inherits.
 	Atime pulumi.StringPtrInput
@@ -361,7 +361,7 @@ type DatasetArgs struct {
 	Checksum pulumi.StringPtrInput
 	// Human-readable description stored as org.freenas:description.
 	Comments pulumi.StringPtrInput
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression pulumi.StringPtrInput
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies pulumi.IntPtrInput
@@ -507,7 +507,7 @@ func (o DatasetOutput) Aclmode() pulumi.StringOutput {
 	return o.ApplyT(func(v *Dataset) pulumi.StringOutput { return v.Aclmode }).(pulumi.StringOutput)
 }
 
-// ACL type: posix, nfsv4, or off. Case-insensitive.
+// ACL type: posix, nfsv4, off, or inherit. Case-insensitive.
 func (o DatasetOutput) Acltype() pulumi.StringOutput {
 	return o.ApplyT(func(v *Dataset) pulumi.StringOutput { return v.Acltype }).(pulumi.StringOutput)
 }
@@ -527,7 +527,7 @@ func (o DatasetOutput) Comments() pulumi.StringOutput {
 	return o.ApplyT(func(v *Dataset) pulumi.StringOutput { return v.Comments }).(pulumi.StringOutput)
 }
 
-// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 func (o DatasetOutput) Compression() pulumi.StringOutput {
 	return o.ApplyT(func(v *Dataset) pulumi.StringOutput { return v.Compression }).(pulumi.StringOutput)
 }

@@ -28,23 +28,31 @@ type LookupZvolArgs struct {
 
 // A collection of values returned by getZvol.
 type LookupZvolResult struct {
-	Checksum       string `pulumi:"checksum"`
-	Comments       string `pulumi:"comments"`
-	Compression    string `pulumi:"compression"`
-	Copies         int    `pulumi:"copies"`
-	Dedup          string `pulumi:"dedup"`
-	Encrypted      bool   `pulumi:"encrypted"`
-	Id             string `pulumi:"id"`
-	Name           string `pulumi:"name"`
-	Pool           string `pulumi:"pool"`
-	Readonly       string `pulumi:"readonly"`
-	Refreservation int    `pulumi:"refreservation"`
-	Reservation    int    `pulumi:"reservation"`
-	Snapdev        string `pulumi:"snapdev"`
-	Sparse         bool   `pulumi:"sparse"`
-	Sync           string `pulumi:"sync"`
-	Volblocksize   int    `pulumi:"volblocksize"`
-	Volsize        int    `pulumi:"volsize"`
+	Checksum              string `pulumi:"checksum"`
+	Comments              string `pulumi:"comments"`
+	Compression           string `pulumi:"compression"`
+	Copies                int    `pulumi:"copies"`
+	Dedup                 string `pulumi:"dedup"`
+	Encrypted             bool   `pulumi:"encrypted"`
+	Encryption            bool   `pulumi:"encryption"`
+	EncryptionAlgorithm   string `pulumi:"encryptionAlgorithm"`
+	EncryptionGenerateKey bool   `pulumi:"encryptionGenerateKey"`
+	EncryptionKey         string `pulumi:"encryptionKey"`
+	EncryptionPassphrase  string `pulumi:"encryptionPassphrase"`
+	Id                    string `pulumi:"id"`
+	InheritEncryption     bool   `pulumi:"inheritEncryption"`
+	KeyFormat             string `pulumi:"keyFormat"`
+	Locked                bool   `pulumi:"locked"`
+	Name                  string `pulumi:"name"`
+	Pool                  string `pulumi:"pool"`
+	Readonly              string `pulumi:"readonly"`
+	Refreservation        int    `pulumi:"refreservation"`
+	Reservation           int    `pulumi:"reservation"`
+	Snapdev               string `pulumi:"snapdev"`
+	Sparse                bool   `pulumi:"sparse"`
+	Sync                  string `pulumi:"sync"`
+	Volblocksize          int    `pulumi:"volblocksize"`
+	Volsize               int    `pulumi:"volsize"`
 }
 
 func LookupZvolOutput(ctx *pulumi.Context, args LookupZvolOutputArgs, opts ...pulumi.InvokeOption) LookupZvolResultOutput {
@@ -100,8 +108,40 @@ func (o LookupZvolResultOutput) Encrypted() pulumi.BoolOutput {
 	return o.ApplyT(func(v LookupZvolResult) bool { return v.Encrypted }).(pulumi.BoolOutput)
 }
 
+func (o LookupZvolResultOutput) Encryption() pulumi.BoolOutput {
+	return o.ApplyT(func(v LookupZvolResult) bool { return v.Encryption }).(pulumi.BoolOutput)
+}
+
+func (o LookupZvolResultOutput) EncryptionAlgorithm() pulumi.StringOutput {
+	return o.ApplyT(func(v LookupZvolResult) string { return v.EncryptionAlgorithm }).(pulumi.StringOutput)
+}
+
+func (o LookupZvolResultOutput) EncryptionGenerateKey() pulumi.BoolOutput {
+	return o.ApplyT(func(v LookupZvolResult) bool { return v.EncryptionGenerateKey }).(pulumi.BoolOutput)
+}
+
+func (o LookupZvolResultOutput) EncryptionKey() pulumi.StringOutput {
+	return o.ApplyT(func(v LookupZvolResult) string { return v.EncryptionKey }).(pulumi.StringOutput)
+}
+
+func (o LookupZvolResultOutput) EncryptionPassphrase() pulumi.StringOutput {
+	return o.ApplyT(func(v LookupZvolResult) string { return v.EncryptionPassphrase }).(pulumi.StringOutput)
+}
+
 func (o LookupZvolResultOutput) Id() pulumi.StringOutput {
 	return o.ApplyT(func(v LookupZvolResult) string { return v.Id }).(pulumi.StringOutput)
+}
+
+func (o LookupZvolResultOutput) InheritEncryption() pulumi.BoolOutput {
+	return o.ApplyT(func(v LookupZvolResult) bool { return v.InheritEncryption }).(pulumi.BoolOutput)
+}
+
+func (o LookupZvolResultOutput) KeyFormat() pulumi.StringOutput {
+	return o.ApplyT(func(v LookupZvolResult) string { return v.KeyFormat }).(pulumi.StringOutput)
+}
+
+func (o LookupZvolResultOutput) Locked() pulumi.BoolOutput {
+	return o.ApplyT(func(v LookupZvolResult) bool { return v.Locked }).(pulumi.BoolOutput)
 }
 
 func (o LookupZvolResultOutput) Name() pulumi.StringOutput {

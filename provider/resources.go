@@ -65,6 +65,9 @@ func Provider() tfbridge.ProviderInfo {
 				mapping.Fields = map[string]*tfbridge.SchemaInfo{}
 			}
 			mapping.Fields["id"] = &tfbridge.SchemaInfo{Type: "string"}
+			// Type conversion alone does not select the resource identity. The
+			// Framework bridge otherwise installs its "missing ID" fallback.
+			mapping.ComputeID = tfbridge.DelegateIDField("id", info.Name, info.Repository)
 		}
 		return true
 	})

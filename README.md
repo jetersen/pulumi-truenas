@@ -99,7 +99,7 @@ explicit path, so configure paths before reading externally managed credentials.
 
 Read failures stop refresh rather than silently retaining stale configuration.
 Avoid verbose provider/debug logs when working with secrets. Read-back and drift
-reconciliation use the upstream v1.5.7 implementation. The adapter translates its
+reconciliation use the upstream v1.5.11 implementation. The adapter translates its
 result into structured Compose without fetching the configuration again.
 
 Import an existing app by name first. Imports initially populate the fully secret

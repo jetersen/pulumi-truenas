@@ -5674,7 +5674,7 @@
                 },
                 "acltype": {
                     "type": "string",
-                    "description": "ACL type: posix, nfsv4, or off. Case-insensitive."
+                    "description": "ACL type: posix, nfsv4, off, or inherit. Case-insensitive."
                 },
                 "atime": {
                     "type": "string",
@@ -5690,7 +5690,7 @@
                 },
                 "compression": {
                     "type": "string",
-                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, etc."
+                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc."
                 },
                 "copies": {
                     "type": "integer",
@@ -5846,7 +5846,7 @@
                 },
                 "acltype": {
                     "type": "string",
-                    "description": "ACL type: posix, nfsv4, or off. Case-insensitive."
+                    "description": "ACL type: posix, nfsv4, off, or inherit. Case-insensitive."
                 },
                 "atime": {
                     "type": "string",
@@ -5862,7 +5862,7 @@
                 },
                 "compression": {
                     "type": "string",
-                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, etc."
+                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc."
                 },
                 "copies": {
                     "type": "integer",
@@ -5967,7 +5967,7 @@
                     },
                     "acltype": {
                         "type": "string",
-                        "description": "ACL type: posix, nfsv4, or off. Case-insensitive."
+                        "description": "ACL type: posix, nfsv4, off, or inherit. Case-insensitive."
                     },
                     "atime": {
                         "type": "string",
@@ -5983,7 +5983,7 @@
                     },
                     "compression": {
                         "type": "string",
-                        "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, etc."
+                        "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc."
                     },
                     "copies": {
                         "type": "integer",
@@ -16122,7 +16122,7 @@
                 },
                 "compression": {
                     "type": "string",
-                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, etc."
+                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc."
                 },
                 "copies": {
                     "type": "integer",
@@ -16130,11 +16130,45 @@
                 },
                 "dedup": {
                     "type": "string",
-                    "description": "Deduplication: off, on, or verify."
+                    "description": "Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent."
                 },
                 "encrypted": {
                     "type": "boolean",
                     "description": "Whether the zvol is encrypted."
+                },
+                "encryption": {
+                    "type": "boolean",
+                    "description": "Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with\u003cspan pulumi-lang-nodejs=\" inheritEncryption \" pulumi-lang-dotnet=\" InheritEncryption \" pulumi-lang-go=\" inheritEncryption \" pulumi-lang-python=\" inherit_encryption \" pulumi-lang-yaml=\" inheritEncryption \" pulumi-lang-java=\" inheritEncryption \" pulumi-lang-hcl=\" inherit_encryption \"\u003e inheritEncryption \u003c/span\u003e= true (the parent determines encryption)."
+                },
+                "encryptionAlgorithm": {
+                    "type": "string",
+                    "description": "Encryption algorithm, e.g. \"AES-256-GCM\". Create-only."
+                },
+                "encryptionGenerateKey": {
+                    "type": "boolean",
+                    "description": "Automatically generate the encryption key (key-based encryption). Create-only."
+                },
+                "encryptionKey": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
+                    "secret": true
+                },
+                "encryptionPassphrase": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
+                    "secret": true
+                },
+                "inheritEncryption": {
+                    "type": "boolean",
+                    "description": "Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset."
+                },
+                "keyFormat": {
+                    "type": "string",
+                    "description": "Encryption key format: PASSPHRASE or HEX (null when not encrypted)."
+                },
+                "locked": {
+                    "type": "boolean",
+                    "description": "Whether the encrypted zvol is currently locked."
                 },
                 "name": {
                     "type": "string",
@@ -16166,7 +16200,7 @@
                 },
                 "sync": {
                     "type": "string",
-                    "description": "Sync setting: standard, always, or disabled."
+                    "description": "Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent."
                 },
                 "volblocksize": {
                     "type": "integer",
@@ -16184,6 +16218,11 @@
                 "copies",
                 "dedup",
                 "encrypted",
+                "encryption",
+                "encryptionAlgorithm",
+                "inheritEncryption",
+                "keyFormat",
+                "locked",
                 "name",
                 "pool",
                 "readonly",
@@ -16205,7 +16244,7 @@
                 },
                 "compression": {
                     "type": "string",
-                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, etc."
+                    "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc."
                 },
                 "copies": {
                     "type": "integer",
@@ -16213,7 +16252,33 @@
                 },
                 "dedup": {
                     "type": "string",
-                    "description": "Deduplication: off, on, or verify."
+                    "description": "Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent."
+                },
+                "encryption": {
+                    "type": "boolean",
+                    "description": "Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with\u003cspan pulumi-lang-nodejs=\" inheritEncryption \" pulumi-lang-dotnet=\" InheritEncryption \" pulumi-lang-go=\" inheritEncryption \" pulumi-lang-python=\" inherit_encryption \" pulumi-lang-yaml=\" inheritEncryption \" pulumi-lang-java=\" inheritEncryption \" pulumi-lang-hcl=\" inherit_encryption \"\u003e inheritEncryption \u003c/span\u003e= true (the parent determines encryption)."
+                },
+                "encryptionAlgorithm": {
+                    "type": "string",
+                    "description": "Encryption algorithm, e.g. \"AES-256-GCM\". Create-only."
+                },
+                "encryptionGenerateKey": {
+                    "type": "boolean",
+                    "description": "Automatically generate the encryption key (key-based encryption). Create-only."
+                },
+                "encryptionKey": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
+                    "secret": true
+                },
+                "encryptionPassphrase": {
+                    "type": "string",
+                    "description": "Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.\n\n**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
+                    "secret": true
+                },
+                "inheritEncryption": {
+                    "type": "boolean",
+                    "description": "Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset."
                 },
                 "name": {
                     "type": "string",
@@ -16241,7 +16306,7 @@
                 },
                 "sync": {
                     "type": "string",
-                    "description": "Sync setting: standard, always, or disabled."
+                    "description": "Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent."
                 },
                 "volblocksize": {
                     "type": "integer",
@@ -16269,7 +16334,7 @@
                     },
                     "compression": {
                         "type": "string",
-                        "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, etc."
+                        "description": "Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc."
                     },
                     "copies": {
                         "type": "integer",
@@ -16277,11 +16342,45 @@
                     },
                     "dedup": {
                         "type": "string",
-                        "description": "Deduplication: off, on, or verify."
+                        "description": "Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent."
                     },
                     "encrypted": {
                         "type": "boolean",
                         "description": "Whether the zvol is encrypted."
+                    },
+                    "encryption": {
+                        "type": "boolean",
+                        "description": "Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with\u003cspan pulumi-lang-nodejs=\" inheritEncryption \" pulumi-lang-dotnet=\" InheritEncryption \" pulumi-lang-go=\" inheritEncryption \" pulumi-lang-python=\" inherit_encryption \" pulumi-lang-yaml=\" inheritEncryption \" pulumi-lang-java=\" inheritEncryption \" pulumi-lang-hcl=\" inherit_encryption \"\u003e inheritEncryption \u003c/span\u003e= true (the parent determines encryption)."
+                    },
+                    "encryptionAlgorithm": {
+                        "type": "string",
+                        "description": "Encryption algorithm, e.g. \"AES-256-GCM\". Create-only."
+                    },
+                    "encryptionGenerateKey": {
+                        "type": "boolean",
+                        "description": "Automatically generate the encryption key (key-based encryption). Create-only."
+                    },
+                    "encryptionKey": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\n64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.",
+                        "secret": true
+                    },
+                    "encryptionPassphrase": {
+                        "type": "string",
+                        "description": "**NOTE:** This field is write-only and its value will not be updated in state as part of read operations.\nPassphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.",
+                        "secret": true
+                    },
+                    "inheritEncryption": {
+                        "type": "boolean",
+                        "description": "Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset."
+                    },
+                    "keyFormat": {
+                        "type": "string",
+                        "description": "Encryption key format: PASSPHRASE or HEX (null when not encrypted)."
+                    },
+                    "locked": {
+                        "type": "boolean",
+                        "description": "Whether the encrypted zvol is currently locked."
                     },
                     "name": {
                         "type": "string",
@@ -16313,7 +16412,7 @@
                     },
                     "sync": {
                         "type": "string",
-                        "description": "Sync setting: standard, always, or disabled."
+                        "description": "Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent."
                     },
                     "volblocksize": {
                         "type": "integer",
@@ -21866,8 +21965,34 @@
                     "encrypted": {
                         "type": "boolean"
                     },
+                    "encryption": {
+                        "type": "boolean"
+                    },
+                    "encryptionAlgorithm": {
+                        "type": "string"
+                    },
+                    "encryptionGenerateKey": {
+                        "type": "boolean"
+                    },
+                    "encryptionKey": {
+                        "type": "string",
+                        "secret": true
+                    },
+                    "encryptionPassphrase": {
+                        "type": "string",
+                        "secret": true
+                    },
                     "id": {
                         "type": "string"
+                    },
+                    "inheritEncryption": {
+                        "type": "boolean"
+                    },
+                    "keyFormat": {
+                        "type": "string"
+                    },
+                    "locked": {
+                        "type": "boolean"
                     },
                     "name": {
                         "type": "string"
@@ -21908,7 +22033,15 @@
                     "copies",
                     "dedup",
                     "encrypted",
+                    "encryption",
+                    "encryptionAlgorithm",
+                    "encryptionGenerateKey",
+                    "encryptionKey",
+                    "encryptionPassphrase",
                     "id",
+                    "inheritEncryption",
+                    "keyFormat",
+                    "locked",
                     "name",
                     "pool",
                     "readonly",

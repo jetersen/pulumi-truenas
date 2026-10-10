@@ -550,8 +550,8 @@ github.com/teekennedy/goldmark-markdown v0.3.0 h1:ik9/biVGCwGWFg8dQ3KVm2pQ/wiiG0
 github.com/teekennedy/goldmark-markdown v0.3.0/go.mod h1:kMhDz8La77A9UHvJGsxejd0QUflN9sS+QXCqnhmxmNo=
 github.com/texttheater/golang-levenshtein v1.0.1 h1:+cRNoVrfiwufQPhoMzB6N0Yf/Mqajr6t1lOv8GyGE2U=
 github.com/texttheater/golang-levenshtein v1.0.1/go.mod h1:PYAKrbF5sAiq9wd+H82hs7gNaen0CplQ9uvm6+enD/8=
-github.com/truenas/terraform-provider-truenas v1.5.7 h1:U20Q+6HVNIwDb1N64V3BoE2h0Ugw0Cko5AIf2eWZ9uc=
-github.com/truenas/terraform-provider-truenas v1.5.7/go.mod h1:MHE4dj0tFze8h7t4CGsOZhVRd+JmjVbojKU2ppPu+QE=
+github.com/truenas/terraform-provider-truenas v1.5.11 h1:z6HvX70PJHRE1EBDJiLyhw9URO5LA1L6OyH/GlcytIo=
+github.com/truenas/terraform-provider-truenas v1.5.11/go.mod h1:MHE4dj0tFze8h7t4CGsOZhVRd+JmjVbojKU2ppPu+QE=
 github.com/uber/jaeger-client-go v2.30.0+incompatible h1:D6wyKGCecFaSRUpo8lCVbaOOb6ThwMmTEbhRwtKR97o=
 github.com/uber/jaeger-client-go v2.30.0+incompatible/go.mod h1:WVhlPFC8FDjOFMMWRy2pZqQJSXxYSwNYOkTr/Z6d3Kk=
 github.com/uber/jaeger-lib v2.4.1+incompatible h1:td4jdvLcExb4cBISKIpHuGoVXh+dVKhn2Um6rjCsSsg=
