@@ -1,9 +1,42 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "ignorePaths": ["sdk/**"],
-  "packageRules": [{
-    "matchPackageNames": ["github.com/truenas/terraform-provider-truenas", "github.com/pulumi/pulumi-terraform-bridge/v3"],
-    "automerge": false
-  }]
+  "extends": [
+    "config:recommended"
+  ],
+  "ignorePaths": [
+    "sdk/**"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "github.com/truenas/terraform-provider-truenas",
+        "github.com/pulumi/pulumi-terraform-bridge/v3"
+      ],
+      "automerge": false
+    },
+    {
+      "matchPackageNames": [
+        "github.com/truenas/terraform-provider-truenas"
+      ],
+      "groupName": "TrueNAS Terraform provider"
+    }
+  ],
+  "ignoreDeps": [
+    "github.com/truenas/terraform-provider-truenas/shim"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^provider/shim/shim\\.go$/"
+      ],
+      "matchStrings": [
+        "upstream\\.New\\(\"(?<currentValue>[^\"]+)\"\\)"
+      ],
+      "depNameTemplate": "github.com/truenas/terraform-provider-truenas",
+      "datasourceTemplate": "go",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>[0-9].*)$"
+    }
+  ]
 }
