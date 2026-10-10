@@ -166,7 +166,8 @@ default; set `PACKAGE_PROVIDER_ARCHIVES=false` to package only the SDKs. Pass
 `dotnet`, `nodejs`, `python`, `go`, or `provider` to package one component.
 
 A `vX.Y.Z` tag publishes a release and NuGet/npm packages using the repository's `GITHUB_TOKEN`. The release also
-tags the Go SDK module. Tags with a prerelease suffix (for example,
+tags a separate commit containing the Go SDK generated for that release version.
+Tags with a prerelease suffix (for example,
 `v0.2.0-rc.1`) publish a GitHub prerelease and use the npm `next` tag, leaving
 the stable release selected by default. Provider builds cover Linux, macOS, and Windows on amd64
 and arm64. Generated APIs reflect upstream coverage; release builds do not prove
