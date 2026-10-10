@@ -5,7 +5,7 @@ go 1.26.6
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.19.0
 	github.com/hashicorp/terraform-plugin-go v0.31.0
-	github.com/truenas/terraform-provider-truenas v1.5.7
+	github.com/truenas/terraform-provider-truenas v1.5.11
 	gopkg.in/yaml.v3 v3.0.1
 )
 
