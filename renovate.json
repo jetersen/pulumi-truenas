@@ -4,7 +4,10 @@
     "config:recommended"
   ],
   "ignorePaths": [
-    "sdk/**"
+    "sdk/go/**",
+    "sdk/dotnet/**",
+    "sdk/nodejs/**",
+    "sdk/python/**"
   ],
   "packageRules": [
     {
@@ -38,5 +41,12 @@
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^v?(?<version>[0-9].*)$"
     }
-  ]
+  ],
+  "postUpdateOptions": [
+    "gomodTidyAll"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": false
+  }
 }
