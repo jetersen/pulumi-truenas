@@ -14,25 +14,19 @@ permissions:
   contents: read
 concurrency:
   group: provider-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   build:
     if: inputs.publish-release == ''
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: provider/go.mod
           cache-dependency-path: |
             provider/go.sum
             provider/shim/go.sum
-            sdk/go.sum
       - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
         with:
           dotnet-version: '10.0.x'
@@ -41,14 +35,17 @@ jobs:
           node-version: '24'
           registry-url: https://npm.pkg.github.com
           scope: '@jetersen'
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
-        with:
-          python-version: '3.13'
       - uses: pulumi/actions@8582a9e8cc630786854029b4e09281acd6794b58 # v6
         with:
           pulumi-version: '3.268.0'
-      - name: Install Python build tools
-        run: python3 -m pip install build
+      # Share NuGet downloads from the CLI tests with the dotnet packaging job.
+      - name: Cache NuGet downloads
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-${{ runner.arch }}-dotnet-packages-v1-${{ hashFiles('provider/go.sum', '.github/workflows/build.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-dotnet-packages-v1-
       - name: Select release version
         shell: bash
         run: |
@@ -64,16 +61,96 @@ jobs:
           if [[ "$VERSION" != "0.1.0" ]]; then
             make test-compose-preview
           fi
-          bash scripts/package.sh
+      - name: Upload generated SDKs and schema
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: generated
+          path: |
+            sdk
+            provider/cmd/pulumi-resource-truenas/schema.json
+            provider/cmd/pulumi-resource-truenas/bridge-metadata.json
+            !sdk/**/bin/**
+            !sdk/**/obj/**
+            !sdk/**/node_modules/**
+          retention-days: 1
+  package:
+    name: Package (${{ matrix.component }})
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        # Provider cross-compilation is only needed for release tags.
+        component: ${{ fromJSON(startsWith(github.ref, 'refs/tags/v') && '["dotnet", "nodejs", "python", "go", "provider"]' || '["dotnet", "nodejs", "python", "go"]') }}
+    if: needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: generated
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        if: matrix.component == 'go' || matrix.component == 'provider'
+        with:
+          go-version-file: provider/go.mod
+          cache-dependency-path: |
+            provider/go.sum
+            provider/shim/go.sum
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        if: matrix.component == 'dotnet'
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        if: matrix.component == 'nodejs'
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        if: matrix.component == 'python'
+        with:
+          python-version: '3.13'
+      - name: Cache package downloads
+        if: matrix.component == 'dotnet' || matrix.component == 'nodejs' || matrix.component == 'python'
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ${{ matrix.component == 'dotnet' && '~/.nuget/packages' || matrix.component == 'nodejs' && '~/.npm' || '~/.cache/pip' }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.component }}-packages-v1-${{ hashFiles('provider/go.sum', '.github/workflows/build.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-${{ matrix.component }}-packages-v1-
+      - name: Install Python build tools
+        if: matrix.component == 'python'
+        run: python3 -m pip install build
+      - name: Package
+        env:
+          COMPONENT: ${{ matrix.component }}
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            export VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          bash scripts/package.sh "$COMPONENT"
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: packages
+          name: packages-${{ matrix.component }}
+          compression-level: 0
           path: |
             dist/*.nupkg
             dist/*.tgz
             dist/*.whl
             dist/*.tar.gz
-            dist/checksums.txt
+          if-no-files-found: error
+  release:
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          pattern: packages-*
+          merge-multiple: true
+          path: dist
+      - name: Checksum packages
+        run: (cd dist && sha256sum ./*.nupkg ./*.tgz ./*.whl ./*.tar.gz > checksums.txt)
       - name: Publish GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
@@ -87,10 +164,14 @@ jobs:
           git tag "sdk/$GITHUB_REF_NAME"
           git push origin "sdk/$GITHUB_REF_NAME"
   publish:
-    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [dotnet, nodejs]
+    needs: release
     if: >-
       always() && !cancelled() &&
-      ((needs.build.result == 'success' && startsWith(github.ref, 'refs/tags/v')) ||
+      ((needs.release.result == 'success' && startsWith(github.ref, 'refs/tags/v')) ||
        (github.event_name == 'workflow_dispatch' && inputs.publish-release != ''))
     runs-on: ubuntu-latest
     permissions:
@@ -98,9 +179,11 @@ jobs:
       packages: write
     steps:
       - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        if: matrix.component == 'dotnet'
         with:
           dotnet-version: '10.0.x'
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        if: matrix.component == 'nodejs'
         with:
           node-version: '24'
           registry-url: https://npm.pkg.github.com
@@ -114,12 +197,14 @@ jobs:
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --dir dist --pattern '*.nupkg' --pattern '*.tgz' --pattern checksums.txt
           (cd dist && sha256sum --check --ignore-missing checksums.txt)
       - name: Publish NuGet to GitHub Packages
+        if: matrix.component == 'dotnet'
         env:
           NuGetPackageSourceCredentials_github: Username=${{ github.actor }};Password=${{ github.token }};ValidAuthenticationTypes=Basic
         run: |
           dotnet nuget add source https://nuget.pkg.github.com/jetersen/index.json --name github
           dotnet nuget push 'dist/*.nupkg' --source github --skip-duplicate
       - name: Publish npm to GitHub Packages
+        if: matrix.component == 'nodejs'
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.publish-release || github.ref_name }}
