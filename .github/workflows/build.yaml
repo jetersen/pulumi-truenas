@@ -21,15 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+      - uses: ./.github/actions/setup-go-cache
         with:
-          go-version-file: provider/go.mod
-          cache-dependency-path: |
-            provider/go.sum
-            provider/shim/go.sum
-      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
-        with:
-          dotnet-version: '10.0.x'
+          scope: provider
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '24'
@@ -38,14 +32,6 @@ jobs:
       - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
         with:
           pulumi-version: '3.268.0'
-      # Share NuGet downloads from the CLI tests with the dotnet packaging job.
-      - name: Cache NuGet downloads
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-${{ runner.arch }}-dotnet-packages-v1-${{ hashFiles('provider/go.sum', '.github/workflows/build.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-dotnet-packages-v1-
       - name: Select release version
         shell: bash
         run: |
@@ -56,12 +42,13 @@ jobs:
           fi
       - name: Generate, build, and test
         run: |
-          make provider sdk test test-compose-preview VERSION=0.1.0
+          make provider sdk test VERSION=0.1.0 SDK_LANGUAGES=go
           git diff --exit-code -- provider/cmd/pulumi-resource-truenas sdk/go
-          if [[ "$VERSION" != "0.1.0" ]]; then
-            make test-compose-preview
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            make provider sdk
           fi
       - name: Upload generated SDKs and schema
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: generated
@@ -73,8 +60,82 @@ jobs:
             !sdk/**/obj/**
             !sdk/**/node_modules/**
           retention-days: 1
-  package:
-    name: Package (${{ matrix.component }})
+      - name: Upload CLI test binaries
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: tar -czf cli-tools.tar.gz -C bin pulumi-resource-truenas pulumi-language-dotnet pulumi-language-yaml
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: cli-tools
+          path: cli-tools.tar.gz
+          retention-days: 1
+  cli-test:
+    name: CLI tests (${{ matrix.scenario }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Separate runners isolate the C# SDK's bin/obj outputs.
+        scenario: [yaml, yaml-overlay, dotnet, dotnet-overlay]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: generated
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: cli-tools
+      - name: Restore CLI test binaries
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          mkdir -p bin
+          tar -xzf cli-tools.tar.gz -C bin
+          echo "$PWD/bin" >> "$GITHUB_PATH"
+      - uses: ./.github/actions/setup-go-cache
+        with:
+          scope: provider
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        if: startsWith(matrix.scenario, 'dotnet')
+        with:
+          dotnet-version: '10.0.x'
+      - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
+        with:
+          pulumi-version: '3.268.0'
+      - name: Build CLI test inputs
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+        run: |
+          if [[ "$SCENARIO" == dotnet* ]]; then
+            make provider sdk SDK_LANGUAGES=dotnet
+          else
+            make provider tools
+          fi
+      - name: Cache NuGet downloads
+        if: startsWith(matrix.scenario, 'dotnet')
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-${{ runner.arch }}-dotnet-packages-v2-${{ hashFiles('sdk/dotnet/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-dotnet-packages-v2-
+      - name: Test Compose CLI preview
+        env:
+          SCENARIO: ${{ matrix.scenario }}
+          TRUENAS_COMPOSE_CLI_TEST: '1'
+        run: |
+          export PATH="$GITHUB_WORKSPACE/bin:$PATH"
+          export VERSION=0.1.0
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            export VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          cd provider
+          go test -count=1 -run "^TestComposeCLIPreview/$SCENARIO$" -v .
+  sdk:
+    name: SDK (${{ matrix.component }})
     needs: build
     strategy:
       fail-fast: false
@@ -86,15 +147,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
           name: generated
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
-        if: matrix.component == 'go' || matrix.component == 'provider'
+      - uses: ./.github/actions/setup-go-cache
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') || matrix.component == 'go' || matrix.component == 'provider' }}
         with:
-          go-version-file: provider/go.mod
-          cache-dependency-path: |
-            provider/go.sum
-            provider/shim/go.sum
+          scope: ${{ matrix.component == 'provider' && 'archives' || matrix.component == 'go' && 'sdk' || 'provider' }}
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         if: matrix.component == 'dotnet'
         with:
@@ -107,26 +166,46 @@ jobs:
         if: matrix.component == 'python'
         with:
           python-version: '3.14'
+      - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          pulumi-version: '3.268.0'
+      - name: Generate SDK for validation
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          COMPONENT: ${{ matrix.component }}
+        run: make sdk SDK_LANGUAGES="$COMPONENT"
       - name: Cache package downloads
         if: matrix.component == 'dotnet' || matrix.component == 'nodejs' || matrix.component == 'python'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ matrix.component == 'dotnet' && '~/.nuget/packages' || matrix.component == 'nodejs' && '~/.npm' || '~/.cache/pip' }}
-          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.component }}-packages-v1-${{ hashFiles('provider/go.sum', '.github/workflows/build.yaml') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-${{ matrix.component }}-packages-v2-${{ matrix.component == 'dotnet' && hashFiles('sdk/dotnet/*.csproj') || hashFiles('sdk/nodejs/package.json', 'sdk/python/pyproject.toml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-${{ matrix.component }}-packages-v1-
+            ${{ runner.os }}-${{ runner.arch }}-${{ matrix.component }}-packages-v2-
       - name: Install Python build tools
-        if: matrix.component == 'python'
+        if: matrix.component == 'python' && startsWith(github.ref, 'refs/tags/v')
         run: python3 -m pip install build
-      - name: Package
+      - name: Build and test SDK
+        if: matrix.component != 'provider'
         env:
           COMPONENT: ${{ matrix.component }}
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             export VERSION="${GITHUB_REF_NAME#v}"
           fi
-          bash scripts/package.sh "$COMPONENT"
+          bash scripts/build-sdk.sh "$COMPONENT"
+      - name: Package release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          COMPONENT: ${{ matrix.component }}
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            export VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          bash scripts/package.sh "$COMPONENT" --no-build
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
           name: packages-${{ matrix.component }}
           compression-level: 0
@@ -136,8 +215,19 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
           if-no-files-found: error
+  checks:
+    name: Build and tests
+    needs: [build, sdk, cli-test]
+    if: always() && inputs.publish-release == ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all build and test jobs
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          jq -e 'all(.[]; .result == "success")' <<< "$RESULTS"
   release:
-    needs: package
+    needs: [sdk, cli-test]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:

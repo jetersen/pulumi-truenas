@@ -309,7 +309,7 @@ resources:
 		project = "name: compose-fixture\nruntime: dotnet\n"
 		sdk, err := filepath.Abs("../sdk/dotnet/Jetersen.Pulumi.TrueNas.csproj")
 		require.NoError(t, err)
-		csproj := fmt.Sprintf(`<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup><ProjectReference Include="%s" /></ItemGroup></Project>`, sdk)
+		csproj := fmt.Sprintf(`<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup><ProjectReference Include="%s" AdditionalProperties="GeneratePackageOnBuild=false" /></ItemGroup></Project>`, sdk)
 		program := fmt.Sprintf(`using Pulumi;
 using TrueNas = Jetersen.Pulumi.TrueNas;
 return await Deployment.RunAsync(() => {

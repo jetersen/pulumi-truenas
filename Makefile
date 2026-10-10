@@ -1,4 +1,5 @@
 VERSION ?= 0.1.0
+SDK_LANGUAGES ?= dotnet nodejs python go
 LDFLAGS = -X github.com/jetersen/pulumi-truenas/provider/pkg/version.Version=$(VERSION)
 export PATH := $(CURDIR)/bin:$(PATH)
 
@@ -17,11 +18,12 @@ tools:
 	cd provider && go build -o ../bin/pulumi-language-yaml github.com/pulumi/pulumi-yaml/cmd/pulumi-language-yaml
 
 sdk: schema tools
-	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language dotnet --out sdk
-	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language nodejs --out sdk
-	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language python --out sdk
-	pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language go --out sdk
+	@set -e; for language in $(SDK_LANGUAGES); do \
+		pulumi package gen-sdk provider/cmd/pulumi-resource-truenas/schema.json --version $(VERSION) --language $$language --out sdk; \
+	done
+ifneq ($(filter go,$(SDK_LANGUAGES)),)
 	cd sdk && go mod tidy
+endif
 
 test:
 	cd provider && go test ./...

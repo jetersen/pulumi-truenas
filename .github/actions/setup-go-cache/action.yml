@@ -1,0 +1,39 @@
+name: Set up Go with shared downloads and compilation caches
+description: Reuse module downloads across jobs and save compiled code after each source revision.
+inputs:
+  scope:
+    description: Compilation workload (provider, sdk, or archives)
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+      id: go
+      with:
+        go-version-file: provider/go.mod
+        cache: false
+    - name: Locate Go caches
+      id: paths
+      shell: bash
+      run: |
+        echo "modules=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
+        echo "build=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+    - name: Cache Go module downloads
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.modules }}
+        key: ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-modules-v2-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-modules-v2-
+    - name: Cache Go compilation
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.paths.outputs.build }}
+        # Source revisions get fresh entries so an exact dependency hit cannot
+        # prevent newly compiled SDK/provider code from being saved.
+        key: ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-${{ inputs.scope }}-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-${{ inputs.scope }}-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}-
+          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-${{ inputs.scope }}-
+          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-provider-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}-
+          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-provider-

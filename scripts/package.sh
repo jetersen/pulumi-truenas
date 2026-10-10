@@ -4,21 +4,26 @@ cd "$(dirname "$0")/.."
 version=${VERSION:-0.1.0}
 component=${1:-all}
 case "$component" in all|dotnet|nodejs|python|go|provider) ;; *) echo "Unknown package component: $component" >&2; exit 1 ;; esac
+case "${2:-}" in ''|--no-build) ;; *) echo "Unknown packaging option: $2" >&2; exit 1 ;; esac
+build_sdk() {
+  if [[ "${2:-}" != --no-build ]]; then
+    bash scripts/build-sdk.sh "$1"
+  fi
+}
 mkdir -p dist
 if [[ "$component" == all || "$component" == dotnet ]]; then
-  dotnet build sdk/dotnet -c Release -p:Version="$version"
+  build_sdk dotnet "${2:-}"
   dotnet pack sdk/dotnet -c Release -p:Version="$version" --no-build -o "$PWD/dist"
 fi
 if [[ "$component" == all || "$component" == nodejs ]]; then
-  (cd sdk/nodejs && npm install --ignore-scripts --no-audit --no-fund && npm run build \
-    && cp package.json README.md bin/ && node -e 'if (!require("./bin").App) process.exit(1)' \
-    && npm pack ./bin --pack-destination ../../dist)
+  build_sdk nodejs "${2:-}"
+  (cd sdk/nodejs && cp package.json README.md bin/ && npm pack ./bin --pack-destination ../../dist)
 fi
 if [[ "$component" == all || "$component" == python ]]; then
   python3 -m build sdk/python --outdir dist
 fi
 if [[ "$component" == all || "$component" == go ]]; then
-  (cd sdk && go test ./go/...)
+  build_sdk go "${2:-}"
   tar -czf "dist/pulumi-truenas-go-v${version}.tar.gz" -C sdk go go.mod go.sum
 fi
 # CI validates the native provider on every build; only releases need all platforms.
