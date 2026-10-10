@@ -45,7 +45,7 @@ jobs:
           make provider sdk test VERSION=0.1.0 SDK_LANGUAGES=go
           git diff --exit-code -- provider/cmd/pulumi-resource-truenas sdk/go
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            make provider sdk
+            make provider sdk tools-yaml
           fi
       - name: Upload generated SDKs and schema
         if: startsWith(github.ref, 'refs/tags/v')
@@ -96,7 +96,7 @@ jobs:
           echo "$PWD/bin" >> "$GITHUB_PATH"
       - uses: ./.github/actions/setup-go-cache
         with:
-          scope: provider
+          scope: ${{ startsWith(matrix.scenario, 'dotnet') && 'provider-dotnet' || 'provider-yaml' }}
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         if: startsWith(matrix.scenario, 'dotnet')
         with:
@@ -112,7 +112,7 @@ jobs:
           if [[ "$SCENARIO" == dotnet* ]]; then
             make provider sdk SDK_LANGUAGES=dotnet
           else
-            make provider tools
+            make provider tools-yaml
           fi
       - name: Cache NuGet downloads
         if: startsWith(matrix.scenario, 'dotnet')
@@ -140,8 +140,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Provider cross-compilation is only needed for release tags.
-        component: ${{ fromJSON(startsWith(github.ref, 'refs/tags/v') && '["dotnet", "nodejs", "python", "go", "provider"]' || '["dotnet", "nodejs", "python", "go"]') }}
+        component: [dotnet, nodejs, python, go]
     if: needs.build.result == 'success'
     runs-on: ubuntu-latest
     steps:
@@ -151,9 +150,9 @@ jobs:
         with:
           name: generated
       - uses: ./.github/actions/setup-go-cache
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') || matrix.component == 'go' || matrix.component == 'provider' }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') || matrix.component == 'go' }}
         with:
-          scope: ${{ matrix.component == 'provider' && 'archives' || matrix.component == 'go' && 'sdk' || 'provider' }}
+          scope: ${{ matrix.component == 'go' && 'sdk' || matrix.component == 'dotnet' && 'provider-dotnet' || 'provider' }}
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         if: matrix.component == 'dotnet'
         with:
@@ -187,7 +186,6 @@ jobs:
         if: matrix.component == 'python' && startsWith(github.ref, 'refs/tags/v')
         run: python3 -m pip install build
       - name: Build and test SDK
-        if: matrix.component != 'provider'
         env:
           COMPONENT: ${{ matrix.component }}
         run: |
@@ -215,6 +213,39 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
           if-no-files-found: error
+  provider-archives:
+    name: Provider (${{ matrix.os }}/${{ matrix.arch }})
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [linux, darwin, windows]
+        arch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: generated
+      - uses: ./.github/actions/setup-go-cache
+        with:
+          scope: archives-${{ matrix.os }}-${{ matrix.arch }}
+          # Native builds lack -trimpath and cannot warm release compilation.
+          provider-fallback: 'false'
+      - name: Build provider archive
+        env:
+          PROVIDER_OS: ${{ matrix.os }}
+          PROVIDER_ARCH: ${{ matrix.arch }}
+        run: |
+          export VERSION="${GITHUB_REF_NAME#v}"
+          bash scripts/package.sh provider
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: packages-provider-${{ matrix.os }}-${{ matrix.arch }}
+          compression-level: 0
+          path: dist/pulumi-resource-truenas-*.tar.gz
+          if-no-files-found: error
   checks:
     name: Build and tests
     needs: [build, sdk, cli-test]
@@ -227,7 +258,7 @@ jobs:
         run: |
           jq -e 'all(.[]; .result == "success")' <<< "$RESULTS"
   release:
-    needs: [sdk, cli-test]
+    needs: [sdk, cli-test, provider-archives]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:

@@ -29,8 +29,11 @@ fi
 # CI validates the native provider on every build; only releases need all platforms.
 # Local packaging keeps producing the complete release by default.
 if [[ "$component" == provider || ( "$component" == all && "${PACKAGE_PROVIDER_ARCHIVES:-true}" == true ) ]]; then
-  for os in linux darwin windows; do
-    for arch in amd64 arm64; do
+  # Optional filters let CI build exactly one target per runner.
+  case "${PROVIDER_OS:-}" in ''|linux|darwin|windows) ;; *) echo "Unsupported provider OS: $PROVIDER_OS" >&2; exit 1 ;; esac
+  case "${PROVIDER_ARCH:-}" in ''|amd64|arm64) ;; *) echo "Unsupported provider architecture: $PROVIDER_ARCH" >&2; exit 1 ;; esac
+  for os in ${PROVIDER_OS:-linux darwin windows}; do
+    for arch in ${PROVIDER_ARCH:-amd64 arm64}; do
       name=pulumi-resource-truenas
       if [ "$os" = windows ]; then name+=.exe; fi
       target="dist/${os}-${arch}"

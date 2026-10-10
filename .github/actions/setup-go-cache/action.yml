@@ -2,8 +2,11 @@ name: Set up Go with shared downloads and compilation caches
 description: Reuse module downloads across jobs and save compiled code after each source revision.
 inputs:
   scope:
-    description: Compilation workload (provider, sdk, or archives)
+    description: Compilation workload (provider, provider-dotnet, provider-yaml, sdk, or archives-<os>-<arch>)
     required: true
+  provider-fallback:
+    description: Restore native provider compilation when its build flags are compatible.
+    default: 'true'
 runs:
   using: composite
   steps:
@@ -22,8 +25,10 @@ runs:
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.paths.outputs.modules }}
-        key: ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-modules-v2-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}
+        # Downloaded module source is shared by both runner architectures.
+        key: ${{ runner.os }}-go-${{ steps.go.outputs.go-version }}-modules-v3-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}
         restore-keys: |
+          ${{ runner.os }}-go-${{ steps.go.outputs.go-version }}-modules-v3-
           ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-modules-v2-
     - name: Cache Go compilation
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -35,5 +40,5 @@ runs:
         restore-keys: |
           ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-${{ inputs.scope }}-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}-
           ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-${{ inputs.scope }}-
-          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-provider-${{ hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum') }}-
-          ${{ runner.os }}-${{ runner.arch }}-go-${{ steps.go.outputs.go-version }}-build-v2-provider-
+          ${{ inputs.provider-fallback == 'true' && format('{0}-{1}-go-{2}-build-v2-provider-{3}-', runner.os, runner.arch, steps.go.outputs.go-version, hashFiles('provider/go.sum', 'provider/shim/go.sum', 'sdk/go.sum')) || '' }}
+          ${{ inputs.provider-fallback == 'true' && format('{0}-{1}-go-{2}-build-v2-provider-', runner.os, runner.arch, steps.go.outputs.go-version) || '' }}
