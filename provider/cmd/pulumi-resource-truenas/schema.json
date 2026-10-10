@@ -5755,7 +5755,7 @@
                     "description": "Name of the pool containing this dataset."
                 },
                 "quota": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Quota in bytes (0 = unlimited)."
                 },
                 "readonly": {
@@ -5767,15 +5767,15 @@
                     "description": "Suggested block size for files, e.g. \"128K\" or \"1M\". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift."
                 },
                 "refquota": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Referenced quota in bytes (0 = unlimited)."
                 },
                 "refreservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits."
                 },
                 "reservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Reserved space in bytes."
                 },
                 "shareType": {
@@ -5799,7 +5799,7 @@
                     "description": "Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive."
                 },
                 "volsize": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Volume size in bytes. Required for type=VOLUME."
                 },
                 "xattr": {
@@ -5907,7 +5907,7 @@
                     "description": "Full dataset path, e.g. tank/mydata."
                 },
                 "quota": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Quota in bytes (0 = unlimited)."
                 },
                 "readonly": {
@@ -5919,15 +5919,15 @@
                     "description": "Suggested block size for files, e.g. \"128K\" or \"1M\". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift."
                 },
                 "refquota": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Referenced quota in bytes (0 = unlimited)."
                 },
                 "refreservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits."
                 },
                 "reservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Reserved space in bytes."
                 },
                 "shareType": {
@@ -5951,7 +5951,7 @@
                     "description": "Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive."
                 },
                 "volsize": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Volume size in bytes. Required for type=VOLUME."
                 }
             },
@@ -6048,7 +6048,7 @@
                         "description": "Name of the pool containing this dataset."
                     },
                     "quota": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Quota in bytes (0 = unlimited)."
                     },
                     "readonly": {
@@ -6060,15 +6060,15 @@
                         "description": "Suggested block size for files, e.g. \"128K\" or \"1M\". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift."
                     },
                     "refquota": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Referenced quota in bytes (0 = unlimited)."
                     },
                     "refreservation": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits."
                     },
                     "reservation": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Reserved space in bytes."
                     },
                     "shareType": {
@@ -6092,7 +6092,7 @@
                         "description": "Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive."
                     },
                     "volsize": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Volume size in bytes. Required for type=VOLUME."
                     },
                     "xattr": {
@@ -16183,11 +16183,11 @@
                     "description": "Mount read-only: ON or OFF. Null inherits."
                 },
                 "refreservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits."
                 },
                 "reservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits."
                 },
                 "snapdev": {
@@ -16207,7 +16207,7 @@
                     "description": "Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only."
                 },
                 "volsize": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Volume size in bytes."
                 }
             },
@@ -16289,11 +16289,11 @@
                     "description": "Mount read-only: ON or OFF. Null inherits."
                 },
                 "refreservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits."
                 },
                 "reservation": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits."
                 },
                 "snapdev": {
@@ -16313,7 +16313,7 @@
                     "description": "Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only."
                 },
                 "volsize": {
-                    "type": "integer",
+                    "type": "number",
                     "description": "Volume size in bytes."
                 }
             },
@@ -16395,11 +16395,11 @@
                         "description": "Mount read-only: ON or OFF. Null inherits."
                     },
                     "refreservation": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits."
                     },
                     "reservation": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits."
                     },
                     "snapdev": {
@@ -16419,7 +16419,7 @@
                         "description": "Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only."
                     },
                     "volsize": {
-                        "type": "integer",
+                        "type": "number",
                         "description": "Volume size in bytes."
                     }
                 },
@@ -17589,7 +17589,7 @@
                         "type": "string"
                     },
                     "quota": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "readonly": {
                         "type": "string"
@@ -17598,13 +17598,13 @@
                         "type": "string"
                     },
                     "refquota": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "refreservation": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "reservation": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "shareType": {
                         "type": "string"
@@ -17622,7 +17622,7 @@
                         "type": "string"
                     },
                     "volsize": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "xattr": {
                         "type": "string"
@@ -22004,10 +22004,10 @@
                         "type": "string"
                     },
                     "refreservation": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "reservation": {
-                        "type": "integer"
+                        "type": "number"
                     },
                     "snapdev": {
                         "type": "string"
@@ -22022,7 +22022,7 @@
                         "type": "integer"
                     },
                     "volsize": {
-                        "type": "integer"
+                        "type": "number"
                     }
                 },
                 "type": "object",

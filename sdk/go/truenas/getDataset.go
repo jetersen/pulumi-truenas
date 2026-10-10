@@ -28,41 +28,41 @@ type LookupDatasetArgs struct {
 
 // A collection of values returned by getDataset.
 type LookupDatasetResult struct {
-	Aclmode               string `pulumi:"aclmode"`
-	Acltype               string `pulumi:"acltype"`
-	Atime                 string `pulumi:"atime"`
-	Checksum              string `pulumi:"checksum"`
-	Comments              string `pulumi:"comments"`
-	Compression           string `pulumi:"compression"`
-	Copies                int    `pulumi:"copies"`
-	Dedup                 string `pulumi:"dedup"`
-	Encrypted             bool   `pulumi:"encrypted"`
-	Encryption            bool   `pulumi:"encryption"`
-	EncryptionAlgorithm   string `pulumi:"encryptionAlgorithm"`
-	EncryptionGenerateKey bool   `pulumi:"encryptionGenerateKey"`
-	EncryptionKey         string `pulumi:"encryptionKey"`
-	EncryptionPassphrase  string `pulumi:"encryptionPassphrase"`
-	Exec                  string `pulumi:"exec"`
-	Id                    string `pulumi:"id"`
-	InheritEncryption     bool   `pulumi:"inheritEncryption"`
-	KeyFormat             string `pulumi:"keyFormat"`
-	Locked                bool   `pulumi:"locked"`
-	Mountpoint            string `pulumi:"mountpoint"`
-	Name                  string `pulumi:"name"`
-	Pool                  string `pulumi:"pool"`
-	Quota                 int    `pulumi:"quota"`
-	Readonly              string `pulumi:"readonly"`
-	Recordsize            string `pulumi:"recordsize"`
-	Refquota              int    `pulumi:"refquota"`
-	Refreservation        int    `pulumi:"refreservation"`
-	Reservation           int    `pulumi:"reservation"`
-	ShareType             string `pulumi:"shareType"`
-	Snapdir               string `pulumi:"snapdir"`
-	SpecialSmallBlockSize int    `pulumi:"specialSmallBlockSize"`
-	Sync                  string `pulumi:"sync"`
-	Type                  string `pulumi:"type"`
-	Volsize               int    `pulumi:"volsize"`
-	Xattr                 string `pulumi:"xattr"`
+	Aclmode               string  `pulumi:"aclmode"`
+	Acltype               string  `pulumi:"acltype"`
+	Atime                 string  `pulumi:"atime"`
+	Checksum              string  `pulumi:"checksum"`
+	Comments              string  `pulumi:"comments"`
+	Compression           string  `pulumi:"compression"`
+	Copies                int     `pulumi:"copies"`
+	Dedup                 string  `pulumi:"dedup"`
+	Encrypted             bool    `pulumi:"encrypted"`
+	Encryption            bool    `pulumi:"encryption"`
+	EncryptionAlgorithm   string  `pulumi:"encryptionAlgorithm"`
+	EncryptionGenerateKey bool    `pulumi:"encryptionGenerateKey"`
+	EncryptionKey         string  `pulumi:"encryptionKey"`
+	EncryptionPassphrase  string  `pulumi:"encryptionPassphrase"`
+	Exec                  string  `pulumi:"exec"`
+	Id                    string  `pulumi:"id"`
+	InheritEncryption     bool    `pulumi:"inheritEncryption"`
+	KeyFormat             string  `pulumi:"keyFormat"`
+	Locked                bool    `pulumi:"locked"`
+	Mountpoint            string  `pulumi:"mountpoint"`
+	Name                  string  `pulumi:"name"`
+	Pool                  string  `pulumi:"pool"`
+	Quota                 float64 `pulumi:"quota"`
+	Readonly              string  `pulumi:"readonly"`
+	Recordsize            string  `pulumi:"recordsize"`
+	Refquota              float64 `pulumi:"refquota"`
+	Refreservation        float64 `pulumi:"refreservation"`
+	Reservation           float64 `pulumi:"reservation"`
+	ShareType             string  `pulumi:"shareType"`
+	Snapdir               string  `pulumi:"snapdir"`
+	SpecialSmallBlockSize int     `pulumi:"specialSmallBlockSize"`
+	Sync                  string  `pulumi:"sync"`
+	Type                  string  `pulumi:"type"`
+	Volsize               float64 `pulumi:"volsize"`
+	Xattr                 string  `pulumi:"xattr"`
 }
 
 func LookupDatasetOutput(ctx *pulumi.Context, args LookupDatasetOutputArgs, opts ...pulumi.InvokeOption) LookupDatasetResultOutput {
@@ -182,8 +182,8 @@ func (o LookupDatasetResultOutput) Pool() pulumi.StringOutput {
 	return o.ApplyT(func(v LookupDatasetResult) string { return v.Pool }).(pulumi.StringOutput)
 }
 
-func (o LookupDatasetResultOutput) Quota() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupDatasetResult) int { return v.Quota }).(pulumi.IntOutput)
+func (o LookupDatasetResultOutput) Quota() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupDatasetResult) float64 { return v.Quota }).(pulumi.Float64Output)
 }
 
 func (o LookupDatasetResultOutput) Readonly() pulumi.StringOutput {
@@ -194,16 +194,16 @@ func (o LookupDatasetResultOutput) Recordsize() pulumi.StringOutput {
 	return o.ApplyT(func(v LookupDatasetResult) string { return v.Recordsize }).(pulumi.StringOutput)
 }
 
-func (o LookupDatasetResultOutput) Refquota() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupDatasetResult) int { return v.Refquota }).(pulumi.IntOutput)
+func (o LookupDatasetResultOutput) Refquota() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupDatasetResult) float64 { return v.Refquota }).(pulumi.Float64Output)
 }
 
-func (o LookupDatasetResultOutput) Refreservation() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupDatasetResult) int { return v.Refreservation }).(pulumi.IntOutput)
+func (o LookupDatasetResultOutput) Refreservation() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupDatasetResult) float64 { return v.Refreservation }).(pulumi.Float64Output)
 }
 
-func (o LookupDatasetResultOutput) Reservation() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupDatasetResult) int { return v.Reservation }).(pulumi.IntOutput)
+func (o LookupDatasetResultOutput) Reservation() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupDatasetResult) float64 { return v.Reservation }).(pulumi.Float64Output)
 }
 
 func (o LookupDatasetResultOutput) ShareType() pulumi.StringOutput {
@@ -226,8 +226,8 @@ func (o LookupDatasetResultOutput) Type() pulumi.StringOutput {
 	return o.ApplyT(func(v LookupDatasetResult) string { return v.Type }).(pulumi.StringOutput)
 }
 
-func (o LookupDatasetResultOutput) Volsize() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupDatasetResult) int { return v.Volsize }).(pulumi.IntOutput)
+func (o LookupDatasetResultOutput) Volsize() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupDatasetResult) float64 { return v.Volsize }).(pulumi.Float64Output)
 }
 
 func (o LookupDatasetResultOutput) Xattr() pulumi.StringOutput {

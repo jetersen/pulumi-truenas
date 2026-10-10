@@ -64,17 +64,17 @@ type Dataset struct {
 	// Name of the pool containing this dataset.
 	Pool pulumi.StringOutput `pulumi:"pool"`
 	// Quota in bytes (0 = unlimited).
-	Quota pulumi.IntOutput `pulumi:"quota"`
+	Quota pulumi.Float64Output `pulumi:"quota"`
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly pulumi.StringOutput `pulumi:"readonly"`
 	// Suggested block size for files, e.g. "128K" or "1M". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift.
 	Recordsize pulumi.StringOutput `pulumi:"recordsize"`
 	// Referenced quota in bytes (0 = unlimited).
-	Refquota pulumi.IntOutput `pulumi:"refquota"`
+	Refquota pulumi.Float64Output `pulumi:"refquota"`
 	// Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits.
-	Refreservation pulumi.IntOutput `pulumi:"refreservation"`
+	Refreservation pulumi.Float64Output `pulumi:"refreservation"`
 	// Reserved space in bytes.
-	Reservation pulumi.IntOutput `pulumi:"reservation"`
+	Reservation pulumi.Float64Output `pulumi:"reservation"`
 	// Optimised share-type preset applied at creation: GENERIC, SMB, MULTIPROTOCOL, NFS, or APPS (write-only, not returned by the API). Create-only.
 	ShareType pulumi.StringPtrOutput `pulumi:"shareType"`
 	// Visibility of the .zfs/snapshot directory: VISIBLE, HIDDEN, or DISABLED. Null inherits.
@@ -86,7 +86,7 @@ type Dataset struct {
 	// Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive.
 	Type pulumi.StringOutput `pulumi:"type"`
 	// Volume size in bytes. Required for type=VOLUME.
-	Volsize pulumi.IntOutput `pulumi:"volsize"`
+	Volsize pulumi.Float64Output `pulumi:"volsize"`
 	// ZFS extended-attribute storage mode: SA (system-attribute), ON/DIR (directory-based), or OFF. Read-only — TrueNAS does not expose xattr in the writable create/update API, so it is set at dataset creation or inherited and only surfaced here for reading and drift-awareness.
 	Xattr pulumi.StringOutput `pulumi:"xattr"`
 }
@@ -180,17 +180,17 @@ type datasetState struct {
 	// Name of the pool containing this dataset.
 	Pool *string `pulumi:"pool"`
 	// Quota in bytes (0 = unlimited).
-	Quota *int `pulumi:"quota"`
+	Quota *float64 `pulumi:"quota"`
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly *string `pulumi:"readonly"`
 	// Suggested block size for files, e.g. "128K" or "1M". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift.
 	Recordsize *string `pulumi:"recordsize"`
 	// Referenced quota in bytes (0 = unlimited).
-	Refquota *int `pulumi:"refquota"`
+	Refquota *float64 `pulumi:"refquota"`
 	// Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits.
-	Refreservation *int `pulumi:"refreservation"`
+	Refreservation *float64 `pulumi:"refreservation"`
 	// Reserved space in bytes.
-	Reservation *int `pulumi:"reservation"`
+	Reservation *float64 `pulumi:"reservation"`
 	// Optimised share-type preset applied at creation: GENERIC, SMB, MULTIPROTOCOL, NFS, or APPS (write-only, not returned by the API). Create-only.
 	ShareType *string `pulumi:"shareType"`
 	// Visibility of the .zfs/snapshot directory: VISIBLE, HIDDEN, or DISABLED. Null inherits.
@@ -202,7 +202,7 @@ type datasetState struct {
 	// Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive.
 	Type *string `pulumi:"type"`
 	// Volume size in bytes. Required for type=VOLUME.
-	Volsize *int `pulumi:"volsize"`
+	Volsize *float64 `pulumi:"volsize"`
 	// ZFS extended-attribute storage mode: SA (system-attribute), ON/DIR (directory-based), or OFF. Read-only — TrueNAS does not expose xattr in the writable create/update API, so it is set at dataset creation or inherited and only surfaced here for reading and drift-awareness.
 	Xattr *string `pulumi:"xattr"`
 }
@@ -253,17 +253,17 @@ type DatasetState struct {
 	// Name of the pool containing this dataset.
 	Pool pulumi.StringPtrInput
 	// Quota in bytes (0 = unlimited).
-	Quota pulumi.IntPtrInput
+	Quota pulumi.Float64PtrInput
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly pulumi.StringPtrInput
 	// Suggested block size for files, e.g. "128K" or "1M". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift.
 	Recordsize pulumi.StringPtrInput
 	// Referenced quota in bytes (0 = unlimited).
-	Refquota pulumi.IntPtrInput
+	Refquota pulumi.Float64PtrInput
 	// Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits.
-	Refreservation pulumi.IntPtrInput
+	Refreservation pulumi.Float64PtrInput
 	// Reserved space in bytes.
-	Reservation pulumi.IntPtrInput
+	Reservation pulumi.Float64PtrInput
 	// Optimised share-type preset applied at creation: GENERIC, SMB, MULTIPROTOCOL, NFS, or APPS (write-only, not returned by the API). Create-only.
 	ShareType pulumi.StringPtrInput
 	// Visibility of the .zfs/snapshot directory: VISIBLE, HIDDEN, or DISABLED. Null inherits.
@@ -275,7 +275,7 @@ type DatasetState struct {
 	// Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive.
 	Type pulumi.StringPtrInput
 	// Volume size in bytes. Required for type=VOLUME.
-	Volsize pulumi.IntPtrInput
+	Volsize pulumi.Float64PtrInput
 	// ZFS extended-attribute storage mode: SA (system-attribute), ON/DIR (directory-based), or OFF. Read-only — TrueNAS does not expose xattr in the writable create/update API, so it is set at dataset creation or inherited and only surfaced here for reading and drift-awareness.
 	Xattr pulumi.StringPtrInput
 }
@@ -324,17 +324,17 @@ type datasetArgs struct {
 	// Full dataset path, e.g. tank/mydata.
 	Name string `pulumi:"name"`
 	// Quota in bytes (0 = unlimited).
-	Quota *int `pulumi:"quota"`
+	Quota *float64 `pulumi:"quota"`
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly *string `pulumi:"readonly"`
 	// Suggested block size for files, e.g. "128K" or "1M". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift.
 	Recordsize *string `pulumi:"recordsize"`
 	// Referenced quota in bytes (0 = unlimited).
-	Refquota *int `pulumi:"refquota"`
+	Refquota *float64 `pulumi:"refquota"`
 	// Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits.
-	Refreservation *int `pulumi:"refreservation"`
+	Refreservation *float64 `pulumi:"refreservation"`
 	// Reserved space in bytes.
-	Reservation *int `pulumi:"reservation"`
+	Reservation *float64 `pulumi:"reservation"`
 	// Optimised share-type preset applied at creation: GENERIC, SMB, MULTIPROTOCOL, NFS, or APPS (write-only, not returned by the API). Create-only.
 	ShareType *string `pulumi:"shareType"`
 	// Visibility of the .zfs/snapshot directory: VISIBLE, HIDDEN, or DISABLED. Null inherits.
@@ -346,7 +346,7 @@ type datasetArgs struct {
 	// Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive.
 	Type *string `pulumi:"type"`
 	// Volume size in bytes. Required for type=VOLUME.
-	Volsize *int `pulumi:"volsize"`
+	Volsize *float64 `pulumi:"volsize"`
 }
 
 // The set of arguments for constructing a Dataset resource.
@@ -390,17 +390,17 @@ type DatasetArgs struct {
 	// Full dataset path, e.g. tank/mydata.
 	Name pulumi.StringInput
 	// Quota in bytes (0 = unlimited).
-	Quota pulumi.IntPtrInput
+	Quota pulumi.Float64PtrInput
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly pulumi.StringPtrInput
 	// Suggested block size for files, e.g. "128K" or "1M". Null (unset) inherits from the parent. Use the ZFS form (uppercase suffix) to avoid drift.
 	Recordsize pulumi.StringPtrInput
 	// Referenced quota in bytes (0 = unlimited).
-	Refquota pulumi.IntPtrInput
+	Refquota pulumi.Float64PtrInput
 	// Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits.
-	Refreservation pulumi.IntPtrInput
+	Refreservation pulumi.Float64PtrInput
 	// Reserved space in bytes.
-	Reservation pulumi.IntPtrInput
+	Reservation pulumi.Float64PtrInput
 	// Optimised share-type preset applied at creation: GENERIC, SMB, MULTIPROTOCOL, NFS, or APPS (write-only, not returned by the API). Create-only.
 	ShareType pulumi.StringPtrInput
 	// Visibility of the .zfs/snapshot directory: VISIBLE, HIDDEN, or DISABLED. Null inherits.
@@ -412,7 +412,7 @@ type DatasetArgs struct {
 	// Dataset type: FILESYSTEM (default) or VOLUME. Case-insensitive.
 	Type pulumi.StringPtrInput
 	// Volume size in bytes. Required for type=VOLUME.
-	Volsize pulumi.IntPtrInput
+	Volsize pulumi.Float64PtrInput
 }
 
 func (DatasetArgs) ElementType() reflect.Type {
@@ -614,8 +614,8 @@ func (o DatasetOutput) Pool() pulumi.StringOutput {
 }
 
 // Quota in bytes (0 = unlimited).
-func (o DatasetOutput) Quota() pulumi.IntOutput {
-	return o.ApplyT(func(v *Dataset) pulumi.IntOutput { return v.Quota }).(pulumi.IntOutput)
+func (o DatasetOutput) Quota() pulumi.Float64Output {
+	return o.ApplyT(func(v *Dataset) pulumi.Float64Output { return v.Quota }).(pulumi.Float64Output)
 }
 
 // Mount read-only: ON or OFF. Null inherits.
@@ -629,18 +629,18 @@ func (o DatasetOutput) Recordsize() pulumi.StringOutput {
 }
 
 // Referenced quota in bytes (0 = unlimited).
-func (o DatasetOutput) Refquota() pulumi.IntOutput {
-	return o.ApplyT(func(v *Dataset) pulumi.IntOutput { return v.Refquota }).(pulumi.IntOutput)
+func (o DatasetOutput) Refquota() pulumi.Float64Output {
+	return o.ApplyT(func(v *Dataset) pulumi.Float64Output { return v.Refquota }).(pulumi.Float64Output)
 }
 
 // Referenced reservation in bytes (space guaranteed to this dataset, excluding descendants/snapshots). Null (unset) inherits.
-func (o DatasetOutput) Refreservation() pulumi.IntOutput {
-	return o.ApplyT(func(v *Dataset) pulumi.IntOutput { return v.Refreservation }).(pulumi.IntOutput)
+func (o DatasetOutput) Refreservation() pulumi.Float64Output {
+	return o.ApplyT(func(v *Dataset) pulumi.Float64Output { return v.Refreservation }).(pulumi.Float64Output)
 }
 
 // Reserved space in bytes.
-func (o DatasetOutput) Reservation() pulumi.IntOutput {
-	return o.ApplyT(func(v *Dataset) pulumi.IntOutput { return v.Reservation }).(pulumi.IntOutput)
+func (o DatasetOutput) Reservation() pulumi.Float64Output {
+	return o.ApplyT(func(v *Dataset) pulumi.Float64Output { return v.Reservation }).(pulumi.Float64Output)
 }
 
 // Optimised share-type preset applied at creation: GENERIC, SMB, MULTIPROTOCOL, NFS, or APPS (write-only, not returned by the API). Create-only.
@@ -669,8 +669,8 @@ func (o DatasetOutput) Type() pulumi.StringOutput {
 }
 
 // Volume size in bytes. Required for type=VOLUME.
-func (o DatasetOutput) Volsize() pulumi.IntOutput {
-	return o.ApplyT(func(v *Dataset) pulumi.IntOutput { return v.Volsize }).(pulumi.IntOutput)
+func (o DatasetOutput) Volsize() pulumi.Float64Output {
+	return o.ApplyT(func(v *Dataset) pulumi.Float64Output { return v.Volsize }).(pulumi.Float64Output)
 }
 
 // ZFS extended-attribute storage mode: SA (system-attribute), ON/DIR (directory-based), or OFF. Read-only — TrueNAS does not expose xattr in the writable create/update API, so it is set at dataset creation or inherited and only surfaced here for reading and drift-awareness.
