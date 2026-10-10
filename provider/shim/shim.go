@@ -10,7 +10,7 @@ import (
 )
 
 func NewProvider() provider.Provider {
-	return &composeProvider{upstream.New("1.5.7")().(*upstream.TrueNASProvider)}
+	return &composeProvider{upstream.New("1.5.11")().(*upstream.TrueNASProvider)}
 }
 
 type composeProvider struct{ *upstream.TrueNASProvider }

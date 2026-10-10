@@ -19,14 +19,36 @@ type Zvol struct {
 	Checksum pulumi.StringOutput `pulumi:"checksum"`
 	// Human-readable description.
 	Comments pulumi.StringOutput `pulumi:"comments"`
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression pulumi.StringOutput `pulumi:"compression"`
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies pulumi.IntOutput `pulumi:"copies"`
-	// Deduplication: off, on, or verify.
+	// Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent.
 	Dedup pulumi.StringOutput `pulumi:"dedup"`
 	// Whether the zvol is encrypted.
 	Encrypted pulumi.BoolOutput `pulumi:"encrypted"`
+	// Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with<span pulumi-lang-nodejs=" inheritEncryption " pulumi-lang-dotnet=" InheritEncryption " pulumi-lang-go=" inheritEncryption " pulumi-lang-python=" inherit_encryption " pulumi-lang-yaml=" inheritEncryption " pulumi-lang-java=" inheritEncryption " pulumi-lang-hcl=" inherit_encryption "> inheritEncryption </span>= true (the parent determines encryption).
+	Encryption pulumi.BoolOutput `pulumi:"encryption"`
+	// Encryption algorithm, e.g. "AES-256-GCM". Create-only.
+	EncryptionAlgorithm pulumi.StringOutput `pulumi:"encryptionAlgorithm"`
+	// Automatically generate the encryption key (key-based encryption). Create-only.
+	EncryptionGenerateKey pulumi.BoolPtrOutput `pulumi:"encryptionGenerateKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
+	EncryptionKey pulumi.StringPtrOutput `pulumi:"encryptionKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
+	EncryptionPassphrase pulumi.StringPtrOutput `pulumi:"encryptionPassphrase"`
+	// Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset.
+	InheritEncryption pulumi.BoolOutput `pulumi:"inheritEncryption"`
+	// Encryption key format: PASSPHRASE or HEX (null when not encrypted).
+	KeyFormat pulumi.StringOutput `pulumi:"keyFormat"`
+	// Whether the encrypted zvol is currently locked.
+	Locked pulumi.BoolOutput `pulumi:"locked"`
 	// Full zvol path, e.g. tank/myvol.
 	Name pulumi.StringOutput `pulumi:"name"`
 	// Name of the pool containing this zvol.
@@ -41,7 +63,7 @@ type Zvol struct {
 	Snapdev pulumi.StringOutput `pulumi:"snapdev"`
 	// Sparse provisioning (write-only; not returned by API).
 	Sparse pulumi.BoolPtrOutput `pulumi:"sparse"`
-	// Sync setting: standard, always, or disabled.
+	// Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent.
 	Sync pulumi.StringOutput `pulumi:"sync"`
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize pulumi.IntOutput `pulumi:"volblocksize"`
@@ -62,6 +84,17 @@ func NewZvol(ctx *pulumi.Context,
 	if args.Volsize == nil {
 		return nil, errors.New("invalid value for required argument 'Volsize'")
 	}
+	if args.EncryptionKey != nil {
+		args.EncryptionKey = pulumi.ToSecret(args.EncryptionKey).(pulumi.StringPtrInput)
+	}
+	if args.EncryptionPassphrase != nil {
+		args.EncryptionPassphrase = pulumi.ToSecret(args.EncryptionPassphrase).(pulumi.StringPtrInput)
+	}
+	secrets := pulumi.AdditionalSecretOutputs([]string{
+		"encryptionKey",
+		"encryptionPassphrase",
+	})
+	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Zvol
 	err := ctx.RegisterResource("truenas:index/zvol:Zvol", name, args, &resource, opts...)
@@ -89,14 +122,32 @@ type zvolState struct {
 	Checksum *string `pulumi:"checksum"`
 	// Human-readable description.
 	Comments *string `pulumi:"comments"`
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression *string `pulumi:"compression"`
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies *int `pulumi:"copies"`
-	// Deduplication: off, on, or verify.
+	// Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent.
 	Dedup *string `pulumi:"dedup"`
 	// Whether the zvol is encrypted.
 	Encrypted *bool `pulumi:"encrypted"`
+	// Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with<span pulumi-lang-nodejs=" inheritEncryption " pulumi-lang-dotnet=" InheritEncryption " pulumi-lang-go=" inheritEncryption " pulumi-lang-python=" inherit_encryption " pulumi-lang-yaml=" inheritEncryption " pulumi-lang-java=" inheritEncryption " pulumi-lang-hcl=" inherit_encryption "> inheritEncryption </span>= true (the parent determines encryption).
+	Encryption *bool `pulumi:"encryption"`
+	// Encryption algorithm, e.g. "AES-256-GCM". Create-only.
+	EncryptionAlgorithm *string `pulumi:"encryptionAlgorithm"`
+	// Automatically generate the encryption key (key-based encryption). Create-only.
+	EncryptionGenerateKey *bool `pulumi:"encryptionGenerateKey"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
+	EncryptionKey *string `pulumi:"encryptionKey"`
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
+	EncryptionPassphrase *string `pulumi:"encryptionPassphrase"`
+	// Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset.
+	InheritEncryption *bool `pulumi:"inheritEncryption"`
+	// Encryption key format: PASSPHRASE or HEX (null when not encrypted).
+	KeyFormat *string `pulumi:"keyFormat"`
+	// Whether the encrypted zvol is currently locked.
+	Locked *bool `pulumi:"locked"`
 	// Full zvol path, e.g. tank/myvol.
 	Name *string `pulumi:"name"`
 	// Name of the pool containing this zvol.
@@ -111,7 +162,7 @@ type zvolState struct {
 	Snapdev *string `pulumi:"snapdev"`
 	// Sparse provisioning (write-only; not returned by API).
 	Sparse *bool `pulumi:"sparse"`
-	// Sync setting: standard, always, or disabled.
+	// Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent.
 	Sync *string `pulumi:"sync"`
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize *int `pulumi:"volblocksize"`
@@ -124,14 +175,32 @@ type ZvolState struct {
 	Checksum pulumi.StringPtrInput
 	// Human-readable description.
 	Comments pulumi.StringPtrInput
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression pulumi.StringPtrInput
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies pulumi.IntPtrInput
-	// Deduplication: off, on, or verify.
+	// Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent.
 	Dedup pulumi.StringPtrInput
 	// Whether the zvol is encrypted.
 	Encrypted pulumi.BoolPtrInput
+	// Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with<span pulumi-lang-nodejs=" inheritEncryption " pulumi-lang-dotnet=" InheritEncryption " pulumi-lang-go=" inheritEncryption " pulumi-lang-python=" inherit_encryption " pulumi-lang-yaml=" inheritEncryption " pulumi-lang-java=" inheritEncryption " pulumi-lang-hcl=" inherit_encryption "> inheritEncryption </span>= true (the parent determines encryption).
+	Encryption pulumi.BoolPtrInput
+	// Encryption algorithm, e.g. "AES-256-GCM". Create-only.
+	EncryptionAlgorithm pulumi.StringPtrInput
+	// Automatically generate the encryption key (key-based encryption). Create-only.
+	EncryptionGenerateKey pulumi.BoolPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
+	EncryptionKey pulumi.StringPtrInput
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
+	EncryptionPassphrase pulumi.StringPtrInput
+	// Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset.
+	InheritEncryption pulumi.BoolPtrInput
+	// Encryption key format: PASSPHRASE or HEX (null when not encrypted).
+	KeyFormat pulumi.StringPtrInput
+	// Whether the encrypted zvol is currently locked.
+	Locked pulumi.BoolPtrInput
 	// Full zvol path, e.g. tank/myvol.
 	Name pulumi.StringPtrInput
 	// Name of the pool containing this zvol.
@@ -146,7 +215,7 @@ type ZvolState struct {
 	Snapdev pulumi.StringPtrInput
 	// Sparse provisioning (write-only; not returned by API).
 	Sparse pulumi.BoolPtrInput
-	// Sync setting: standard, always, or disabled.
+	// Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent.
 	Sync pulumi.StringPtrInput
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize pulumi.IntPtrInput
@@ -163,12 +232,30 @@ type zvolArgs struct {
 	Checksum *string `pulumi:"checksum"`
 	// Human-readable description.
 	Comments *string `pulumi:"comments"`
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression *string `pulumi:"compression"`
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies *int `pulumi:"copies"`
-	// Deduplication: off, on, or verify.
+	// Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent.
 	Dedup *string `pulumi:"dedup"`
+	// Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with<span pulumi-lang-nodejs=" inheritEncryption " pulumi-lang-dotnet=" InheritEncryption " pulumi-lang-go=" inheritEncryption " pulumi-lang-python=" inherit_encryption " pulumi-lang-yaml=" inheritEncryption " pulumi-lang-java=" inheritEncryption " pulumi-lang-hcl=" inherit_encryption "> inheritEncryption </span>= true (the parent determines encryption).
+	Encryption *bool `pulumi:"encryption"`
+	// Encryption algorithm, e.g. "AES-256-GCM". Create-only.
+	EncryptionAlgorithm *string `pulumi:"encryptionAlgorithm"`
+	// Automatically generate the encryption key (key-based encryption). Create-only.
+	EncryptionGenerateKey *bool `pulumi:"encryptionGenerateKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
+	EncryptionKey *string `pulumi:"encryptionKey"`
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
+	EncryptionPassphrase *string `pulumi:"encryptionPassphrase"`
+	// Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset.
+	InheritEncryption *bool `pulumi:"inheritEncryption"`
 	// Full zvol path, e.g. tank/myvol.
 	Name string `pulumi:"name"`
 	// Mount read-only: ON or OFF. Null inherits.
@@ -181,7 +268,7 @@ type zvolArgs struct {
 	Snapdev *string `pulumi:"snapdev"`
 	// Sparse provisioning (write-only; not returned by API).
 	Sparse *bool `pulumi:"sparse"`
-	// Sync setting: standard, always, or disabled.
+	// Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent.
 	Sync *string `pulumi:"sync"`
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize *int `pulumi:"volblocksize"`
@@ -195,12 +282,30 @@ type ZvolArgs struct {
 	Checksum pulumi.StringPtrInput
 	// Human-readable description.
 	Comments pulumi.StringPtrInput
-	// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+	// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 	Compression pulumi.StringPtrInput
 	// Number of copies of each block (1-3). Null (unset) inherits from the parent.
 	Copies pulumi.IntPtrInput
-	// Deduplication: off, on, or verify.
+	// Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent.
 	Dedup pulumi.StringPtrInput
+	// Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with<span pulumi-lang-nodejs=" inheritEncryption " pulumi-lang-dotnet=" InheritEncryption " pulumi-lang-go=" inheritEncryption " pulumi-lang-python=" inherit_encryption " pulumi-lang-yaml=" inheritEncryption " pulumi-lang-java=" inheritEncryption " pulumi-lang-hcl=" inherit_encryption "> inheritEncryption </span>= true (the parent determines encryption).
+	Encryption pulumi.BoolPtrInput
+	// Encryption algorithm, e.g. "AES-256-GCM". Create-only.
+	EncryptionAlgorithm pulumi.StringPtrInput
+	// Automatically generate the encryption key (key-based encryption). Create-only.
+	EncryptionGenerateKey pulumi.BoolPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
+	EncryptionKey pulumi.StringPtrInput
+	// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+	//
+	// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+	// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
+	EncryptionPassphrase pulumi.StringPtrInput
+	// Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset.
+	InheritEncryption pulumi.BoolPtrInput
 	// Full zvol path, e.g. tank/myvol.
 	Name pulumi.StringInput
 	// Mount read-only: ON or OFF. Null inherits.
@@ -213,7 +318,7 @@ type ZvolArgs struct {
 	Snapdev pulumi.StringPtrInput
 	// Sparse provisioning (write-only; not returned by API).
 	Sparse pulumi.BoolPtrInput
-	// Sync setting: standard, always, or disabled.
+	// Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent.
 	Sync pulumi.StringPtrInput
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize pulumi.IntPtrInput
@@ -318,7 +423,7 @@ func (o ZvolOutput) Comments() pulumi.StringOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.StringOutput { return v.Comments }).(pulumi.StringOutput)
 }
 
-// Compression algorithm. Case-insensitive: lz4, zstd, off, etc.
+// Compression algorithm. Case-insensitive: lz4, zstd, off, inherit, etc.
 func (o ZvolOutput) Compression() pulumi.StringOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.StringOutput { return v.Compression }).(pulumi.StringOutput)
 }
@@ -328,7 +433,7 @@ func (o ZvolOutput) Copies() pulumi.IntOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.IntOutput { return v.Copies }).(pulumi.IntOutput)
 }
 
-// Deduplication: off, on, or verify.
+// Deduplication: ON, VERIFY, or OFF. INHERIT inherits from the parent.
 func (o ZvolOutput) Dedup() pulumi.StringOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.StringOutput { return v.Dedup }).(pulumi.StringOutput)
 }
@@ -336,6 +441,52 @@ func (o ZvolOutput) Dedup() pulumi.StringOutput {
 // Whether the zvol is encrypted.
 func (o ZvolOutput) Encrypted() pulumi.BoolOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.BoolOutput { return v.Encrypted }).(pulumi.BoolOutput)
+}
+
+// Enable ZFS encryption on this zvol at creation. Create-only: changing it recreates the zvol. Cannot be combined with<span pulumi-lang-nodejs=" inheritEncryption " pulumi-lang-dotnet=" InheritEncryption " pulumi-lang-go=" inheritEncryption " pulumi-lang-python=" inherit_encryption " pulumi-lang-yaml=" inheritEncryption " pulumi-lang-java=" inheritEncryption " pulumi-lang-hcl=" inherit_encryption "> inheritEncryption </span>= true (the parent determines encryption).
+func (o ZvolOutput) Encryption() pulumi.BoolOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.BoolOutput { return v.Encryption }).(pulumi.BoolOutput)
+}
+
+// Encryption algorithm, e.g. "AES-256-GCM". Create-only.
+func (o ZvolOutput) EncryptionAlgorithm() pulumi.StringOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.StringOutput { return v.EncryptionAlgorithm }).(pulumi.StringOutput)
+}
+
+// Automatically generate the encryption key (key-based encryption). Create-only.
+func (o ZvolOutput) EncryptionGenerateKey() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.BoolPtrOutput { return v.EncryptionGenerateKey }).(pulumi.BoolPtrOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// 64-character hex key for key-based encryption. Write-only: never stored in state. Create-only.
+func (o ZvolOutput) EncryptionKey() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.StringPtrOutput { return v.EncryptionKey }).(pulumi.StringPtrOutput)
+}
+
+// Pulumi stores this input encrypted in state. Upstream statements below about never storing it apply to Terraform, not Pulumi.
+//
+// **NOTE:** This field is write-only and its value will not be updated in state as part of read operations.
+// Passphrase for passphrase-based encryption (minimum 8 characters). Write-only: never stored in state. Create-only.
+func (o ZvolOutput) EncryptionPassphrase() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.StringPtrOutput { return v.EncryptionPassphrase }).(pulumi.StringPtrOutput)
+}
+
+// Whether this zvol inherits its encryption from the parent dataset rather than owning its own key. Create-only. Computed: reconciled from the zvol's encryption root on read, so it reflects reality even when left unset.
+func (o ZvolOutput) InheritEncryption() pulumi.BoolOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.BoolOutput { return v.InheritEncryption }).(pulumi.BoolOutput)
+}
+
+// Encryption key format: PASSPHRASE or HEX (null when not encrypted).
+func (o ZvolOutput) KeyFormat() pulumi.StringOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.StringOutput { return v.KeyFormat }).(pulumi.StringOutput)
+}
+
+// Whether the encrypted zvol is currently locked.
+func (o ZvolOutput) Locked() pulumi.BoolOutput {
+	return o.ApplyT(func(v *Zvol) pulumi.BoolOutput { return v.Locked }).(pulumi.BoolOutput)
 }
 
 // Full zvol path, e.g. tank/myvol.
@@ -373,7 +524,7 @@ func (o ZvolOutput) Sparse() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.BoolPtrOutput { return v.Sparse }).(pulumi.BoolPtrOutput)
 }
 
-// Sync setting: standard, always, or disabled.
+// Sync write behaviour: STANDARD, ALWAYS, or DISABLED. INHERIT inherits from the parent.
 func (o ZvolOutput) Sync() pulumi.StringOutput {
 	return o.ApplyT(func(v *Zvol) pulumi.StringOutput { return v.Sync }).(pulumi.StringOutput)
 }
