@@ -56,9 +56,9 @@ type Zvol struct {
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly pulumi.StringOutput `pulumi:"readonly"`
 	// Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits.
-	Refreservation pulumi.IntOutput `pulumi:"refreservation"`
+	Refreservation pulumi.Float64Output `pulumi:"refreservation"`
 	// Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits.
-	Reservation pulumi.IntOutput `pulumi:"reservation"`
+	Reservation pulumi.Float64Output `pulumi:"reservation"`
 	// Visibility of the volume's snapshot device nodes: VISIBLE or HIDDEN. Null inherits.
 	Snapdev pulumi.StringOutput `pulumi:"snapdev"`
 	// Sparse provisioning (write-only; not returned by API).
@@ -68,7 +68,7 @@ type Zvol struct {
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize pulumi.IntOutput `pulumi:"volblocksize"`
 	// Volume size in bytes.
-	Volsize pulumi.IntOutput `pulumi:"volsize"`
+	Volsize pulumi.Float64Output `pulumi:"volsize"`
 }
 
 // NewZvol registers a new resource with the given unique name, arguments, and options.
@@ -155,9 +155,9 @@ type zvolState struct {
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly *string `pulumi:"readonly"`
 	// Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits.
-	Refreservation *int `pulumi:"refreservation"`
+	Refreservation *float64 `pulumi:"refreservation"`
 	// Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits.
-	Reservation *int `pulumi:"reservation"`
+	Reservation *float64 `pulumi:"reservation"`
 	// Visibility of the volume's snapshot device nodes: VISIBLE or HIDDEN. Null inherits.
 	Snapdev *string `pulumi:"snapdev"`
 	// Sparse provisioning (write-only; not returned by API).
@@ -167,7 +167,7 @@ type zvolState struct {
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize *int `pulumi:"volblocksize"`
 	// Volume size in bytes.
-	Volsize *int `pulumi:"volsize"`
+	Volsize *float64 `pulumi:"volsize"`
 }
 
 type ZvolState struct {
@@ -208,9 +208,9 @@ type ZvolState struct {
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly pulumi.StringPtrInput
 	// Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits.
-	Refreservation pulumi.IntPtrInput
+	Refreservation pulumi.Float64PtrInput
 	// Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits.
-	Reservation pulumi.IntPtrInput
+	Reservation pulumi.Float64PtrInput
 	// Visibility of the volume's snapshot device nodes: VISIBLE or HIDDEN. Null inherits.
 	Snapdev pulumi.StringPtrInput
 	// Sparse provisioning (write-only; not returned by API).
@@ -220,7 +220,7 @@ type ZvolState struct {
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize pulumi.IntPtrInput
 	// Volume size in bytes.
-	Volsize pulumi.IntPtrInput
+	Volsize pulumi.Float64PtrInput
 }
 
 func (ZvolState) ElementType() reflect.Type {
@@ -261,9 +261,9 @@ type zvolArgs struct {
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly *string `pulumi:"readonly"`
 	// Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits.
-	Refreservation *int `pulumi:"refreservation"`
+	Refreservation *float64 `pulumi:"refreservation"`
 	// Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits.
-	Reservation *int `pulumi:"reservation"`
+	Reservation *float64 `pulumi:"reservation"`
 	// Visibility of the volume's snapshot device nodes: VISIBLE or HIDDEN. Null inherits.
 	Snapdev *string `pulumi:"snapdev"`
 	// Sparse provisioning (write-only; not returned by API).
@@ -273,7 +273,7 @@ type zvolArgs struct {
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize *int `pulumi:"volblocksize"`
 	// Volume size in bytes.
-	Volsize int `pulumi:"volsize"`
+	Volsize float64 `pulumi:"volsize"`
 }
 
 // The set of arguments for constructing a Zvol resource.
@@ -311,9 +311,9 @@ type ZvolArgs struct {
 	// Mount read-only: ON or OFF. Null inherits.
 	Readonly pulumi.StringPtrInput
 	// Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits.
-	Refreservation pulumi.IntPtrInput
+	Refreservation pulumi.Float64PtrInput
 	// Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits.
-	Reservation pulumi.IntPtrInput
+	Reservation pulumi.Float64PtrInput
 	// Visibility of the volume's snapshot device nodes: VISIBLE or HIDDEN. Null inherits.
 	Snapdev pulumi.StringPtrInput
 	// Sparse provisioning (write-only; not returned by API).
@@ -323,7 +323,7 @@ type ZvolArgs struct {
 	// Block size in bytes (512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072). Set at create time only.
 	Volblocksize pulumi.IntPtrInput
 	// Volume size in bytes.
-	Volsize pulumi.IntInput
+	Volsize pulumi.Float64Input
 }
 
 func (ZvolArgs) ElementType() reflect.Type {
@@ -505,13 +505,13 @@ func (o ZvolOutput) Readonly() pulumi.StringOutput {
 }
 
 // Referenced reservation in bytes (space guaranteed to the volume, excluding snapshots). Null (unset) inherits.
-func (o ZvolOutput) Refreservation() pulumi.IntOutput {
-	return o.ApplyT(func(v *Zvol) pulumi.IntOutput { return v.Refreservation }).(pulumi.IntOutput)
+func (o ZvolOutput) Refreservation() pulumi.Float64Output {
+	return o.ApplyT(func(v *Zvol) pulumi.Float64Output { return v.Refreservation }).(pulumi.Float64Output)
 }
 
 // Reserved space in bytes (guaranteed to this volume including snapshots). Null (unset) inherits.
-func (o ZvolOutput) Reservation() pulumi.IntOutput {
-	return o.ApplyT(func(v *Zvol) pulumi.IntOutput { return v.Reservation }).(pulumi.IntOutput)
+func (o ZvolOutput) Reservation() pulumi.Float64Output {
+	return o.ApplyT(func(v *Zvol) pulumi.Float64Output { return v.Reservation }).(pulumi.Float64Output)
 }
 
 // Visibility of the volume's snapshot device nodes: VISIBLE or HIDDEN. Null inherits.
@@ -535,8 +535,8 @@ func (o ZvolOutput) Volblocksize() pulumi.IntOutput {
 }
 
 // Volume size in bytes.
-func (o ZvolOutput) Volsize() pulumi.IntOutput {
-	return o.ApplyT(func(v *Zvol) pulumi.IntOutput { return v.Volsize }).(pulumi.IntOutput)
+func (o ZvolOutput) Volsize() pulumi.Float64Output {
+	return o.ApplyT(func(v *Zvol) pulumi.Float64Output { return v.Volsize }).(pulumi.Float64Output)
 }
 
 type ZvolArrayOutput struct{ *pulumi.OutputState }

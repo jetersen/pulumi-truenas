@@ -29,6 +29,8 @@ func Provider() tfbridge.ProviderInfo {
 		PluginDownloadURL: "github://api.github.com/jetersen/pulumi-truenas",
 		MetadataInfo:      tfbridge.NewProviderMetadata(metadata),
 		Resources: map[string]*tfbridge.ResourceInfo{
+			"truenas_dataset": {Fields: byteFields("quota", "refquota", "reservation", "refreservation", "volsize")},
+			"truenas_zvol":    {Fields: byteFields("reservation", "refreservation", "volsize")},
 			"truenas_certificate": {Fields: map[string]*tfbridge.SchemaInfo{
 				"certificate": {CSharpName: "CertificatePem"},
 			}},
@@ -36,6 +38,10 @@ func Provider() tfbridge.ProviderInfo {
 				"values":                       {Secret: &secret},
 				"custom_compose_config_string": {Secret: &secret},
 			}},
+		},
+		DataSources: map[string]*tfbridge.DataSourceInfo{
+			"truenas_dataset": {Fields: byteFields("quota", "refquota", "reservation", "refreservation", "volsize")},
+			"truenas_zvol":    {Fields: byteFields("reservation", "refreservation", "volsize")},
 		},
 		JavaScript: &tfbridge.JavaScriptInfo{
 			PackageName: "@jetersen/pulumi-truenas", RespectSchemaVersion: true,
@@ -92,4 +98,14 @@ func Provider() tfbridge.ProviderInfo {
 		})
 	}
 	return info
+}
+
+// Pulumi's integer schema generates 32-bit C# values. Byte sizes need number
+// fields so SDKs can represent Terraform's int64 quotas and volume sizes.
+func byteFields(names ...string) map[string]*tfbridge.SchemaInfo {
+	fields := make(map[string]*tfbridge.SchemaInfo, len(names))
+	for _, name := range names {
+		fields[name] = &tfbridge.SchemaInfo{Type: "number"}
+	}
+	return fields
 }

@@ -28,31 +28,31 @@ type LookupZvolArgs struct {
 
 // A collection of values returned by getZvol.
 type LookupZvolResult struct {
-	Checksum              string `pulumi:"checksum"`
-	Comments              string `pulumi:"comments"`
-	Compression           string `pulumi:"compression"`
-	Copies                int    `pulumi:"copies"`
-	Dedup                 string `pulumi:"dedup"`
-	Encrypted             bool   `pulumi:"encrypted"`
-	Encryption            bool   `pulumi:"encryption"`
-	EncryptionAlgorithm   string `pulumi:"encryptionAlgorithm"`
-	EncryptionGenerateKey bool   `pulumi:"encryptionGenerateKey"`
-	EncryptionKey         string `pulumi:"encryptionKey"`
-	EncryptionPassphrase  string `pulumi:"encryptionPassphrase"`
-	Id                    string `pulumi:"id"`
-	InheritEncryption     bool   `pulumi:"inheritEncryption"`
-	KeyFormat             string `pulumi:"keyFormat"`
-	Locked                bool   `pulumi:"locked"`
-	Name                  string `pulumi:"name"`
-	Pool                  string `pulumi:"pool"`
-	Readonly              string `pulumi:"readonly"`
-	Refreservation        int    `pulumi:"refreservation"`
-	Reservation           int    `pulumi:"reservation"`
-	Snapdev               string `pulumi:"snapdev"`
-	Sparse                bool   `pulumi:"sparse"`
-	Sync                  string `pulumi:"sync"`
-	Volblocksize          int    `pulumi:"volblocksize"`
-	Volsize               int    `pulumi:"volsize"`
+	Checksum              string  `pulumi:"checksum"`
+	Comments              string  `pulumi:"comments"`
+	Compression           string  `pulumi:"compression"`
+	Copies                int     `pulumi:"copies"`
+	Dedup                 string  `pulumi:"dedup"`
+	Encrypted             bool    `pulumi:"encrypted"`
+	Encryption            bool    `pulumi:"encryption"`
+	EncryptionAlgorithm   string  `pulumi:"encryptionAlgorithm"`
+	EncryptionGenerateKey bool    `pulumi:"encryptionGenerateKey"`
+	EncryptionKey         string  `pulumi:"encryptionKey"`
+	EncryptionPassphrase  string  `pulumi:"encryptionPassphrase"`
+	Id                    string  `pulumi:"id"`
+	InheritEncryption     bool    `pulumi:"inheritEncryption"`
+	KeyFormat             string  `pulumi:"keyFormat"`
+	Locked                bool    `pulumi:"locked"`
+	Name                  string  `pulumi:"name"`
+	Pool                  string  `pulumi:"pool"`
+	Readonly              string  `pulumi:"readonly"`
+	Refreservation        float64 `pulumi:"refreservation"`
+	Reservation           float64 `pulumi:"reservation"`
+	Snapdev               string  `pulumi:"snapdev"`
+	Sparse                bool    `pulumi:"sparse"`
+	Sync                  string  `pulumi:"sync"`
+	Volblocksize          int     `pulumi:"volblocksize"`
+	Volsize               float64 `pulumi:"volsize"`
 }
 
 func LookupZvolOutput(ctx *pulumi.Context, args LookupZvolOutputArgs, opts ...pulumi.InvokeOption) LookupZvolResultOutput {
@@ -156,12 +156,12 @@ func (o LookupZvolResultOutput) Readonly() pulumi.StringOutput {
 	return o.ApplyT(func(v LookupZvolResult) string { return v.Readonly }).(pulumi.StringOutput)
 }
 
-func (o LookupZvolResultOutput) Refreservation() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupZvolResult) int { return v.Refreservation }).(pulumi.IntOutput)
+func (o LookupZvolResultOutput) Refreservation() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupZvolResult) float64 { return v.Refreservation }).(pulumi.Float64Output)
 }
 
-func (o LookupZvolResultOutput) Reservation() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupZvolResult) int { return v.Reservation }).(pulumi.IntOutput)
+func (o LookupZvolResultOutput) Reservation() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupZvolResult) float64 { return v.Reservation }).(pulumi.Float64Output)
 }
 
 func (o LookupZvolResultOutput) Snapdev() pulumi.StringOutput {
@@ -180,8 +180,8 @@ func (o LookupZvolResultOutput) Volblocksize() pulumi.IntOutput {
 	return o.ApplyT(func(v LookupZvolResult) int { return v.Volblocksize }).(pulumi.IntOutput)
 }
 
-func (o LookupZvolResultOutput) Volsize() pulumi.IntOutput {
-	return o.ApplyT(func(v LookupZvolResult) int { return v.Volsize }).(pulumi.IntOutput)
+func (o LookupZvolResultOutput) Volsize() pulumi.Float64Output {
+	return o.ApplyT(func(v LookupZvolResult) float64 { return v.Volsize }).(pulumi.Float64Output)
 }
 
 func init() {
