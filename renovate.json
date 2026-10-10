@@ -11,17 +11,21 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": [
-        "github.com/truenas/terraform-provider-truenas",
-        "github.com/pulumi/pulumi-terraform-bridge/v3"
+      "matchManagers": [
+        "gomod",
+        "custom.regex"
       ],
+      "groupName": "Go dependencies",
+      "separateMajorMinor": false,
       "automerge": false
     },
     {
-      "matchPackageNames": [
-        "github.com/truenas/terraform-provider-truenas"
+      "matchManagers": [
+        "github-actions"
       ],
-      "groupName": "TrueNAS Terraform provider"
+      "groupName": "Build tooling",
+      "separateMajorMinor": false,
+      "automerge": false
     }
   ],
   "ignoreDeps": [
@@ -47,6 +51,9 @@
   ],
   "vulnerabilityAlerts": {
     "enabled": true,
-    "automerge": false
+    "automerge": false,
+    "groupName": "Go dependencies",
+    "groupSlug": "go-dependencies",
+    "separateMajorMinor": false
   }
 }
