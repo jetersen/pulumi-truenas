@@ -164,7 +164,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         if: matrix.component == 'python'
         with:
-          python-version: '3.14'
+          python-version: '3.15'
       - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         with:
