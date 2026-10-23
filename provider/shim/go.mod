@@ -1,11 +1,11 @@
 module github.com/truenas/terraform-provider-truenas/shim
 
-go 1.26.6
+go 1.26.10
 
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.19.0
 	github.com/hashicorp/terraform-plugin-go v0.31.0
-	github.com/truenas/terraform-provider-truenas v1.5.11
+	github.com/truenas/terraform-provider-truenas v1.5.18
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -21,5 +21,5 @@ require (
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
 )
