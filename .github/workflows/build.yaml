@@ -26,12 +26,12 @@ jobs:
           scope: provider
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
-          node-version: '24'
+          node-version: '26'
           registry-url: https://npm.pkg.github.com
           scope: '@jetersen'
       - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
         with:
-          pulumi-version: '3.268.0'
+          pulumi-version: '3.273.0'
       - name: Select release version
         shell: bash
         run: |
@@ -103,7 +103,7 @@ jobs:
           dotnet-version: '10.0.x'
       - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
         with:
-          pulumi-version: '3.268.0'
+          pulumi-version: '3.273.0'
       - name: Build CLI test inputs
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         env:
@@ -160,15 +160,15 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         if: matrix.component == 'nodejs'
         with:
-          node-version: '24'
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+          node-version: '26'
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         if: matrix.component == 'python'
         with:
-          python-version: '3.14'
+          python-version: '3.15'
       - uses: pulumi/actions@8e5e406f4007fca908480587cb9893c07090f58d # v7
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         with:
-          pulumi-version: '3.268.0'
+          pulumi-version: '3.273.0'
       - name: Generate SDK for validation
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         env:
@@ -313,7 +313,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         if: matrix.component == 'nodejs'
         with:
-          node-version: '24'
+          node-version: '26'
           registry-url: https://npm.pkg.github.com
           scope: '@jetersen'
       - name: Download and verify release packages
